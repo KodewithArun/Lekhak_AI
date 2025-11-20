@@ -7,14 +7,22 @@ It coordinates between:
 2. Output Agent - Receives and outputs the planner's final analysis
 """
 
-from google.adk.agents import SequentialAgent
-from .planner_agent import planner_agent
+from ..utils.logger import get_logger
 
+logger = get_logger("content_writer_agent")
+logger.info("Initializing content writer agent")
 
+try:
+    from google.adk.agents import SequentialAgent
+    from .planner_agent import planner_agent
 
+    content_writer_agent = SequentialAgent(
+        name="content_writer_agent",
+        description="Orchestrates content creation by coordinating planning and output formatting.",
+        sub_agents=[planner_agent],
+    )
 
-content_writer_agent = SequentialAgent(
-    name="content_writer_agent",
-    description="Orchestrates content creation by coordinating planning and output formatting.",
-    sub_agents=[planner_agent],
-)
+    logger.info("Content writer agent initialized with planner agent")
+except Exception as e:
+    logger.error(f"Failed to initialize content writer agent: {e}")
+    raise
