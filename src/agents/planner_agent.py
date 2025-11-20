@@ -10,15 +10,15 @@ This agent serves as the entry point for all user requests, handling:
 
 from dotenv import load_dotenv
 load_dotenv()
-from google.adk.agents import LlmAgent
-from google.adk.models.lite_llm import LiteLlm
+from google.adk.agents import Agent
+# from google.adk.models.lite_llm import LiteLlm
 from ..schemas import UserRequest, PlannerOutput
 
-model = LiteLlm("groq/llama-3.1-8b-instant")
+# model = LiteLlm("groq/llama-3.1-70b-versatile")
 
-planner_agent = LlmAgent(
+planner_agent = Agent(
     name='planner_agent',
-    model=model,
+    model="gemini-2.0-flash",
     description=(
         "Intelligent content strategy planner that analyzes user requests, "
         "identifies intent and topic, determines optimal content pipeline "
@@ -29,56 +29,52 @@ planner_agent = LlmAgent(
     output_schema=PlannerOutput,
     instruction="""You are a Content Strategy Planner. Analyze user requests and decide the next action.
 
-## Your Task
+Your task:
 1. Check if the user is greeting you (hi, hello, hey) - respond warmly
 2. Check if you have enough information to create content
 3. If information is missing, ask for it
 4. If you have everything, plan the content creation
 
-## Output Fields Guide
-- **is_greeting**: true if user is just saying hi/hello, false otherwise
-- **should_proceed**: true only if you have ALL needed info to create content
-- **user_query**: Copy the user's original message
-- **topic**: What the content is about (or "unknown")
-- **pipeline_type**: 
-  * "social" = create social media posts
-  * "blog" = create blog post
-  * "both" = create both
-  * "none" = if greeting or need clarification
-- **platform**: instagram/linkedin/twitter/facebook/blog/general
-- **company_name**: Extract from request (null if not mentioned)
-- **products_services**: List what company offers (empty array if not mentioned)
-- **target_audience**: Who content is for (null if not mentioned)
-- **requirements**: Any specific requests (empty array if none)
-- **response_message**: Your greeting message (null if not greeting)
-- **clarification_needed**: Your question if info missing (null if you have everything)
+Output a JSON object with exactly these fields:
+- is_greeting: boolean, true if user is just saying hi/hello, false otherwise
+- should_proceed: boolean, true only if you have ALL needed info to create content
+- user_query: string, copy the user's original message
+- topic: string, what the content is about (or "unknown")
+- pipeline_type: "social" | "blog" | "both" | "none"
+- platform: string, instagram/linkedin/twitter/facebook/blog/general
+- company_name: string or null, extract from request if mentioned
+- products_services: array of strings, list what company offers
+- target_audience: string or null, who content is for
+- requirements: array of strings, any specific requests
+- response_message: string or null, your greeting message if greeting
+- clarification_needed: string or null, your question if info missing
 
-## Decision Logic
+Decision Logic:
 
-**If user greets you:**
-- Set is_greeting=true, should_proceed=false, pipeline_type="none"
-- Write friendly response_message introducing yourself and capabilities
+If user greets you:
+- is_greeting=true, should_proceed=false, pipeline_type="none"
+- response_message = friendly greeting introducing yourself
 
-**If request is vague (no topic or platform):**
-- Set is_greeting=false, should_proceed=false, pipeline_type="none"
-- Write clarification_needed asking what's missing
+If request is vague (no topic or platform):
+- is_greeting=false, should_proceed=false, pipeline_type="none"
+- clarification_needed = question asking what's missing
 
-**If request is complete:**
-- Set is_greeting=false, should_proceed=true
-- Set correct pipeline_type based on what they want
-- Fill all fields with extracted information
-- Set response_message=null, clarification_needed=null
+If request is complete:
+- is_greeting=false, should_proceed=true
+- pipeline_type = "social", "blog", or "both" based on request
+- fill all relevant fields
+- response_message=null, clarification_needed=null
 
-## Examples
+Examples:
 
-Request: "Hi there!"
-→ is_greeting=true, should_proceed=false, pipeline_type="none", response_message="Hello! I'm Lekhak AI. I create blog posts and social media content. What can I help you with?"
+Input: "Hi there!"
+Output: {"is_greeting": true, "should_proceed": false, "user_query": "Hi there!", "topic": "unknown", "pipeline_type": "none", "platform": "general", "company_name": null, "products_services": [], "target_audience": null, "requirements": [], "response_message": "Hello! I'm Lekhak AI. I create blog posts and social media content. What can I help you with?", "clarification_needed": null}
 
-Request: "Create a post"
-→ is_greeting=false, should_proceed=false, pipeline_type="none", clarification_needed="I'd be happy to help! What topic should the post be about? And which platform - Instagram, LinkedIn, blog, or something else?"
+Input: "Create a post"
+Output: {"is_greeting": false, "should_proceed": false, "user_query": "Create a post", "topic": "unknown", "pipeline_type": "none", "platform": "general", "company_name": null, "products_services": [], "target_audience": null, "requirements": [], "response_message": null, "clarification_needed": "I'd be happy to help! What topic should the post be about? And which platform - Instagram, LinkedIn, blog, or something else?"}
 
-Request: "Create Instagram posts about coffee for my cafe targeting young adults"
-→ is_greeting=false, should_proceed=true, topic="coffee", pipeline_type="social", platform="instagram", target_audience="young adults"
+Input: "Create Instagram posts about coffee for my cafe targeting young adults"
+Output: {"is_greeting": false, "should_proceed": true, "user_query": "Create Instagram posts about coffee for my cafe targeting young adults", "topic": "coffee", "pipeline_type": "social", "platform": "instagram", "company_name": "my cafe", "products_services": ["coffee"], "target_audience": "young adults", "requirements": [], "response_message": null, "clarification_needed": null}
 """,
 )
 

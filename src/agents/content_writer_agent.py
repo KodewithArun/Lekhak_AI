@@ -9,7 +9,6 @@ It coordinates between:
 
 from google.adk.agents import SequentialAgent
 from .planner_agent import planner_agent
-from .output_agent import output_agent
 
 
 
@@ -17,5 +16,5 @@ from .output_agent import output_agent
 content_writer_agent = SequentialAgent(
     name="content_writer_agent",
     description="Orchestrates content creation by coordinating planning and output formatting.",
-    sub_agents=[planner_agent, output_agent],
+    sub_agents=[planner_agent],
 )
