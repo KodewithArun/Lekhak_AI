@@ -1,5 +1,5 @@
 def main():
-    print("Hello from lekhak-ai!")
+    print("Welcome to Lekhak AI - AI-Powered Content Creation Platform")
 
 
 if __name__ == "__main__":

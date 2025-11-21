@@ -15,6 +15,7 @@ __pycache__/
 *.pyo
 *.pyd
 .Python
+.python-version
 
 
 
@@ -23,6 +24,7 @@ src/logs/
 logs/
 *.log
 *.log.*
+
 
 
 

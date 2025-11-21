@@ -10,3 +10,22 @@ dependencies = [
     "pydantic>=2.12.4",
     "python-dotenv>=1.2.1",
 ]
+packages = ["src"]
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[tool.black]
+line-length = 88
+target-version = ["py312"]
+exclude = '''
+/(
+    \.git
+  | \.mypy_cache
+  | \.ruff_cache
+  | \.venv
+  | build
+  | dist
+)/
+'''

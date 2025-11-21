@@ -12,9 +12,10 @@ LOG_FILE = os.path.join(LOG_DIR, "app.log")
 # Ensure logs directory exists
 os.makedirs(LOG_DIR, exist_ok=True)
 
+
 def get_logger(name: str):
     """Logger with rotation: 5 MB max, keep 5 files."""
-    
+
     logger = logging.getLogger(name)
     logger.setLevel(logging.INFO)
 
@@ -24,9 +25,9 @@ def get_logger(name: str):
 
     handler = RotatingFileHandler(
         LOG_FILE,
-        maxBytes=5 * 1024 * 1024,   # 5 MB
-        backupCount=5,              # keep last 5 logs
-        encoding="utf-8"
+        maxBytes=5 * 1024 * 1024,  # 5 MB
+        backupCount=5,  # keep last 5 logs
+        encoding="utf-8",
     )
 
     formatter = logging.Formatter(
