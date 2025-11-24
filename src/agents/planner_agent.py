@@ -12,13 +12,13 @@ from google.adk.agents import Agent
 
 from src.schema.planner_schema import UserRequest, PlannerOutput
 from src.utils.loggers import get_logger
-from src.utils.prompt_loader import load_prompt
+from src.prompts.planner_instruction import INSTRUCTION
+
 
 load_dotenv()
 
 logger = get_logger("planner_agent")
 
-instruction_text = load_prompt("planner_instruction.txt")
 
 try:
     logger.info("Planner agent initialized")
@@ -35,11 +35,11 @@ try:
         input_schema=UserRequest,
         output_schema=PlannerOutput,
         output_key="planner_output",
-        instruction=instruction_text,
+        instruction=INSTRUCTION,
     )
 
-    logger.info("Planner agent configured")
-    logger.info("Planner agent started")
+    logger.info("Planner agent configured and ready for use")
+
 
 except Exception as e:
     logger.error(f"Failed to initialize planner agent: {e}")
