@@ -25,6 +25,10 @@ logs/
 *.log
 *.log.*
 
+# database files
+*.db
+*.sqlite3
+
 
 
 

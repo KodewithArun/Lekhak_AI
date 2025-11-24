@@ -7,6 +7,7 @@ This agent serves as the entry point for all user requests, handling:
 - Context extraction (topic, platform, audience, etc.)
 """
 
+import os
 from dotenv import load_dotenv
 from google.adk.agents import Agent
 

@@ -5,27 +5,9 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "aiosqlite>=0.21.0",
     "google-adk>=1.19.0",
-    "litellm>=1.80.0",
     "pydantic>=2.12.4",
     "python-dotenv>=1.2.1",
+    "streamlit>=1.40.0",
 ]
-packages = ["src"]
-
-[build-system]
-requires = ["setuptools"]
-build-backend = "setuptools.build_meta"
-
-[tool.black]
-line-length = 88
-target-version = ["py312"]
-exclude = '''
-/(
-    \.git
-  | \.mypy_cache
-  | \.ruff_cache
-  | \.venv
-  | build
-  | dist
-)/
-'''
