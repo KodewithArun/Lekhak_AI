@@ -13,7 +13,6 @@ from src.utils.agent_runner import call_agent_async as async_call
 from src.utils.loggers import get_logger
 
 # Configuration
-
 APP_NAME = os.getenv("APP_NAME")
 DB_URL = os.getenv("DB_URL")
 USER_ID = os.getenv("USER_ID")
