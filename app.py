@@ -1,4 +1,3 @@
-
 import streamlit as st
 from src.services.lekhak_service import generate_content
 
@@ -18,5 +17,4 @@ if st.button("Generate"):
 
     with st.spinner("Generating..."):
         result = generate_content(prompt, st.session_state["user_id"])
-
-    st.success(result)
+        st.success(result)

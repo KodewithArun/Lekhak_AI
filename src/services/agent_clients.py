@@ -46,7 +46,7 @@ class AgentClient:
 
             response_iter = await _maybe_await(response_iter)
 
-            # --- KEY CHANGE: Collect both blog and social content ---
+            #  Collect both blog and social content
             final_content = await self._collect_parallel_content(response_iter)
 
             if final_content:
@@ -60,12 +60,13 @@ class AgentClient:
             self.logger.error("Agent error", exc_info=True)
             return {"ok": False, "error": str(exc)}
 
-    # --- NEW METHOD: Specifically for collecting parallel results ---
+    # Collect content from parallel pipelines
     async def _collect_parallel_content(
         self, response_iter: Any
     ) -> Optional[Dict[str, Any]]:
         final_blog_content = None
         final_social_content = None
+        clarification_message = None
 
         if hasattr(response_iter, "__aiter__"):
             async for event in response_iter:
@@ -81,17 +82,33 @@ class AgentClient:
                     elif author == "social_presenter":
                         self.logger.info("Captured final social post.")
                         final_social_content = content_text
+                    elif author == "router_agent":
+                        # Capture clarification or error messages from router
+                        self.logger.info("Captured message from router agent.")
+                        clarification_message = content_text
+
+        # If only clarification is available, return it
+        if (
+            clarification_message
+            and not final_blog_content
+            and not final_social_content
+        ):
+            return {"clarification": clarification_message}
 
         # Return a dictionary containing both results
         return {"blog": final_blog_content, "social": final_social_content}
 
-    # --- UPDATED METHOD: Handle the new dictionary structure ---
+    # Handle the new dictionary structure
     def extract_text_from_content(self, content: Any) -> str:
         if content is None:
             return ""
 
         # Handle the new dictionary structure from _collect_parallel_content
         if isinstance(content, dict):
+            # Check for clarification message first
+            if content.get("clarification"):
+                return content["clarification"]
+
             blog_content = ""
             social_content = ""
 
