@@ -1,10 +1,13 @@
+# src/services/agent_clients.py
+
 import asyncio
 from functools import lru_cache
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional, Tuple
 from google.adk.runners import Runner
 from google.adk.sessions import DatabaseSessionService
 from google.genai.types import Content, Part
 import logging
+import json
 
 logger = logging.getLogger("agent_client")
 
@@ -37,14 +40,15 @@ class AgentClient:
 
         user_content = Content(role="user", parts=[Part(text=text)])
         try:
-
             response_iter = self.runner.run_async(
                 user_id=user_id, session_id=session_id, new_message=user_content
             )
 
             response_iter = await _maybe_await(response_iter)
 
-            final_content = await self._collect_final_content(response_iter)
+            # --- KEY CHANGE: Collect both blog and social content ---
+            final_content = await self._collect_parallel_content(response_iter)
+
             if final_content:
                 return {
                     "ok": True,
@@ -56,29 +60,71 @@ class AgentClient:
             self.logger.error("Agent error", exc_info=True)
             return {"ok": False, "error": str(exc)}
 
-    # Helper to collect final content from async iterator
-    async def _collect_final_content(self, response_iter: Any):
-        final = None
+    # --- NEW METHOD: Specifically for collecting parallel results ---
+    async def _collect_parallel_content(
+        self, response_iter: Any
+    ) -> Optional[Dict[str, Any]]:
+        final_blog_content = None
+        final_social_content = None
 
         if hasattr(response_iter, "__aiter__"):
-            async for part in response_iter:
+            async for event in response_iter:
+                # Check if the event is a final response from one of our presenter agents
+                if event.is_final_response() and event.content and event.content.parts:
+                    author = event.author
+                    content_text = event.content.parts[0].text
 
-                if hasattr(part, "content"):
+                    # Store the content based on the author
+                    if author == "blog_presenter":
+                        self.logger.info("Captured final blog post.")
+                        final_blog_content = content_text
+                    elif author == "social_presenter":
+                        self.logger.info("Captured final social post.")
+                        final_social_content = content_text
 
-                    final = part.content
-                elif hasattr(part, "parts") or hasattr(part, "text"):
-                    final = part
-        else:
-            if hasattr(response_iter, "content"):
-                final = response_iter.content
-            else:
-                final = response_iter
-        return final
+        # Return a dictionary containing both results
+        return {"blog": final_blog_content, "social": final_social_content}
 
-    # Extract text from Content or Part objects
+    # --- UPDATED METHOD: Handle the new dictionary structure ---
     def extract_text_from_content(self, content: Any) -> str:
         if content is None:
             return ""
+
+        # Handle the new dictionary structure from _collect_parallel_content
+        if isinstance(content, dict):
+            blog_content = ""
+            social_content = ""
+
+            if content.get("blog"):
+                try:
+                    # Parse the JSON string to get the clean text
+                    blog_data = json.loads(content["blog"])
+                    blog_content = blog_data.get("final_content", "")
+                except json.JSONDecodeError:
+                    blog_content = content["blog"]  # Fallback if not valid JSON
+
+            if content.get("social"):
+                try:
+                    # Parse the JSON string to get the clean text
+                    social_data = json.loads(content["social"])
+                    social_content = social_data.get("final_content", "")
+                except json.JSONDecodeError:
+                    social_content = content["social"]  # Fallback if not valid JSON
+
+            # Combine them into a single, well-formatted string for display
+            output = ""
+            if social_content:
+                output += "===== SOCIAL MEDIA CONTENT =====\n"
+                output += social_content
+                output += "\n==============================\n\n"
+            if blog_content:
+                output += "======== BLOG CONTENT ========\n"
+                output += blog_content
+                output += "\n============================\n"
+
+            return output.strip()
+
+        # Fallback for old content structure (if you ever run a single pipeline)
         if hasattr(content, "parts"):
             txts = []
             for p in content.parts:
