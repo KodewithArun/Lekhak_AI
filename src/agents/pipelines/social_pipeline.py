@@ -10,7 +10,7 @@ from src.schema.pipeline_schemas import (
     SocialOptimizerOutput,
     FinalSocialOutput,
 )
-from src.utils.config import GEMINI_MODEL
+from src.config import GEMINI_MODEL
 from src.utils.loggers import get_logger
 
 logger = get_logger("social_pipeline")

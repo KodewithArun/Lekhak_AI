@@ -1,4 +1,7 @@
 import streamlit as st
+
+# Import config first to ensure environment variables are set
+from src import config
 from src.services.lekhak_service import generate_content
 
 st.set_page_config(page_title="Lekhak AI")

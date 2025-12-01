@@ -4,7 +4,7 @@ from src.schema.planner_schema import UserRequest, PlannerOutput
 from src.utils.loggers import get_logger
 
 from src.prompts.planner_instruction import INSTRUCTION
-from src.utils.config import GEMINI_MODEL
+from src.config import GEMINI_MODEL
 
 logger = get_logger("planner_agent")
 

@@ -10,7 +10,7 @@ from src.schema.pipeline_schemas import (
     BlogOptimizerOutput,
     FinalBlogOutput,
 )
-from src.utils.config import GEMINI_MODEL
+from src.config import GEMINI_MODEL
 from src.utils.loggers import get_logger
 
 logger_blog = get_logger("blog_pipeline")
