@@ -1,16 +1,11 @@
 import asyncio
+import os
 from google.adk.runners import Runner
 from google.adk.sessions import DatabaseSessionService
 from src.agents.content_creator_agent import content_creator_agent
 from src.services.agent_clients import get_agent_client_cached
-from dotenv import load_dotenv
-import os
+from src.utils.config import APP_NAME, DB_URL
 
-
-load_dotenv()
-
-APP_NAME = os.getenv("APP_NAME")
-DB_URL = os.getenv("DB_URL")
 
 # Initialize runner and session service once
 _session_service = DatabaseSessionService(db_url=DB_URL)

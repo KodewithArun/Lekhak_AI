@@ -10,13 +10,14 @@ from src.schema.pipeline_schemas import (
     SocialOptimizerOutput,
     FinalSocialOutput,
 )
+from src.utils.config import GEMINI_MODEL
 from src.utils.loggers import get_logger
 
 logger = get_logger("social_pipeline")
 
 social_researcher = LlmAgent(
     name="social_researcher",
-    model="gemini-2.0-flash",
+    model=GEMINI_MODEL,
     description="Researches topics for social media.",
     output_schema=ResearchOutput,
     output_key="social_research",
@@ -25,7 +26,7 @@ social_researcher = LlmAgent(
 
 social_writer = LlmAgent(
     name="social_writer",
-    model="gemini-2.0-flash",
+    model=GEMINI_MODEL,
     description="Creates engaging social media content.",
     output_schema=SocialWriterOutput,
     output_key="social_content",
@@ -34,7 +35,7 @@ social_writer = LlmAgent(
 
 social_optimizer = LlmAgent(
     name="social_optimizer",
-    model="gemini-2.0-flash",
+    model=GEMINI_MODEL,
     description="Optimizes social content for engagement.",
     output_schema=SocialOptimizerOutput,
     output_key="optimized_social_content",
@@ -43,7 +44,7 @@ social_optimizer = LlmAgent(
 
 social_presenter = LlmAgent(
     name="social_presenter",
-    model="gemini-2.0-flash",
+    model=GEMINI_MODEL,
     description="Formats the optimized social content for the user.",
     output_schema=FinalSocialOutput,
     output_key="final_social_post",

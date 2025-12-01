@@ -10,13 +10,14 @@ from src.schema.pipeline_schemas import (
     BlogOptimizerOutput,
     FinalBlogOutput,
 )
+from src.utils.config import GEMINI_MODEL
 from src.utils.loggers import get_logger
 
 logger_blog = get_logger("blog_pipeline")
 
 blog_researcher = LlmAgent(
     name="blog_researcher",
-    model="gemini-2.0-flash",
+    model=GEMINI_MODEL,
     description="Deep research specialist for long-form blog content.",
     output_schema=ResearchOutput,
     output_key="blog_research",
@@ -25,7 +26,7 @@ blog_researcher = LlmAgent(
 
 blog_writer = LlmAgent(
     name="blog_writer",
-    model="gemini-2.0-flash",
+    model=GEMINI_MODEL,
     description="Creates comprehensive, SEO-optimized blog articles.",
     output_schema=BlogWriterOutput,
     output_key="blog_content",
@@ -34,7 +35,7 @@ blog_writer = LlmAgent(
 
 blog_optimizer = LlmAgent(
     name="blog_optimizer",
-    model="gemini-2.0-flash",
+    model=GEMINI_MODEL,
     description="Optimizes blog content for SEO and readability.",
     output_schema=BlogOptimizerOutput,
     output_key="optimized_blog_content",
@@ -43,7 +44,7 @@ blog_optimizer = LlmAgent(
 
 blog_presenter = LlmAgent(
     name="blog_presenter",
-    model="gemini-2.0-flash",
+    model=GEMINI_MODEL,
     description="Formats the optimized blog content for the user.",
     output_schema=FinalBlogOutput,
     output_key="final_blog_post",
