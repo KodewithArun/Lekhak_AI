@@ -17,15 +17,25 @@ class PlannerOutput(BaseModel):
         description="Selected content pipeline"
     )
     platform: str = Field(default="general", description="Target platform")
-    company_name: Optional[str] = Field(
-        default=None, description="Company name if mentioned"
-    )
+    company_name: Optional[str] = Field(default=None, description="Company/brand name")
     products_services: List[str] = Field(
-        default_factory=list, description="Products or services mentioned"
+        default_factory=list, description="Products or services offered"
     )
-    target_audience: Optional[str] = Field(default=None, description="Target audience")
+    company_description: Optional[str] = Field(
+        default=None, description="Brief company description or industry"
+    )
+    unique_value: Optional[str] = Field(
+        default=None, description="Unique selling points or key differentiators"
+    )
+    target_audience: Optional[str] = Field(
+        default=None, description="Target audience or customer segment"
+    )
+    tone: str = Field(
+        default="professional",
+        description="Content tone (professional, casual, friendly, etc.)",
+    )
     requirements: List[str] = Field(
-        default_factory=list, description="Specific requirements"
+        default_factory=list, description="Specific requirements or requests"
     )
     clarification_needed: Optional[str] = Field(
         default=None, description="Question if more info is needed"

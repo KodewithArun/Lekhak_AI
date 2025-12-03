@@ -27,41 +27,74 @@ class EngagementEstimate(BaseModel):
     estimate: str = Field(description="The estimated value or range for the metric")
 
 
-# output schemas for various pipeline stages (later chaged based on each respective agent's output)
+# Research output for both social and blog pipelines
 class ResearchOutput(BaseModel):
-    topic_summary: str = Field(description="Brief topic overview")
-    key_points: List[str] = Field(description="Main points to cover in content")
-    keywords: List[str] = Field(description="Primary and secondary keywords")
-    target_audience_insights: str = Field(description="Audience insights")
-    competitor_insights: Optional[str] = Field(default=None)
-    trending_topics: List[str] = Field(default_factory=list)
-    data_sources: List[str] = Field(default_factory=list)
-    content_gaps: List[str] = Field(default_factory=list)
+    """Research findings for creating professional content."""
+
+    topic_summary: str = Field(
+        description="2-4 sentence overview of the topic and company context"
+    )
+    key_benefits: List[str] = Field(
+        description="3-6 specific benefits or value propositions"
+    )
+    audience_pain_points: str = Field(
+        description="Clear description of problems the target audience faces"
+    )
+    trending_hashtags: List[str] = Field(
+        default_factory=list,
+        description="6-8 trending hashtags WITH # symbol (for social media only)",
+    )
+    content_angle: str = Field(
+        description="Best approach: problem-solution, transformation, educational, thought leadership, etc."
+    )
+    competitor_insights: Optional[str] = Field(
+        default=None, description="How competitors position similar offerings"
+    )
+    credibility_elements: List[str] = Field(
+        default_factory=list,
+        description="Proof points: stats, testimonials, results, awards, etc.",
+    )
 
 
-class SocialContentVariation(BaseModel):
-    platform: str
-    content: str
-    hashtags: List[str]
-    character_count: int
-    hook_type: str
+# ============================================
+# SOCIAL MEDIA CONTENT CREATION SCHEMAS
+# ============================================
+
+
+class SocialPostVariation(BaseModel):
+    """A single promotional social media post."""
+
+    platform: str = Field(
+        description="Social platform: Instagram, LinkedIn, Twitter, Facebook, etc."
+    )
+    hook: str = Field(description="Attention-grabbing opening line (1 line)")
+    content: str = Field(
+        description="Main message with company/product details (2-3 lines)"
+    )
+    hashtags: str = Field(
+        description="Trending hashtags as single string: '#tag1 #tag2 #tag3'"
+    )
 
 
 class SocialWriterOutput(BaseModel):
-    variations: List[SocialContentVariation]
-    primary_cta: str
-    engagement_strategy: str
-    visual_suggestions: List[str]
+    """Output from social media writer agent."""
+
+    posts: List[SocialPostVariation] = Field(
+        description="1 optimized promotional post for the target platform"
+    )
 
 
-class SocialOptimizerOutput(BaseModel):
-    final_content: List[SocialContentVariation]
-    best_posting_times: List[str]
-    hashtag_strategy: List[HashtagStrategy]
-    ab_test_recommendations: str
-    engagement_tactics: List[str]
-    visual_requirements: str
-    platform_specific_tips: List[PlatformTip]
+class FinalSocialOutput(BaseModel):
+    """The final, user-facing output for social media content."""
+
+    final_content: str = Field(
+        description="The formatted social media post, including hook, content, and hashtags."
+    )
+
+
+# ============================================
+# BLOG CONTENT CREATION SCHEMAS
+# ============================================
 
 
 class BlogSection(BaseModel):
