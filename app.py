@@ -18,6 +18,14 @@ if st.button("Generate"):
         st.warning("Please enter something.")
         st.stop()
 
-    with st.spinner("Generating..."):
-        result = generate_content(prompt, st.session_state["user_id"])
-        st.success(result)
+    with st.spinner("Generating content... This may take 30-60 seconds."):
+        try:
+            result = generate_content(prompt, st.session_state["user_id"])
+
+            # Check if result is an error message
+            if result.startswith("⚠️"):
+                st.error(result)
+            else:
+                st.success(result)
+        except Exception as e:
+            st.error(f"An error occurred: {str(e)}")

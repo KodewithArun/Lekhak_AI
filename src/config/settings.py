@@ -13,7 +13,10 @@ os.environ["GOOGLE_GENAI_USE_VERTEXAI"] = str(GOOGLE_GENAI_USE_VERTEXAI)
 if GOOGLE_API_KEY:
     os.environ["GOOGLE_API_KEY"] = GOOGLE_API_KEY
 
-GEMINI_MODEL = "gemini-2.0-flash"
+SERPAPI_API_KEY = os.getenv("SERPAPI_API_KEY")
+RITEKIT_API_KEY = os.getenv("RITEKIT_API_KEY")
+
+GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-2.0-flash")
 
 APP_NAME = os.getenv("APP_NAME", "agents")
 USER_ID = os.getenv("USER_ID", "streamlit_user")

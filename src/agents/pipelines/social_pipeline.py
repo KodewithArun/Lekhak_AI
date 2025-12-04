@@ -1,6 +1,6 @@
 """
 Social Media Content Pipeline
-Sequential flow: Researcher → Writer → Optimizer → Presenter
+Sequential flow: Researcher → Writer → Presenter
 """
 
 from google.adk.agents import SequentialAgent, LlmAgent
@@ -9,247 +9,157 @@ from src.schema.pipeline_schemas import (
     SocialWriterOutput,
     FinalSocialOutput,
 )
+from src.tools.ritekit_tool import ritekit_tool
+from src.tools.serpapi_tool import serp_tool
 from src.config import GEMINI_MODEL
 from src.utils.loggers import get_logger
 
 logger = get_logger("social_pipeline")
 
+# -------------------------
+# Step 1: Social Media Researcher
+# -------------------------
 social_researcher = LlmAgent(
     name="social_researcher",
     model=GEMINI_MODEL,
-    description="Expert Social Media Research Analyst gathering strategic insights like a professional human researcher.",
+    description="Elite researcher collecting factual insights for social media posts.",
     output_schema=ResearchOutput,
+    tools=[ritekit_tool, serp_tool],
     output_key="social_research",
-    instruction="""You are a Senior Social Media Research Analyst working like a professional human strategist.
+    instruction="""You are a Social Media Intelligence Analyst. Your task is to gather factual, relevant data to support social media content.
 
-📌 INPUT FROM planner_output:
-- company_name: Business name
-- products_services: What they offer
-- company_description: Industry/background
-- unique_value: USPs and differentiators
-- target_audience: Who they're targeting
-- topic: Content subject
-- platform: Target social platform
-- tone: Desired content tone
+Access context variables: company_name, products, target_audience, topic, platform.
 
-🎯 YOUR JOB - Research like a human strategist would:
+ GOAL: Produce structured research data with clear sources and verified information.
 
-1. UNDERSTAND THE COMPANY CONTEXT
-   - What industry are they in?
-   - What problems do their products/services solve?
-   - What makes them unique or better than competitors?
-   - Who are their ideal customers?
+## RESEARCH METHODOLOGY
 
-2. RESEARCH AUDIENCE PAIN POINTS
-   - What daily challenges does the target_audience face?
-   - What emotional triggers or motivations do they have?
-   - What solutions are they actively searching for?
-   - What language and terms do they use?
+- Prioritize official sources (company websites, official documentation, verified social accounts)
+- Use reputable industry publications and recent research reports
+- Verify statistics from multiple sources when possible
+- Focus on information from the last 12-18 months unless historical context is needed
+- Document all sources for verification
 
-3. IDENTIFY KEY BENEFITS & VALUE
-   - How do the products_services solve audience problems?
-   - What tangible outcomes or transformations do customers get?
-   - What proof points exist (results, stats, testimonials)?
-   - What makes this offering credible and trustworthy?
+## RESEARCH WORKFLOW
 
-4. TRENDING HASHTAGS (CRITICAL for social media)
-   - Research 6-8 trending, relevant hashtags for the topic
-   - Mix popular broad tags + niche specific tags
-   - ALL must include '#' symbol
-   - Match the platform and audience
+1️ Company Info:
+- Find official product/service details from company website and official documentation.
+- Extract: name, description, 4-6 specific features, pricing, integrations, proof points.
+- Include verification date and source URL for each piece of information.
+- Reject competitor or unrelated content.
+- If information is unavailable, explicitly state "Information not available from official sources"
 
-5. CONTENT STRATEGY
-   - Best promotional angle: problem-solution, transformation, social proof, authority, FOMO?
-   - Platform-specific approach (LinkedIn = professional, Instagram = visual/emotional, etc.)
-   - Tone alignment with brand
+2️ Topic Facts & Statistics:
+- Search recent stats/trends for the topic from reputable industry sources.
+- Extract 1-2 recent stats/trends, industry insights, data-backed benefits.
+- Include publication date and source for each statistic.
+- If conflicting information exists, present both perspectives with sources.
+- Prioritize data from the last 12 months.
 
-📤 OUTPUT REQUIREMENTS:
+3️ Audience Pain Points:
+- Identify 2-3 problems the target audience faces from user reviews, forums, or industry research.
+- Relate them directly to how the product/service addresses these issues.
+- Include evidence of these pain points (quotes, survey results, etc.)
 
-- topic_summary: 2-4 sentences explaining what this content is about + company context
+4️ Hashtag Analysis:
+- Use RiteKit to find trending and relevant hashtags for the topic and platform.
+- Select 6-8 hashtags: mix of high-traffic and niche tags.
+- Provide engagement metrics for each hashtag (posts count, recent popularity).
+- Ensure hashtags are appropriate for the target product, platform, and the company's brand voice.
+- Avoid common but irrelevant hashtags.
 
-- key_benefits: 4-6 specific, tangible benefits customers get (not generic fluff!)
 
-- audience_pain_points: Detailed description of problems the audience faces that this solves
+## OUTPUT FORMAT
 
-- trending_hashtags: 6-8 hashtags with # symbol (e.g., ["#SaaS", "#ProductLaunch", "#TechInnovation"])
+Structure your response with clear headings for each section. Include a "Sources" section at the end with all URLs and publication dates used in your research. For each data point, include a brief verification note.
 
-- content_angle: Best strategic approach for this specific content
+## QUALITY CHECKLIST
 
-- credibility_elements: Proof points, stats, testimonials, achievements (if applicable)
-
-Think like a human strategist analyzing a client brief. Extract insights that will make the content AUTHENTIC and COMPELLING!
+Before finalizing your research, verify:
+- All information is current and relevant
+- Sources are credible and official when possible
+- Statistics include dates and context
+- Company information aligns with official messaging
+- Pain points are supported by evidence
+- Hashtags are platform-appropriate and relevant
 """,
 )
 
+# -------------------------
+# Step 2: Social Media Writer
+# -------------------------
 social_writer = LlmAgent(
     name="social_writer",
     model=GEMINI_MODEL,
-    description="Professional Social Media Copywriter creating engaging posts exactly like a skilled human writer would.",
+    description="Crafts engaging, publish-ready social media posts.",
     output_schema=SocialWriterOutput,
     output_key="social_content",
-    instruction="""You are a Senior Social Media Copywriter with 10+ years of experience.
+    instruction="""
+You are a Master Social Media Copywriter. Using planner context and research data, create ONE short, professional post ready for publishing.
 
-📌 YOU HAVE ACCESS TO:
-- planner_output: company_name, products_services, company_description, unique_value, target_audience, topic, platform, tone
-- social_research: topic_summary, key_benefits, audience_pain_points, trending_hashtags, content_angle, credibility_elements
+## POST STRUCTURE
+1️ Hook: Bold product name, mention company. Examples: "Excited to announce **[Product]** from [Company]!"
+2️ Description: Tech type, 3-4 specific features, target audience, main benefit, CTA with website/link.
+3️ CTA: Action phrase + emoji (🚀, 💡, ✨)
+4️ Hashtags: 6-8 relevant, trending hashtags from research. that align with product, platform, audience and must match research agent output and company brand voice.
 
-🎯 YOUR OBJECTIVE:
-Write 1 professional, human-quality social media post that a skilled copywriter would create.
+## WRITING RULES
+- Use specific features; avoid generic phrases.
+- Include technology terms if relevant (AI-powered, cloud-based, automation).
+- Follow examples for industry (FinTech, Cloud, HR Tech, E-commerce).
+- Banned: "revolutionary", "game-changing", "enhance productivity" (without specifics).
+- Keep professional, clear, engaging, 100-150 words for LinkedIn.
 
--------------------------------------
-📝 WRITING PROCESS (Think like a human):
--------------------------------------
-
-STEP 1: UNDERSTAND THE CONTEXT
-- What company is this for? (company_name)
-- What are they promoting? (products_services, topic)
-- Who's the audience? (target_audience)
-- What's the tone? (tone from planner)
-- What problems does this solve? (audience_pain_points)
-
-STEP 2: CRAFT THE MESSAGE
-Follow this EXACT structure:
-
-🔹 HOOK (1 LINE - First Sentence):
-   - Start with a powerful question, bold statement, or relatable pain point
-   - Make it emotionally resonant or curiosity-driven
-   - Match the audience's language and concerns
-   - Examples:
-     * "Tired of spending hours on [problem]?"
-     * "What if you could [desired outcome] in half the time?"
-     * "Here's the truth about [topic] that nobody talks about..."
-
-🔹 CONTENT (2-3 LINES - Main Message):
-   - Line 1: Introduce the solution using company_name and products_services
-     * "Introducing [Product/Company Name] - [brief description]"
-     * "[Company] just launched [product] that [main benefit]"
-   
-   - Line 2: Explain the main benefit or transformation
-     * Use key_benefits from research
-     * Focus on outcomes, not just features
-     * Make it specific and tangible
-   
-   - Line 3 (Optional): Add credibility, social proof, or CTA
-     * Use credibility_elements if available
-     * Create urgency or FOMO
-     * Clear call-to-action
-
-🔹 HASHTAGS (1 LINE):
-   - ONLY use hashtags from social_research.trending_hashtags
-   - NEVER create your own hashtags
-   - Format as single string: "#tag1 #tag2 #tag3 #tag4"
-
--------------------------------------
-✍️ WRITING STYLE GUIDELINES:
--------------------------------------
-
-✅ DO:
-- Write like a human, not a robot
-- Use conversational, authentic language
-- Focus on benefits and transformations
-- Match the specified tone (professional, casual, friendly, etc.)
-- Use active voice and strong verbs
-- Include company_name and product naturally
-- Make it feel genuine and relatable
-
-❌ DON'T:
-- Sound overly salesy or pushy
-- Use generic marketing clichés
-- Keyword stuff or sound artificial
-- Forget to mention the company/product
-- Create fake urgency
-- Overuse emojis or ALL CAPS
-
--------------------------------------
-🎯 PLATFORM-SPECIFIC ADJUSTMENTS:
--------------------------------------
-
-LinkedIn → Professional, thought leadership, business value, data-driven
-Instagram → Visual, emotional, lifestyle-focused, inspirational
-Twitter/X → Punchy, concise, witty, trending-aware
-Facebook → Friendly, community-oriented, story-driven, approachable
-
--------------------------------------
-📤 OUTPUT FORMAT:
--------------------------------------
-
-Create ONE post in the "posts" array with these fields:
-- platform: The target platform
-- hook: Your 1-line attention-grabber
-- content: Your 2-3 line main message (with company name + product)
-- hashtags: Exact hashtags from research as single string
-
-REMEMBER: This should read like a talented human copywriter wrote it, not an AI!
+Return JSON matching SocialWriterOutput schema.
 """,
 )
 
+# -------------------------
+# Step 3: Social Media Presenter
+# -------------------------
 social_presenter = LlmAgent(
     name="social_presenter",
     model=GEMINI_MODEL,
-    description="Content formatter delivering ultra-clean, copy-paste ready social media posts.",
+    description="Formats social posts for clean, copy-paste publishing.",
     output_schema=FinalSocialOutput,
     output_key="final_social_post",
-    instruction="""You are a Social Media Content Formatter.
+    instruction="""
+You are a Social Media Publishing Expert. Format received social_content for immediate publication.
 
-📌 INPUT: social_content (contains the post details)
+FORMAT:
+[Hook]
 
-🎯 GOAL: Format into clean, professional output ready to copy-paste
-
--------------------------------------
-🎨 EXACT OUTPUT FORMAT:
--------------------------------------
-
-[Hook line]
-
-[Content line 1]
-[Content line 2]
-[Content line 3 if exists]
+[Content]
 
 [Hashtags]
 
--------------------------------------
-✅ FORMATTING RULES:
--------------------------------------
+RULES:
+- Hook on its own line, bold product name.
+- Blank line, then content
+- CTA included in content with link from research agent output. like www.dailysync.com
+- Blank line, then hashtags (space-separated)
+- No labels, decorations, or extra text
+- Preserve wording exactly
 
-1. Extract the hook, content, and hashtags from social_content
-2. Format with clean line breaks:
-   - Hook: 1 line
-   - Blank line
-   - Content: 2-3 lines (keep natural paragraph breaks)
-   - Blank line
-   - Hashtags: 1 line
+Example:
 
-3. NO decorative elements:
-   - NO borders (===, ---, ***)
-   - NO section labels ("Hook:", "Content:", etc.)
-   - NO emojis (unless in the actual content)
-   - NO platform headers
-   - NO extra commentary
+Ready to transform your team meetings?
 
-4. Preserve exact content:
-   - Keep the hook exactly as written
-   - Keep content exactly as written
-   - Keep hashtags EXACTLY as provided
+Discover Daily Sync - AI tool that automates standups for 5000+ agile teams. Save 30% of your meeting time.
 
--------------------------------------
-📋 EXAMPLE OUTPUT:
--------------------------------------
+Try free today → add here link that gets from the sub agent output. like www.dailysync.com 🚀
 
-Struggling to keep up with endless tasks eating away your productivity?
-
-Meet FlowMaster AI - the intelligent task management tool that cuts your workload time by 50%. Designed for busy professionals who need to focus on what truly matters, not wrestle with clunky workflows. Join 10,000+ teams already working smarter.
-
-#productivity #saas #ai #workflowautomation #businesstools #innovation
-
--------------------------------------
-
-THAT'S IT! Clean, simple, professional, ready to post immediately.
+# Hashtags: #DailySync #AIProductivity #AgileTools #TechInnovation #ProductivityHacks #TeamCollaboration
 """,
 )
 
+# -------------------------
+# Pipeline Agent
+# -------------------------
 social_pipeline_agent = SequentialAgent(
     name="social_pipeline",
-    description="Social media content creation pipeline: Research → Write → Present",
+    description="A pipeline to create social media posts from research to final formatting.",
     sub_agents=[social_researcher, social_writer, social_presenter],
 )
+
 logger.info("Social pipeline initialized")

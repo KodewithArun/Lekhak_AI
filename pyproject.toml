@@ -7,10 +7,12 @@ requires-python = ">=3.12"
 dependencies = [
     "asyncpg>=0.31.0",
     "google-adk>=1.19.0",
+    "google-search-results>=2.4.2",
     "nest-asyncio>=1.6.0",
     "psycopg2-binary>=2.9.9",
     "psycopg[binary]>=3.2.13",
     "pydantic>=2.12.4",
     "python-dotenv>=1.2.1",
+    "ritetag>=1.3.3",
     "streamlit>=1.40.0",
 ]

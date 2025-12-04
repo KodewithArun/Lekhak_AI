@@ -1,0 +1,1 @@
+Create a LinkedIn post announcing the launch of Daily Sync, our AI-powered team synchronization tool from Inspiring Lab. It automates standups for remote teams.

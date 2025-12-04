@@ -24,9 +24,6 @@ class PlannerOutput(BaseModel):
     company_description: Optional[str] = Field(
         default=None, description="Brief company description or industry"
     )
-    unique_value: Optional[str] = Field(
-        default=None, description="Unique selling points or key differentiators"
-    )
     target_audience: Optional[str] = Field(
         default=None, description="Target audience or customer segment"
     )

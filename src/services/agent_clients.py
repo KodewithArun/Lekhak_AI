@@ -131,11 +131,9 @@ class AgentClient:
             # Combine them into a single, well-formatted string for display
             output = ""
             if social_content:
-                output += "===== SOCIAL MEDIA CONTENT =====\n"
                 output += social_content
                 output += "\n==============================\n\n"
             if blog_content:
-                output += "======== BLOG CONTENT ========\n"
                 output += blog_content
                 output += "\n============================\n"
 
