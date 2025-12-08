@@ -1,0 +1,18 @@
+GOOGLE_GENAI_USE_VERTEXAI=0
+GOOGLE_API_KEY=AIzaSyCMiYtwcby5yenMpI7iT2jMQ5UTdyJy3lc
+GEMINI_MODEL=gemini-2.5-flash
+# SerpAPI Configuration
+SERPAPI_API_KEY=8a3a4bbb04bea1097279a34c67687093b6fe28c7f2042bd766eb3fad211b9386
+RITEKIT_API_KEY=2d6fdd714715556a9c461fa26120d7049b04c5a750fc
+
+
+# Application Configuration
+APP_NAME=agents
+USER_ID=test_user
+
+# PostgreSQL Database Configuration
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=lekhak_ai
+DB_USER=postgres
+DB_PASSWORD=2003
