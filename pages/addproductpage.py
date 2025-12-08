@@ -67,4 +67,4 @@ with st.form("add_product_form"):
                     f"Product '{name}' added successfully to {selected_company}!"
                 )
             except Exception as e:
-                st.error(f"❌ Error adding product: {e}")
+                st.error(f" Error adding product: {e}")
