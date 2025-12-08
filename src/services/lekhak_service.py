@@ -3,6 +3,7 @@ import os
 from typing import Optional
 from google.adk.runners import Runner
 from google.adk.sessions import DatabaseSessionService
+from google.genai.errors import ClientError
 from src.agents.content_creator_agent import content_creator_agent
 from src.services.agent_clients import get_agent_client_cached
 from src.config import APP_NAME, DATABASE_URL

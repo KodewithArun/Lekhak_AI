@@ -49,9 +49,8 @@ class PlannerOutput(BaseModel):
     product_context: Optional[ProductContext] = Field(
         default=None, description="Product information from database"
     )
-    target_audience: Optional[str] = Field(default=None, description="Target audience")
     requirements: List[str] = Field(
-        default_factory=list, description="Specific requirements"
+        default_factory=list, description="Specific requirements or requests"
     )
     clarification_needed: Optional[str] = Field(
         default=None, description="Question if more info is needed"
