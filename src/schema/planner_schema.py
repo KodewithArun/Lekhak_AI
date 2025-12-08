@@ -2,9 +2,35 @@ from typing import List, Literal, Optional
 from pydantic import BaseModel, Field
 
 
+class CompanyContext(BaseModel):
+    """Company context from database."""
+
+    company_id: int
+    name: str
+    industry: str
+    description: str
+    target_audience: str
+    brand_voice: str
+
+
+class ProductContext(BaseModel):
+    """Product/Service context from database."""
+
+    product_id: int
+    name: str
+    description: str
+    key_features: str
+
+
 class UserRequest(BaseModel):
     instruction: str = Field(description="User's natural language content request")
     tone: str = Field(default="professional", description="Content tone")
+    company_context: Optional[CompanyContext] = Field(
+        default=None, description="Company information from database"
+    )
+    product_context: Optional[ProductContext] = Field(
+        default=None, description="Product information from database"
+    )
 
 
 class PlannerOutput(BaseModel):
@@ -17,11 +43,11 @@ class PlannerOutput(BaseModel):
         description="Selected content pipeline"
     )
     platform: str = Field(default="general", description="Target platform")
-    company_name: Optional[str] = Field(
-        default=None, description="Company name if mentioned"
+    company_context: Optional[CompanyContext] = Field(
+        default=None, description="Company information from database"
     )
-    products_services: List[str] = Field(
-        default_factory=list, description="Products or services mentioned"
+    product_context: Optional[ProductContext] = Field(
+        default=None, description="Product information from database"
     )
     target_audience: Optional[str] = Field(default=None, description="Target audience")
     requirements: List[str] = Field(

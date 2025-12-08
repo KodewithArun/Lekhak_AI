@@ -12,5 +12,6 @@ dependencies = [
     "psycopg[binary]>=3.2.13",
     "pydantic>=2.12.4",
     "python-dotenv>=1.2.1",
+    "sqlalchemy>=2.0.44",
     "streamlit>=1.40.0",
 ]

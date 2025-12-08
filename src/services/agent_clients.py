@@ -1,5 +1,3 @@
-# src/services/agent_clients.py
-
 import asyncio
 from functools import lru_cache
 from typing import Any, Dict, Optional, Tuple
@@ -34,11 +32,19 @@ class AgentClient:
         )
 
     # Send message to agent and get response
-    async def send_message(self, user_id: str, session_id: str, text: str):
-        if not text.strip():
-            return {"ok": False, "error": "empty input"}
+    async def send_message(self, user_id: str, session_id: str, message):
+        # Handle both string and dict (structured) messages
+        if isinstance(message, str):
+            if not message.strip():
+                return {"ok": False, "error": "empty input"}
+            user_content = Content(role="user", parts=[Part(text=message)])
+        elif isinstance(message, dict):
+            # Convert dict to JSON string for structured data
+            message_text = json.dumps(message)
+            user_content = Content(role="user", parts=[Part(text=message_text)])
+        else:
+            return {"ok": False, "error": "invalid message type"}
 
-        user_content = Content(role="user", parts=[Part(text=text)])
         try:
             response_iter = self.runner.run_async(
                 user_id=user_id, session_id=session_id, new_message=user_content
@@ -131,13 +137,9 @@ class AgentClient:
             # Combine them into a single, well-formatted string for display
             output = ""
             if social_content:
-                output += "===== SOCIAL MEDIA CONTENT =====\n"
                 output += social_content
-                output += "\n==============================\n\n"
             if blog_content:
-                output += "======== BLOG CONTENT ========\n"
                 output += blog_content
-                output += "\n============================\n"
 
             return output.strip()
 
