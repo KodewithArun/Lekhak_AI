@@ -1,10 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.routers import company, product, conversation
+from app.routers import company, product, conversation, content
 from app.database import Base, engine
-
-# Create all tables
-Base.metadata.create_all(bind=engine)
 
 # create FastAPI app instance
 app = FastAPI(
@@ -12,6 +9,14 @@ app = FastAPI(
     description="Backend API for Lekhak AI application",
     version="1.0.0",
 )
+
+
+# Create all tables on startup
+@app.on_event("startup")
+async def startup_event():
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+
 
 # Set up CORS middleware
 app.add_middleware(
@@ -41,3 +46,4 @@ app.include_router(product.router, prefix="/api/products", tags=["products"])
 app.include_router(
     conversation.router, prefix="/api/conversations", tags=["conversations"]
 )
+app.include_router(content.router, prefix="/api/content", tags=["content"])

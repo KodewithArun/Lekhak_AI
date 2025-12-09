@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select
 from app.database import get_db
 from app.schemas.product import ProductCreate, ProductGet, ProductListResponse
 from app.models.product import Product
@@ -11,9 +12,10 @@ router = APIRouter(prefix="/products", tags=["products"])
 
 # Create a new product
 @router.post("/", response_model=ProductGet)
-async def create_product(product: ProductCreate, db: Session = Depends(get_db)):
+async def create_product(product: ProductCreate, db: AsyncSession = Depends(get_db)):
     # Check if the company exists
-    db_company = db.query(Company).filter(Company.id == product.company_id).first()
+    result = await db.execute(select(Company).where(Company.id == product.company_id))
+    db_company = result.scalar_one_or_none()
     if not db_company:
         raise HTTPException(status_code=404, detail="Company not found")
 
@@ -25,22 +27,24 @@ async def create_product(product: ProductCreate, db: Session = Depends(get_db)):
         updated_at=datetime.utcnow(),
     )
     db.add(db_product)
-    db.commit()
-    db.refresh(db_product)
+    await db.commit()
+    await db.refresh(db_product)
     return db_product
 
 
 # Get a list of all products
 @router.get("/", response_model=ProductListResponse)
-async def list_products(db: Session = Depends(get_db)):
-    products = db.query(Product).all()
+async def list_products(db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(Product))
+    products = result.scalars().all()
     return ProductListResponse(products=products)
 
 
 # Get a specific product by ID
 @router.get("/{product_id}", response_model=ProductGet)
-async def get_product(product_id: int, db: Session = Depends(get_db)):
-    db_product = db.query(Product).filter(Product.id == product_id).first()
+async def get_product(product_id: int, db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(Product).where(Product.id == product_id))
+    db_product = result.scalar_one_or_none()
     if not db_product:
         raise HTTPException(status_code=404, detail="Product not found")
     return db_product
@@ -48,6 +52,7 @@ async def get_product(product_id: int, db: Session = Depends(get_db)):
 
 # get products by company id
 @router.get("/company/{company_id}", response_model=ProductListResponse)
-async def get_products_by_company(company_id: int, db: Session = Depends(get_db)):
-    products = db.query(Product).filter(Product.company_id == company_id).all()
+async def get_products_by_company(company_id: int, db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(Product).where(Product.company_id == company_id))
+    products = result.scalars().all()
     return ProductListResponse(products=products)

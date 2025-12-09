@@ -12,8 +12,6 @@ class Conversation(Base):
     product_id = Column(Integer, ForeignKey("products.id"), nullable=True)
     user_query = Column(String, nullable=False)
     generated_content = Column(String, nullable=False)
-
-    # Replace DATETIME with DateTime
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
 
     # Relationships
