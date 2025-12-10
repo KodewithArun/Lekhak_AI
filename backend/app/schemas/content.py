@@ -1,12 +1,14 @@
 """Content generation API schemas."""
 
 from typing import Optional
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class ContentRequest(BaseModel):
     prompt: str
-    user_id: Optional[str] = "default_user"
+    user_id: str = Field(
+        default="default_user", description="User ID for session management"
+    )
     company_id: Optional[int] = None
     product_id: Optional[int] = None
 

@@ -6,7 +6,7 @@ from app.models.company import Company
 from app.schemas.company import CompanyCreate, CompanyGet, CompanyListResponse
 from datetime import datetime
 
-router = APIRouter(prefix="/companies", tags=["companies"])
+router = APIRouter()
 
 
 # Create a new company

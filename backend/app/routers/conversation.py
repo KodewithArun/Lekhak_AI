@@ -9,7 +9,7 @@ from app.schemas.conversation import (
 )
 from app.models.conversations import Conversation
 
-router = APIRouter(prefix="/conversations", tags=["conversations"])
+router = APIRouter()
 
 
 # Create a new conversation

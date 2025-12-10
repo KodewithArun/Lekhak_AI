@@ -7,7 +7,7 @@ from app.models.product import Product
 from app.models.company import Company
 from datetime import datetime
 
-router = APIRouter(prefix="/products", tags=["products"])
+router = APIRouter()
 
 
 # Create a new product
