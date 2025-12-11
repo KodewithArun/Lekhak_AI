@@ -21,7 +21,7 @@ social_researcher = LlmAgent(
     description="Researches topics for social media.",
     output_schema=SocialResearchOutput,
     output_key="social_research",
-    instruction="You are a social media research specialist. Based on the planner_output, research trends, engagement strategies, hashtags, competitor content, and audience pain points.",
+    instruction="Research trends, hashtags, and audience insights for the topic. Focus on: 1) Current trending angles 2) Platform-specific best practices 3) Audience pain points. Keep research targeted to support the content_framework from planner_output.",
 )
 
 social_writer = LlmAgent(
@@ -30,7 +30,35 @@ social_writer = LlmAgent(
     description="Creates engaging social media content.",
     output_schema=SocialWriterOutput,
     output_key="social_content",
-    instruction="You are an expert social media writer. Using the social_research, create compelling content with hooks, platform-appropriate formatting, hashtags, and CTAs. Generate 2-3 variations.",
+    instruction="""Create compelling social media content using research and planner_output.
+
+STEP 1: Select the best framework based on content_intention from planner_output:
+
+For PROMOTE/PERSUADE intention, choose from:
+• AIDA (Attention-Interest-Desire-Action): Hook attention → Build interest → Create desire → Call to action
+• PAS (Problem-Agitate-Solution): Identify problem → Amplify pain → Present solution
+• BAB (Before-After-Bridge): Current state → Desired outcome → Your solution as bridge
+
+For STORYTELLING/INSPIRE intention, choose from:
+• STF (Story-Transformation-Lesson): Set context → Show conflict → Share resolution → Extract lesson
+• SLA (Story-Lesson-Application): Tell story → Extract insight → Provide action steps
+• MRS (Mistake-Realization-Shift): Share mistake → Aha moment → How you changed
+
+For ENGAGE intention, choose from:
+• VSQ (Value-Story-Question): Share insight → Support with story → Ask engaging question
+• HVCTA (Hook-Value-CTA): Attention grabber → Deliver value → Clear action
+
+For THOUGHT_LEADERSHIP intention, choose from:
+• CA (Contrarian Approach): State common belief → Challenge it → Provide evidence → New perspective
+• HTOF (Hot Take): Bold statement → Explain reasoning → Support with examples → Invite debate
+
+For EDUCATE/INFORM intention, choose from:
+• VSQ (Value-Story-Question): Share insight → Support with story → Ask engaging question
+• HVCTA (Hook-Value-CTA): Attention grabber → Deliver value → Clear action
+
+STEP 2: Apply the selected framework structure strictly to create the content.
+
+STEP 3: Generate 2-3 platform-optimized variations with hooks, hashtags, and CTAs.""",
 )
 
 social_optimizer = LlmAgent(
@@ -39,7 +67,7 @@ social_optimizer = LlmAgent(
     description="Optimizes social content for engagement.",
     output_schema=SocialOptimizerOutput,
     output_key="optimized_social_content",
-    instruction="You are a social media optimization expert. Review the social_content and optimize it. For 'hashtag_strategy', provide a list of objects with 'category' and 'tags'. For 'platform_specific_tips', provide a list of objects with 'platform' and 'tip'.",
+    instruction="Optimize content for maximum engagement. Refine: 1) Hook strength 2) Hashtag relevance 3) CTA clarity. Provide 'hashtag_strategy' as list of objects with 'category' and 'tags'. Provide 'platform_specific_tips' as list of objects with 'platform' and 'tip'.",
 )
 
 social_presenter = LlmAgent(
@@ -48,27 +76,15 @@ social_presenter = LlmAgent(
     description="Formats the optimized social content for the user.",
     output_schema=FinalSocialOutput,
     output_key="final_social_post",
-    instruction="""
-        You are a content formatter. Your task is to take the optimized social media content and present it cleanly to the user.
+    instruction="""Format optimized content for user delivery. For each post in optimized_social_content:
 
-    Here is the optimized data: {optimized_social_content}
+✦ Platform: [Platform Name]
+[Post content]
 
-    The data contains a list of social media posts. Your job is to format this list into a single, easy-to-read string.
-    For EACH post in the list, create a separate section with the platform name, the content, and the hashtags.
+Hashtags: [hashtags]
+---
 
-    Do not include any other internal strategy. Just format the posts.
-
-    Example format:
-     Platform: Twitter 
-    [The text of the post goes here]
-
-    Hashtags: #tag1 #tag2 #tag3
-
-     Platform: LinkedIn 
-    [The text of the post goes here]
-
-    Hashtags: #tag1 #tag2 #tag3
-    """,
+Clean, ready-to-use format. Exclude internal metrics/strategy.""",
 )
 
 social_pipeline_agent = SequentialAgent(
