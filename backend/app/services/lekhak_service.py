@@ -5,12 +5,33 @@ from google.adk.runners import Runner
 from google.adk.sessions import DatabaseSessionService
 from sqlalchemy import select
 from app.agents.content_creator_agent import content_creator_agent
-from app.services.agent_clients import get_agent_client_cached
+from app.services.agent_clients import AgentClient
 from app.core.setting import APP_NAME, DATABASE_URL
 from app.database import SessionLocal
 from app.models.company import Company
 from app.models.product import Product
 from app.schemas.planner_schema import CompanyContext, ProductContext
+
+# Global singleton instances - created once and reused across all requests
+_session_service = None
+_runner = None
+_agent_client = None
+
+
+def _get_agent_client() -> AgentClient:
+    """Get or create singleton agent client instance."""
+    global _session_service, _runner, _agent_client
+
+    if _agent_client is None:
+        _session_service = DatabaseSessionService(db_url=DATABASE_URL)
+        _runner = Runner(
+            agent=content_creator_agent,
+            app_name=APP_NAME,
+            session_service=_session_service,
+        )
+        _agent_client = AgentClient(_runner, _session_service, APP_NAME)
+
+    return _agent_client
 
 
 async def _build_user_request(
@@ -70,12 +91,8 @@ async def async_generate_content(
     else:
         user_request = {"instruction": prompt}
 
-    print(f"Creating new isolated session service for user: {user_id}")
-    session_service = DatabaseSessionService(db_url=DATABASE_URL)
-    runner = Runner(
-        agent=content_creator_agent, app_name=APP_NAME, session_service=session_service
-    )
-    client = get_agent_client_cached(runner, session_service, APP_NAME)
+    # Get singleton agent client instance
+    client = _get_agent_client()
 
     session = await client.get_or_create_session(user_id)
     session_id = session.id

@@ -1,5 +1,4 @@
 import asyncio
-from functools import lru_cache
 from typing import Any, Dict, Optional
 from google.adk.runners import Runner
 from google.adk.sessions import DatabaseSessionService
@@ -160,11 +159,3 @@ async def _maybe_await(obj: Any):
     if asyncio.iscoroutine(obj) or hasattr(obj, "__await__"):
         return await obj
     return obj
-
-
-# Cached agent client factory
-@lru_cache(maxsize=8)
-def get_agent_client_cached(
-    runner: Runner, session_service: DatabaseSessionService, app_name: str = "agents"
-):
-    return AgentClient(runner, session_service, app_name)
