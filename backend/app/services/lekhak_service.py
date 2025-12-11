@@ -5,12 +5,12 @@ from google.adk.runners import Runner
 from google.adk.sessions import DatabaseSessionService
 from sqlalchemy import select
 from app.agents.content_creator_agent import content_creator_agent
-from app.services.agent_clients import AgentClient
 from app.core.setting import APP_NAME, DATABASE_URL
 from app.database import SessionLocal
 from app.models.company import Company
 from app.models.product import Product
 from app.schemas.planner_schema import CompanyContext, ProductContext
+from app.services.agent_clients import AgentClient
 
 # Global singleton instances - created once and reused across all requests
 _session_service = None

@@ -1,11 +1,10 @@
 from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
 from app.database import get_db
-from app.services.lekhak_service import async_generate_content
-from app.schemas.content import ContentRequest, ContentResponse
 from app.models.conversations import Conversation
+from app.schemas.content import ContentRequest, ContentResponse
+from app.services.lekhak_service import async_generate_content
 
 router = APIRouter()
 

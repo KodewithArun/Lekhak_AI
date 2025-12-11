@@ -1,13 +1,13 @@
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 from app.database import get_db
+from app.models.conversations import Conversation
 from app.schemas.conversation import (
     ConversationCreate,
     ConversationGet,
     ConversationListResponse,
 )
-from app.models.conversations import Conversation
 
 router = APIRouter()
 

@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.routers import company, product, conversation, content
 from app.database import Base, engine
+from app.routers import company, content, conversation, product
 
 # create FastAPI app instance
 app = FastAPI(

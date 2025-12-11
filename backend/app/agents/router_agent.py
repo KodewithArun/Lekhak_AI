@@ -3,15 +3,15 @@ Router Agent - Dynamic pipeline routing based on planner output
 """
 
 from typing import AsyncGenerator
-from typing_extensions import override
 from google.adk.agents import BaseAgent, ParallelAgent
 from google.adk.agents.invocation_context import InvocationContext
 from google.adk.events import Event
 from google.genai import types
+from typing_extensions import override
+from app.agents.pipelines.blog_pipeline import blog_pipeline_agent
+from app.agents.pipelines.social_pipeline import social_pipeline_agent
 from app.schemas.planner_schema import PlannerOutput
 from app.utils.loggers import get_logger
-from app.agents.pipelines.social_pipeline import social_pipeline_agent
-from app.agents.pipelines.blog_pipeline import blog_pipeline_agent
 
 
 logger = get_logger("router_agent")

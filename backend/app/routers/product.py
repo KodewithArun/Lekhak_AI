@@ -1,11 +1,11 @@
-from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
-from app.database import get_db
-from app.schemas.product import ProductCreate, ProductGet, ProductListResponse
-from app.models.product import Product
-from app.models.company import Company
 from datetime import datetime
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+from app.database import get_db
+from app.models.company import Company
+from app.models.product import Product
+from app.schemas.product import ProductCreate, ProductGet, ProductListResponse
 
 router = APIRouter()
 
