@@ -1,8 +1,6 @@
 import streamlit as st
 import requests
-
-# Configuration
-API_BASE_URL = "http://localhost:8000/api"
+from backend.app.core.setting import API_BASE_URL
 
 
 # Helper functions for API calls

@@ -12,6 +12,9 @@ GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
 APP_NAME = os.getenv("APP_NAME", "Lekhak_AI")
 USER_ID = os.getenv("USER_ID", "test_user")
 
+# API Configuration
+API_BASE_URL = os.getenv("API_BASE_URL")
+
 # Database Configuration
 DB_USER = os.getenv("DB_USER", "postgres")
 DB_PASSWORD = os.getenv("DB_PASSWORD", "2003")
