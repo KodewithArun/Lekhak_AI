@@ -45,6 +45,19 @@ class PlannerOutput(BaseModel):
         description="Selected content pipeline"
     )
     platform: str = Field(default="general", description="Target platform")
+    content_intention: Literal[
+        "educate",
+        "promote",
+        "engage",
+        "storytelling",
+        "persuade",
+        "inform",
+        "inspire",
+        "thought_leadership",
+    ] = Field(
+        default="inform",
+        description="Primary intention/purpose of the content (educate, promote, engage, storytelling, persuade, inform, inspire, thought_leadership)",
+    )
     clarification_needed: Optional[str] = Field(
         default=None,
         description="Message requesting clarification from user if should_proceed is False",
