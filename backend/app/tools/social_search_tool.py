@@ -1,10 +1,9 @@
 import os
 from serpapi import GoogleSearch
 from google.adk.tools import FunctionTool
+from app.core.setting import SERPAPI_API_KEY
 from app.utils.loggers import get_logger
 
-
-SERPAPI_API_KEY = os.getenv("SERPAPI_API_KEY", "YOUR_SERPAPI_API_KEY_HERE")
 
 logger = get_logger("SerpApi Tool")
 
@@ -14,7 +13,7 @@ def serp_api_search(query: str) -> dict:
     Performs a web search using the SerpApi and returns the full result dictionary.
     The 'query' parameter is the search term.
     """
-    if SERPAPI_API_KEY == "YOUR_SERPAPI_API_KEY_HERE":
+    if SERPAPI_API_KEY is None:
         logger.error(
             "SerpApi API key is not configured. Please set the SERPAPI_API_KEY environment variable."
         )
