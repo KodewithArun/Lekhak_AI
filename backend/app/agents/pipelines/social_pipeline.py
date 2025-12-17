@@ -5,9 +5,8 @@ Sequential flow: Researcher: Writer : Optimizer : Presenter
 
 from google.adk.agents import LlmAgent, SequentialAgent
 
-# from google.adk.tools import google_search
-from app.tools.hashtag_tool import hashtag_tool
-from app.tools.social_search_tool import serp_search_tool
+from app.tools.hashtag_tool import get_trending_hashtags
+from app.tools.social_search_tool import serp_api_search
 from app.core.setting import GEMINI_MODEL
 from app.schemas.social_pipeline_schema import (
     FinalSocialOutput,
@@ -22,10 +21,10 @@ logger = get_logger("social_pipeline")
 
 social_researcher = LlmAgent(
     name="social_researcher",
-    model="gemini-2.5-flash-lite",
+    model=GEMINI_MODEL,
     description="Conducts social media research on a given topic using hashtag and web search tools.",
     output_schema=SocialResearchOutput,
-    tools=[hashtag_tool, serp_search_tool],
+    tools=[get_trending_hashtags, serp_api_search],
     output_key="social_research",
     instruction=RESEARCH_AGENT_INSTRUCTION,
 )
