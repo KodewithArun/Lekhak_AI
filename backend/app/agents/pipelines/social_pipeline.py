@@ -4,6 +4,10 @@ Sequential flow: Researcher: Writer : Optimizer : Presenter
 """
 
 from google.adk.agents import LlmAgent, SequentialAgent
+
+# from google.adk.tools import google_search
+from app.tools.hashtag_tool import hashtag_tool
+from app.tools.social_search_tool import serp_search_tool
 from app.core.setting import GEMINI_MODEL
 from app.schemas.social_pipeline_schema import (
     FinalSocialOutput,
@@ -12,17 +16,20 @@ from app.schemas.social_pipeline_schema import (
     SocialWriterOutput,
 )
 from app.utils.loggers import get_logger
+from app.prompts.research_instruction import RESEARCH_AGENT_INSTRUCTION
 
 logger = get_logger("social_pipeline")
 
 social_researcher = LlmAgent(
     name="social_researcher",
-    model=GEMINI_MODEL,
-    description="Researches topics for social media.",
+    model="gemini-2.5-flash-lite",
+    description="Conducts social media research on a given topic using hashtag and web search tools.",
     output_schema=SocialResearchOutput,
+    tools=[hashtag_tool, serp_search_tool],
     output_key="social_research",
-    instruction="Research trends, hashtags, and audience insights for the topic. Focus on: 1) Current trending angles 2) Platform-specific best practices 3) Audience pain points. Keep research targeted to support the content_framework from planner_output.",
+    instruction=RESEARCH_AGENT_INSTRUCTION,
 )
+
 
 social_writer = LlmAgent(
     name="social_writer",
@@ -52,9 +59,9 @@ For THOUGHT_LEADERSHIP intention, choose from:
 • CA (Contrarian Approach): State common belief → Challenge it → Provide evidence → New perspective
 • HTOF (Hot Take): Bold statement → Explain reasoning → Support with examples → Invite debate
 
-For EDUCATE/INFORM intention, choose from:
-• VSQ (Value-Story-Question): Share insight → Support with story → Ask engaging question
-• HVCTA (Hook-Value-CTA): Attention grabber → Deliver value → Clear action
+For EDUCATE/INF VSQ (Value-Story-Question): Share insight → Support with story → Ask engaging question
+• HVCTA (Hook-Value-CTA): AttenORM intention, choose from:
+•tion grabber → Deliver value → Clear action
 
 STEP 2: Apply the selected framework structure strictly to create the content.
 

@@ -1,25 +1,29 @@
 """Social media pipeline schema models."""
 
-from typing import List, Optional
+from typing import List
 from pydantic import BaseModel, Field
 
 
-# Social media research output
+# Social media research output model
 class SocialResearchOutput(BaseModel):
-    topic_summary: str = Field(description="Brief topic overview for social media")
-    key_points: List[str] = Field(description="Main points to cover in social content")
-    trending_hashtags: List[str] = Field(description="Trending and relevant hashtags")
-    platform_trends: List[str] = Field(description="Current platform-specific trends")
-    audience_engagement_insights: str = Field(
-        description="How audience engages with similar content"
+    trending_hashtags: List[str] = Field(
+        description="Hashtags currently trending or frequently used for the topic"
     )
-    viral_content_patterns: List[str] = Field(description="Patterns from viral content")
-    optimal_posting_times: List[str] = Field(description="Best times to post")
-    competitor_social_performance: Optional[str] = Field(
-        default=None, description="How competitors perform on social"
+
+    competitor_captions: List[str] = Field(
+        description="Captions from high-performing competitor or viral posts"
     )
-    content_gaps: List[str] = Field(
-        default_factory=list, description="Gaps in current social content"
+
+    viral_hooks: List[str] = Field(
+        description="Opening hooks commonly used in viral posts"
+    )
+
+    platform_trends: List[str] = Field(
+        description="Content formats or trends observed on each platform"
+    )
+
+    audience_preferences: List[str] = Field(
+        description="Observed audience preferences per platform based on engagement patterns"
     )
 
 
