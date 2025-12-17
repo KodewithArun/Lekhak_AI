@@ -15,14 +15,6 @@ USER_ID = os.getenv("USER_ID", "test_user")
 # API Configuration
 API_BASE_URL = os.getenv("API_BASE_URL")
 
-# RiteKit (hashtag/trending) configuration
-RITEKIT_API_URL = os.getenv("RITEKIT_API_URL")
-RITEKIT_CLIENT_ID = os.getenv("RITEKIT_CLIENT_ID")
-
-# SerpAPI configuration (web search)
-SERPAPI_API_KEY = os.getenv("SERPAPI_API_KEY")
-SERPAPI_URL = os.getenv("SERPAPI_URL", "https://serpapi.com/search")
-
 # Database Configuration
 DB_USER = os.getenv("DB_USER", "postgres")
 DB_PASSWORD = os.getenv("DB_PASSWORD", "2003")
