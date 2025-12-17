@@ -8,6 +8,15 @@ GOOGLE_GENAI_USE_VERTEXAI = os.getenv("GOOGLE_GENAI_USE_VERTEXAI", "0")
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
 
+# RiteKit API configuration
+RITEKIT_API_URL = os.getenv(
+    "RITEKIT_API_URL", "https://api.ritekit.com/v1/search/trending"
+)
+RITEKIT_CLIENT_ID = os.getenv("RITEKIT_CLIENT_ID")
+
+# SerpApi API Key
+SERPAPI_API_KEY = os.getenv("SERPAPI_API_KEY")
+
 # Application Configuration
 APP_NAME = os.getenv("APP_NAME", "Lekhak_AI")
 USER_ID = os.getenv("USER_ID", "test_user")
