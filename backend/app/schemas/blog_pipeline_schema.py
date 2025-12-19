@@ -1,85 +1,87 @@
 """Blog pipeline schema models."""
 
-from typing import List, Optional
+from typing import List, Optional, Dict
 from pydantic import BaseModel, Field
 
 
-# Blog research output
+# for keyword research
+class KeywordResearch(BaseModel):
+    primary_keywords: List[str] = Field(
+        description="Primary SEO keywords extracted from SERP data"
+    )
+    secondary_keywords: List[str] = Field(
+        description="Secondary SEO keywords from related searches and competitor data"
+    )
+    long_tail_keywords: List[str] = Field(
+        description="Long-tail keywords from People Also Ask and related searches"
+    )
+
+
+# for competitor research
+class CompetitorResearch(BaseModel):
+    competitor_names: List[str] = Field(
+        description="Competitor or alternative product/service names found in SERP results"
+    )
+    competitor_gaps: List[str] = Field(
+        description="Important topics or user questions competitors do NOT cover well"
+    )
+
+
+# for pain point analysis
+class PainPointAnalysis(BaseModel):
+    pain_points: List[str] = Field(
+        description="List of user pain points derived from product features and target audience"
+    )
+
+
+# blog research output
 class BlogResearchOutput(BaseModel):
-    topic_summary: str = Field(description="In-depth topic analysis for blog content")
-    key_points: List[str] = Field(description="Comprehensive points to cover in blog")
-    primary_keywords: List[str] = Field(description="Primary SEO keywords")
-    secondary_keywords: List[str] = Field(description="LSI and secondary keywords")
-    competitor_content_analysis: Optional[str] = Field(
-        default=None, description="Analysis of competitor blog content"
-    )
-    seo_opportunities: List[str] = Field(description="SEO and ranking opportunities")
-    content_structure_suggestions: List[str] = Field(
-        description="Suggested blog structure"
-    )
-    backlink_opportunities: List[str] = Field(
-        default_factory=list, description="Potential backlink sources"
-    )
-    content_gaps: List[str] = Field(
-        default_factory=list, description="Gaps in existing blog content"
+    keyword_research: KeywordResearch
+    competitor_research: CompetitorResearch
+    pain_point_analysis: PainPointAnalysis
+
+    sources: List[str] = Field(
+        description="SERP URLs used for research and data collection"
     )
 
 
-# Blog related models
 class BlogSection(BaseModel):
-    heading: str
-    content: str
-    key_points: List[str]
+    heading: Optional[str] = None
+    content: Optional[str] = None
+    key_points: List[str] = []
 
 
 class BlogWriterOutput(BaseModel):
-    headline: str
-    subheadline: Optional[str] = None
-    meta_description: str
-    introduction: str
-    sections: List[BlogSection]
-    conclusion: str
-    word_count: int
-    reading_time: str
-    key_takeaways: List[str]
-    internal_links: List[str] = []
-    external_sources: List[str] = []
-    image_suggestions: List[str] = []
+    headline: Optional[str] = None
+    meta_description: Optional[str] = None
+    introduction: Optional[str] = None
+    sections: List[BlogSection] = []
+    conclusion: Optional[str] = None
 
 
 class SEOOptimization(BaseModel):
-    primary_keyword: str
-    secondary_keywords: List[str]
-    lsi_keywords: List[str]
-    keyword_density: float
-    featured_snippet_opportunity: Optional[str] = None
-    schema_markup: Optional[str] = None
+    primary_keyword: Optional[str] = None
+    secondary_keywords: List[str] = []
+    lsi_keywords: List[str] = []
+    keyword_density: Optional[float] = None
 
 
 class ReadabilityMetrics(BaseModel):
     flesch_score: Optional[float] = None
     grade_level: Optional[str] = None
     avg_sentence_length: Optional[float] = None
-    improvements: List[str]
-
-
-class EngagementEstimate(BaseModel):
-    """Represents an estimated engagement metric."""
-
-    metric: str = Field(description="The engagement metric, e.g., 'likes', 'shares'")
-    estimate: str = Field(description="The estimated value or range for the metric")
+    improvements: List[str] = []
 
 
 class BlogOptimizerOutput(BaseModel):
-    final_headline: str
-    final_meta_description: str
-    optimized_content: str
-    seo_optimization: SEOOptimization
-    readability_metrics: ReadabilityMetrics
-    image_alt_texts: List[str]
-    conversion_elements: List[str]
-    publication_checklist: List[str]
-    estimated_engagement: List[EngagementEstimate]
+    final_headline: Optional[str] = None
+    final_meta_description: Optional[str] = None
+    optimized_content: Optional[str] = None
+    seo_optimization: Optional[SEOOptimization] = None
+    readability_metrics: Optional[ReadabilityMetrics] = None
+    image_alt_texts: List[str] = []
+    conversion_elements: List[str] = []
+    publication_checklist: List[str] = []
 
 
 # Final outputs
@@ -89,10 +91,3 @@ class FinalBlogOutput(BaseModel):
     final_content: str = Field(
         description="The formatted blog post, ready for publication."
     )
-
-
-class EngagementEstimate(BaseModel):
-    """Represents an estimated engagement metric."""
-
-    metric: str = Field(description="The engagement metric, e.g., 'likes', 'shares'")
-    estimate: str = Field(description="The estimated value or range for the metric")
