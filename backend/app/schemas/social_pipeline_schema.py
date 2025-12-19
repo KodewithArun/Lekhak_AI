@@ -1,31 +1,44 @@
 """Social media pipeline schema models."""
 
-from typing import List
+from typing import Dict, List
 from pydantic import BaseModel, Field
 
 
-# Social media research output model
 class SocialResearchOutput(BaseModel):
+    platform: str = Field(
+        description="The platform being researched (from Planner: linkedin, instagram, twitter, facebook)."
+    )
+
+    platform_context: str = Field(
+        description="Summary of how this specific platform behaves and what users expect."
+    )
+
+    audience_intent: Dict[str, List[str]] = Field(
+        description="Primary, secondary, and tertiary user motivations for this platform."
+    )
+
+    attention_triggers: Dict[str, List[str]] = Field(
+        description="Elements that capture attention on this platform."
+    )
+
+    content_angles: Dict[str, Dict[str, str]] = Field(
+        description="Strategic content approaches for this platform only (problem-solution, feature focus, use-cases, etc)."
+    )
+
+    credibility_signals: List[str] = Field(
+        description="What increases trust for this specific platform."
+    )
+
+    format_guidelines: Dict[str, str] = Field(
+        description="Formatting rules for this platform (tone, length, hashtags, structure)."
+    )
+
     trending_hashtags: List[str] = Field(
-        description="Hashtags currently trending or frequently used for the topic"
+        description="Trending hashtags relevant to the topic on this specific platform."
     )
 
-    competitor_captions: List[str] = Field(
-        description="Captions from high-performing competitor or viral posts"
-    )
 
-    viral_hooks: List[str] = Field(
-        description="Opening hooks commonly used in viral posts"
-    )
-
-    platform_trends: List[str] = Field(
-        description="Content formats or trends observed on each platform"
-    )
-
-    audience_preferences: List[str] = Field(
-        description="Observed audience preferences per platform based on engagement patterns"
-    )
-
+# below are models related to social media content creation that will be refine in upcoming steps
 
 # Social media related models
 class HashtagStrategy(BaseModel):

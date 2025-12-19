@@ -86,6 +86,14 @@ class RouterAgent(BaseAgent):
                 async for event in social_pipeline_agent.run_async(ctx):
                     yield event
 
+                # After pipeline completes, log the researcher/tools output if available
+                try:
+                    social_research = ctx.session.state.get("social_research")
+                    if social_research:
+                        logger.info(f"Social research output: {social_research}")
+                except Exception:
+                    logger.exception("Failed to log social_research state")
+
             elif pipeline_type == "blog":
                 logger.info("Routing to BLOG pipeline")
 
