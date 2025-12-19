@@ -14,7 +14,9 @@ from app.schemas.social_pipeline_schema import (
     SocialWriterOutput,
 )
 from app.utils.loggers import get_logger
-from app.prompts.research_instruction import RESEARCH_AGENT_INSTRUCTION
+from app.prompts.social_instructions.research_instruction import (
+    RESEARCH_AGENT_INSTRUCTION,
+)
 
 logger = get_logger("social_pipeline")
 

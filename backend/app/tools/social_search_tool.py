@@ -1,43 +1,20 @@
-import os
-from serpapi import GoogleSearch
-from google.adk.tools import FunctionTool
-from app.core.setting import SERPAPI_API_KEY
-from app.utils.loggers import get_logger
+"""Social Media Search Tool using SERP API Performs searches for social media trends and content using SERP API"""
+
+import requests
+from app.core.setting import SERPAPI_API_KEY, SERPAPI_BASE_URL
 
 
-logger = get_logger("SerpApi Tool")
-
-
-def serp_api_search(query: str) -> dict:
+def serp_platform_search(query: str, platform: str, num_results: int = 5) -> dict:
     """
-    Performs a web search using the SerpApi and returns the full result dictionary.
-    The 'query' parameter is the search term.
+    Performs a SERP API search for a specific platform.
+    Returns structured JSON results with title, snippet, URL.
     """
-    if SERPAPI_API_KEY is None:
-        logger.error(
-            "SerpApi API key is not configured. Please set the SERPAPI_API_KEY environment variable."
-        )
-        return {"error": "SerpApi API key is not configured."}
-
+    url = SERPAPI_BASE_URL
     params = {
-        "q": query,
-        "hl": "en",
-        "gl": "us",
-        "google_domain": "google.com",
+        "q": f"{query} site:{platform}",  # platform-specific search
         "api_key": SERPAPI_API_KEY,
+        "num": num_results,
     }
-
-    try:
-        search = GoogleSearch(params)
-        results = search.get_dict()
-        logger.info(f"Successfully performed SerpApi search for query: '{query}'")
-        return results
-    except Exception as e:
-        logger.error(f"Error during SerpApi search: {e}")
-
-        return {"error": str(e)}
-
-
-serp_search_tool = FunctionTool(func=serp_api_search)
-
-logger.info("SerpApi search tool initialized.")
+    response = requests.get(url, params=params)
+    response.raise_for_status()
+    return response.json()
