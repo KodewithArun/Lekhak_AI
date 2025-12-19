@@ -93,6 +93,12 @@ class RouterAgent(BaseAgent):
                 async for event in blog_pipeline_agent.run_async(ctx):
                     yield event
 
+                blog_research_output = ctx.session.state.get("blog_research")
+                if blog_research_output:
+                    logger.info(f" Final Blog Research Output: {blog_research_output}")
+                else:
+                    logger.warning("No 'blog_research' found in context state")
+
             elif pipeline_type == "both":
                 logger.info("Routing to BOTH pipelines (parallel)")
                 async for event in self._execute_both_pipelines(ctx):
