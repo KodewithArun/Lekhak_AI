@@ -84,8 +84,8 @@ class AgentClient:
                     if author == "blog_presenter":
                         self.logger.info("Captured final blog post.")
                         final_blog_content = content_text
-                    elif author == "social_presenter":
-                        self.logger.info("Captured final social post.")
+                    elif author == "social_optimizer":
+                        self.logger.info("Captured final social post from optimizer.")
                         final_social_content = content_text
                     elif author == "router_agent":
                         # Capture clarification or error messages from router
@@ -127,9 +127,37 @@ class AgentClient:
 
             if content.get("social"):
                 try:
-                    # Parse the JSON string to get the clean text
                     social_data = json.loads(content["social"])
-                    social_content = social_data.get("final_content", "")
+                    # Support both old and new schema field names
+                    caption = social_data.get("optimized_caption") or social_data.get(
+                        "caption", ""
+                    )
+                    main_content = social_data.get(
+                        "optimized_content"
+                    ) or social_data.get("main_content", "")
+                    hashtags = social_data.get("final_hashtags") or social_data.get(
+                        "hashtags", []
+                    )
+                    cta = social_data.get("platform_cta") or social_data.get(
+                        "call_to_action", ""
+                    )
+
+                    hashtags_str = (
+                        " ".join([f"#{h}" for h in hashtags]) if hashtags else ""
+                    )
+
+                    # Build the content with all available parts
+                    parts = []
+                    if caption:
+                        parts.append(f"**Caption:** {caption}")
+                    if main_content:
+                        parts.append(f"\n{main_content}")
+                    if cta:
+                        parts.append(f"\n\n**CTA:** {cta}")
+                    if hashtags_str:
+                        parts.append(f"\n\n{hashtags_str}")
+
+                    social_content = "\n".join(parts).strip()
                 except json.JSONDecodeError:
                     social_content = content["social"]  # Fallback if not valid JSON
 
