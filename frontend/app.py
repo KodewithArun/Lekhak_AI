@@ -1,9 +1,14 @@
 import streamlit as st
 import requests
-from backend.app.core.setting import API_BASE_URL
+import os
+from dotenv import load_dotenv
+
+# Loading environment variables
+load_dotenv()
+API_BASE_URL = os.getenv("API_BASE_URL")
 
 
-# Helper functions for API calls
+# Helper functions
 def get_companies():
     try:
         response = requests.get(f"{API_BASE_URL}/companies/")
@@ -11,7 +16,7 @@ def get_companies():
             return response.json().get("companies", [])
         return []
     except Exception as e:
-        st.error(f"Error fetching companies: {str(e)}")
+        st.error(f"Error: {str(e)}")
         return []
 
 
@@ -19,40 +24,14 @@ def create_company(name, industry, description):
     try:
         response = requests.post(
             f"{API_BASE_URL}/companies/",
-            json={"name": name, "industry": industry, "description": description},
+            json={"name": name, "industry": industry, "description": description}
         )
         if response.status_code == 200:
             return response.json()
-        st.error(f"Error creating company: {response.text}")
+        st.error(f"Error: {response.text}")
         return None
     except Exception as e:
-        st.error(f"Error creating company: {str(e)}")
-        return None
-
-
-def get_products():
-    try:
-        response = requests.get(f"{API_BASE_URL}/products/")
-        if response.status_code == 200:
-            return response.json().get("products", [])
-        return []
-    except Exception as e:
-        st.error(f"Error fetching products: {str(e)}")
-        return []
-
-
-def create_product(name, description, company_id):
-    try:
-        response = requests.post(
-            f"{API_BASE_URL}/products/",
-            json={"name": name, "description": description, "company_id": company_id},
-        )
-        if response.status_code == 200:
-            return response.json()
-        st.error(f"Error creating product: {response.text}")
-        return None
-    except Exception as e:
-        st.error(f"Error creating product: {str(e)}")
+        st.error(f"Error: {str(e)}")
         return None
 
 
@@ -63,8 +42,23 @@ def get_products_by_company(company_id):
             return response.json().get("products", [])
         return []
     except Exception as e:
-        st.error(f"Error fetching products for company: {str(e)}")
+        st.error(f"Error: {str(e)}")
         return []
+
+
+def create_product(name, description, company_id):
+    try:
+        response = requests.post(
+            f"{API_BASE_URL}/products/",
+            json={"name": name, "description": description, "company_id": company_id}
+        )
+        if response.status_code == 200:
+            return response.json()
+        st.error(f"Error: {response.text}")
+        return None
+    except Exception as e:
+        st.error(f"Error: {str(e)}")
+        return None
 
 
 def get_conversations():
@@ -74,7 +68,7 @@ def get_conversations():
             return response.json().get("conversations", [])
         return []
     except Exception as e:
-        st.error(f"Error fetching conversations: {str(e)}")
+        st.error(f"Error: {str(e)}")
         return []
 
 
@@ -86,239 +80,118 @@ def generate_content(prompt, company_id=None, product_id=None):
         if product_id:
             payload["product_id"] = product_id
 
-        response = requests.post(
-            f"{API_BASE_URL}/content/generated/",
-            json=payload,
-        )
+        response = requests.post(f"{API_BASE_URL}/content/generated/", json=payload)
         if response.status_code == 200:
             return response.json()
-        st.error(f"Error generating content: {response.text}")
+        st.error(f"Error: {response.text}")
         return None
     except Exception as e:
-        st.error(f"Error generating content: {str(e)}")
+        st.error(f"Error: {str(e)}")
         return None
 
 
-# Initialize session state
-if "companies" not in st.session_state:
-    st.session_state.companies = get_companies()
-if "products" not in st.session_state:
-    st.session_state.products = get_products()
-if "conversations" not in st.session_state:
-    st.session_state.conversations = get_conversations()
+# Page config
+st.set_page_config(page_title="Lekhak AI", layout="centered")
 
-# Main app
-st.set_page_config(page_title="Lekhak AI", layout="wide")
-st.title("Lekhak AI Content Generation Platform")
+# Title
+st.title("Lekhak AI")
 
-# Sidebar for navigation
-st.sidebar.title("Navigation")
-page = st.sidebar.radio(
-    "Go to", ["Content Generation", "Companies", "Products", "Conversations"]
-)
+# Navigation
+page = st.sidebar.radio("Navigation", ["Generate Content", "Create Company", "Create Product", "Chat History"])
 
-# Content Generation Page
-if page == "Content Generation":
-    st.header("Generate Content with Lekhak AI")
-
-    # Form for content generation
-    with st.form("content_generation_form"):
-        st.subheader("Generate New Content")
-
-        # Company selection
-        companies = st.session_state.companies
-        selected_company_id = None
-        selected_product_id = None
-
-        if companies:
-            company_options = {c["name"]: c["id"] for c in companies}
-            selected_company_name = st.selectbox(
-                "Select Company (optional)", ["None"] + list(company_options.keys())
-            )
-            selected_company_id = (
-                company_options.get(selected_company_name)
-                if selected_company_name != "None"
-                else None
-            )
-        else:
-            st.warning("No companies available. Please create a company first.")
-
-        # Product selection - show all products or filter by company
-        products = st.session_state.products
-        if products:
-            # Filter products by selected company if a company is selected
-            if selected_company_id:
-                filtered_products = [
-                    p for p in products if p.get("company_id") == selected_company_id
-                ]
-                if filtered_products:
-                    product_options = {p["name"]: p["id"] for p in filtered_products}
-                    selected_product_name = st.selectbox(
-                        "Select Product (optional)",
-                        ["None"] + list(product_options.keys()),
-                    )
-                    selected_product_id = (
-                        product_options.get(selected_product_name)
-                        if selected_product_name != "None"
-                        else None
-                    )
-                else:
-                    st.info("No products found for this company")
-            else:
-                # Show all products if no company is selected
-                product_options = {p["name"]: p["id"] for p in products}
-                selected_product_name = st.selectbox(
-                    "Select Product (optional)",
-                    ["None"] + list(product_options.keys()),
-                )
-                selected_product_id = (
-                    product_options.get(selected_product_name)
-                    if selected_product_name != "None"
-                    else None
-                )
-        else:
-            st.warning("No products available. Please create a product first.")
-
-        # User prompt
-        user_prompt = st.text_area("Enter your prompt", height=150)
-
-        # Submit button
-        submit_button = st.form_submit_button("Generate Content")
-
-        if submit_button and user_prompt:
-            with st.spinner("Generating content..."):
-                result = generate_content(
-                    prompt=user_prompt,
-                    company_id=selected_company_id,
-                    product_id=selected_product_id,
-                )
-
-                if result:
-                    st.success("Content generated successfully!")
-                    st.subheader("Generated Content")
-                    st.write(result["content"])
-
-                    # Show metadata
-                    with st.expander("Content Details"):
-                        st.json(
-                            {
-                                "Company ID": result.get("company_id"),
-                                "Product ID": result.get("product_id"),
-                                "Generated At": result.get("generated_at"),
-                                "Conversation ID": result.get("conversation_id"),
-                            }
-                        )
-
-                    # Refresh conversations
-                    st.session_state.conversations = get_conversations()
-
-# Companies Page
-elif page == "Companies":
-    st.header("Company Management")
-
-    # Tabs for company operations
-    tab1, tab2 = st.tabs(["View Companies", "Create Company"])
-
-    with tab1:
-        st.subheader("All Companies")
-        companies = st.session_state.companies
-
-        if companies:
-            for company in companies:
-                with st.expander(
-                    f"{company['name']} ({company.get('industry', 'N/A')})"
-                ):
-                    st.write(f"**ID:** {company['id']}")
-                    st.write(f"**Description:** {company.get('description', 'N/A')}")
-                    st.write(f"**Created At:** {company.get('created_at', 'N/A')}")
-
-                    # Show products for this company
-                    company_products = get_products_by_company(company["id"])
-                    if company_products:
-                        st.write("**Products:**")
-                        for product in company_products:
-                            st.write(f"- {product['name']}")
-        else:
-            st.info("No companies found.")
-
-    with tab2:
-        st.subheader("Create New Company")
-        with st.form("create_company_form"):
-            name = st.text_input("Company Name")
-            industry = st.text_input("Industry")
-            description = st.text_area("Description")
-
-            submit_button = st.form_submit_button("Create Company")
-
-            if submit_button and name:
-                new_company = create_company(name, industry, description)
-                if new_company:
-                    st.success(f"Company '{name}' created successfully!")
-                    st.session_state.companies = get_companies()  # Refresh companies
-
-# Products Page
-elif page == "Products":
-    st.header("Product Management")
-
-    # Tabs for product operations
-    tab1, tab2 = st.tabs(["View Products", "Create Product"])
-
-    with tab1:
-        st.subheader("All Products")
-        products = st.session_state.products
-
-        if products:
-            for product in products:
-                with st.expander(f"{product['name']}"):
-                    st.write(f"**ID:** {product['id']}")
-                    st.write(f"**Company ID:** {product.get('company_id', 'N/A')}")
-                    st.write(f"**Description:** {product.get('description', 'N/A')}")
-                    st.write(f"**Created At:** {product.get('created_at', 'N/A')}")
-        else:
-            st.info("No products found.")
-
-    with tab2:
-        st.subheader("Create New Product")
-        with st.form("create_product_form"):
-            name = st.text_input("Product Name")
-            description = st.text_area("Description")
-
-            # Company selection
-            companies = st.session_state.companies
-            if companies:
-                company_options = {c["name"]: c["id"] for c in companies}
-                selected_company_name = st.selectbox(
-                    "Select Company", list(company_options.keys())
-                )
-                company_id = company_options[selected_company_name]
-            else:
-                st.error("No companies available. Please create a company first.")
-                company_id = None
-
-            submit_button = st.form_submit_button("Create Product")
-
-            if submit_button and name and company_id:
-                new_product = create_product(name, description, company_id)
-                if new_product:
-                    st.success(f"Product '{name}' created successfully!")
-                    st.session_state.products = get_products()  # Refresh products
-
-# Conversations Page
-elif page == "Conversations":
-    st.header("Conversation History")
-
-    conversations = st.session_state.conversations
-
-    if conversations:
-        for conversation in conversations:
-            with st.expander(f"Conversation {conversation['id']}"):
-                st.write(f"**ID:** {conversation['id']}")
-                st.write(f"**Company ID:** {conversation.get('company_id', 'N/A')}")
-                st.write(f"**Product ID:** {conversation.get('product_id', 'N/A')}")
-                st.write(f"**User Query:** {conversation.get('user_query', 'N/A')}")
-                st.write(
-                    f"**Generated Content:** {conversation.get('generated_content', 'N/A')}"
-                )
-                st.write(f"**Created At:** {conversation.get('created_at', 'N/A')}")
+#  GENERATE CONTENT PAGE 
+if page == "Generate Content":
+    
+    companies = get_companies()
+    
+    if not companies:
+        st.warning("No companies available. Please create a company first.")
     else:
-        st.info("No conversations found.")
+        # Company selection
+        company_options = {c["name"]: c["id"] for c in companies}
+        selected_company_name = st.selectbox("Select Company", list(company_options.keys()))
+        selected_company_id = company_options[selected_company_name]
+        
+        # Product selection (auto-filtered by company)
+        products = get_products_by_company(selected_company_id)
+        
+        if products:
+            product_options = {p["name"]: p["id"] for p in products}
+            selected_product_name = st.selectbox("Select Product", list(product_options.keys()))
+            selected_product_id = product_options[selected_product_name]
+        else:
+            st.info("No products available for this company")
+            selected_product_id = None
+        
+        # Content request
+        user_prompt = st.text_area("Enter your content request", height=150)
+        
+        # Generate button
+        if st.button("Generate Content", type="primary"):
+            if user_prompt:
+                with st.spinner("Generating..."):
+                    result = generate_content(user_prompt, selected_company_id, selected_product_id)
+                    
+                    if result:
+                        st.success("Content generated!")
+                        st.subheader("Generated Content")
+                        st.write(result.get("content", "No content returned"))
+            else:
+                st.error("Please enter a content request")
+
+#  CREATE COMPANY PAGE 
+elif page == "Create Company":
+    st.header("Create Company")
+    
+    company_name = st.text_input("Company Name")
+    industry = st.text_input("Industry")
+    description = st.text_area("Description")
+    
+    if st.button("Create Company", type="primary"):
+        if company_name:
+            result = create_company(company_name, industry, description)
+            if result:
+                st.success(f"Company '{company_name}' created successfully!")
+        else:
+            st.error("Please enter a company name")
+
+#  CREATE PRODUCT PAGE 
+elif page == "Create Product":
+    st.header("Create Product")
+    
+    companies = get_companies()
+    
+    if not companies:
+        st.warning("No companies available. Please create a company first.")
+    else:
+        product_name = st.text_input("Product Name")
+        description = st.text_area("Description")
+        
+        # Company selection
+        company_options = {c["name"]: c["id"] for c in companies}
+        selected_company_name = st.selectbox("Select Company", list(company_options.keys()))
+        selected_company_id = company_options[selected_company_name]
+        
+        if st.button("Create Product", type="primary"):
+            if product_name:
+                result = create_product(product_name, description, selected_company_id)
+                if result:
+                    st.success(f"Product '{product_name}' created successfully!")
+            else:
+                st.error("Please enter a product name")
+
+#  CHAT HISTORY PAGE 
+elif page == "Chat History":
+    st.header("Chat History")
+    
+    conversations = get_conversations()
+    
+    if conversations:
+        for conv in conversations:
+            with st.expander(f"Conversation {conv['id']} - {conv.get('created_at', 'N/A')}"):
+                st.write(f"**User Query:** {conv.get('user_query', 'N/A')}")
+                st.write(f"**Generated Content:** {conv.get('generated_content', 'N/A')}")
+                st.write(f"**Company ID:** {conv.get('company_id', 'N/A')}")
+                st.write(f"**Product ID:** {conv.get('product_id', 'N/A')}")
+    else:
+        st.info("No chat history available")
