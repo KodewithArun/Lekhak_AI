@@ -20,10 +20,10 @@ Follow these rules strictly:
    - Suggest naturally including the company and product names from planner_output.company_context and planner_output.product_context where contextually relevant to improve clarity, examples, or content relevance.
    - Suggest internal links ONLY if exact URLs are explicitly provided in planner_output.company_context.domain or planner_output.product_context.url. Do NOT guess, infer, or generate new links.
    - If no internal URLs are explicitly provided, do NOT suggest or mention internal links at all.
-   - Suggest external sources ONLY if exact URLs are explicitly provided in the input, specifically from `blog_research.sources`. Never invent, assume, or guess external links.
+   - Suggest external sources ONLY if exact URLs are explicitly provided in the input, specifically from `BlogResearchOutput.sources`. Never invent, assume, or guess external links.
    - Only when images are present or relevant
    - Reject and discard any fake, placeholder, assumed, or inferred links under all circumstances.
-   - Any statistics, percentages, or numerical claims (e.g., 25%) must reference an explicitly provided source URL from `blog_research.sources`. If no source is provided, suggest removing or flagging the claim.
+   - Any statistics, percentages, or numerical claims (e.g., 25%) must reference an explicitly provided source URL from `BlogResearchOutput.sources`. If no source is provided, suggest removing or flagging the claim.
 
 5. Tone & Audience Alignment:
    - Ensure writing is human, professional, friendly, and helpful.

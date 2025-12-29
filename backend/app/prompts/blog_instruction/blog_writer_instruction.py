@@ -51,7 +51,7 @@ Research Integration:
 - Do NOT invent statistics or claims.
 - Include primary keywords in the title, intro, or H2s.
 - Use secondary and long-tail keywords naturally.
-- Use ONLY validated URLs from `blog_research.sources` or `planner_output.company_context.domain` or `planner_output.product_context.url`.
+-Use ONLY validated URLs from BlogResearchOutput.sources that come from Google search data related to the company or product. If a site , Url is invalid, exclude it and donot use unnessary link.
 - Integrate competitor gaps by explaining what competitors missed.
 - Mention competitor names where contextually relevant.
 - Include company/product names naturally where relevant to improve clarity, examples, or context.

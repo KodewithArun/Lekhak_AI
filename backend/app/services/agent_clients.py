@@ -159,10 +159,6 @@ class AgentClient:
                         parts.append(f"**Caption:** {caption}")
                     if main_content:
                         parts.append(f"\n{main_content}")
-                    if hashtags_str:
-                        parts.append(f"\n{hashtags_str}")
-                    if cta:
-                        parts.append(f"\nCTA: {cta}")
 
                     social_content = "\n".join(parts).strip()
                 except json.JSONDecodeError:
