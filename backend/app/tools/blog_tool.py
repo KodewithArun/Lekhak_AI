@@ -116,26 +116,26 @@ def extract_seo_keywords(
 
     related_searches = serp_data.get("related_searches", [])
 
-    # Primary first 3 related searches
+    # get primary keywords from related searches
     for search in related_searches[:3]:
         if search and search.lower() != main_query.lower():
             primary.append(search)
 
-    # Fallback to titles if no primary keywords
+    # Fallback to organic titles if no primary found in related searches
     if not primary:
         for r in serp_data.get("organic_results", [])[:3]:
             title = r.get("title")
             if title:
                 primary.append(title)
 
-    # Fallback to main query
+    # Ensure at least one primary keyword if organic titles also fail.
     if not primary:
         primary = [main_query]
 
-    # Long-tail from PAA
+    # get long tail keywords from PAA questions
     long_tail = [q for q in serp_data.get("related_questions", []) if q]
 
-    # Secondary from remaining related searches + titles
+    # get secondary keywords from related searches and organic titles
     secondary = related_searches[3:] or []
     for r in serp_data.get("organic_results", [])[:5]:
         title = r.get("title")
@@ -157,6 +157,7 @@ def extract_competitors(serp_data: Dict[str, Any]) -> List[str]:
         link = r.get("link", "")
         if link:
             try:
+                # extract domain and brand name from URL
                 domain = urlparse(link).netloc
                 brand = domain.replace("www.", "").split(".")[0]
                 if brand and len(brand) > 3:
@@ -173,6 +174,7 @@ def extract_pain_points(serp_data: Dict[str, Any]) -> List[str]:
 
     for q in serp_data.get("people_also_ask", []):
         q_lower = q.lower()
+        # look for keywords indicating pain points
         if any(
             w in q_lower
             for w in [
@@ -190,6 +192,7 @@ def extract_pain_points(serp_data: Dict[str, Any]) -> List[str]:
 
     for s in serp_data.get("related_searches", []):
         s_lower = s.lower()
+        # look for comparison or problem-related terms
         if any(w in s_lower for w in ["vs", "alternatives", "problems", "review"]):
             pain_points.append(s)
 
