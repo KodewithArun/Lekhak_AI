@@ -2,6 +2,9 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.database import Base, engine
 from app.routers import company, content, conversation, product
+from app.utils.loggers import get_logger
+
+logger = get_logger("main")
 
 # create FastAPI app instance
 app = FastAPI(
@@ -10,12 +13,16 @@ app = FastAPI(
     version="1.0.0",
 )
 
+logger.info("FastAPI application instance created")
+
 
 # Create all tables on startup
 @app.on_event("startup")
 async def startup_event():
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
+
+    logger.info("Database tables created (if not exist)")
 
 
 # Set up CORS middleware

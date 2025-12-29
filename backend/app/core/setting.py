@@ -8,12 +8,16 @@ GOOGLE_GENAI_USE_VERTEXAI = os.getenv("GOOGLE_GENAI_USE_VERTEXAI", "0")
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
 
+
+# SerpApi API Key
+SERPAPI_API_KEY = os.getenv("SERPAPI_API_KEY")
+SERPAPI_BASE_URL = os.getenv("SERPAPI_BASE_URL")
+
+
 # Application Configuration
 APP_NAME = os.getenv("APP_NAME", "Lekhak_AI")
 USER_ID = os.getenv("USER_ID", "test_user")
 
-# API Configuration
-API_BASE_URL = os.getenv("API_BASE_URL")
 
 # Database Configuration
 DB_USER = os.getenv("DB_USER", "postgres")

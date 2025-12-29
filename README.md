@@ -33,12 +33,10 @@ Lekhak AI is an AI-powered content creation platform designed to streamline and 
 - **Context Building**: Automatic company and product context injection from database
 - **Error Handling**: User-friendly error messages for rate limits, quota exceeded, and API failures
 
-### In Progress
-
-Implementing frontend interface using Streamlit for user interaction with Lekhak AI.
-
-### Upcoming Features
-
--Implemting social pipelines and blog pipelines for content generation by changing the test implementations pipelines for the router agent.
+## Updated Features
+- Social Media Content Generation Pipeline
+  1. Social Research Agent along with social_search tool using SerpAPI
+  2. Social Content Generator Agent
+  3. Social Content Optimizer Agent
 
 ### Recent Updates (December 2025)
