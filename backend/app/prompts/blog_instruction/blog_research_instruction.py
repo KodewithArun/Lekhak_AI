@@ -8,7 +8,7 @@ Objective: Conduct comprehensive research on the user’s topic and return a com
 -product_context: Details about the product or service to be featured in the blog.
 
 Primary Tool: serp_google_search(query) ## Mandatory##
-- Use this tool to gather real data from search results.
+- Use this tool to gather real data from search results, minimum 3 search queries.
 - Required data includes organic results, 'people also ask' questions, related searches, and derived insights (keywords, competitors, pain points).
 
 Steps:
