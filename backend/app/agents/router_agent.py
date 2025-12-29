@@ -133,9 +133,9 @@ class RouterAgent(BaseAgent):
             social_content = ctx.session.state.get("social_content")
             optimized_content = ctx.session.state.get("optimized_social_content")
 
-            logger.info(f"Social Research: {social_research}")
-            logger.info(f"Social Content: {social_content}")
-            logger.info(f"Optimized Content: {optimized_content}")
+            logger.info(f"Social Research: {str(social_research)[:100]}")
+            logger.info(f"Social Content: {str(social_content)[:100]}")
+            logger.info(f"Optimized Content: {str(optimized_content)[:100]}")
         except Exception as e:
             logger.exception(f"Failed to log social outputs: {e}")
 
@@ -145,8 +145,8 @@ class RouterAgent(BaseAgent):
             blog_research = ctx.session.state.get("blog_research")
             blog_content = ctx.session.state.get("blog_content")
 
-            logger.info(f"Blog Research: {blog_research}")
-            logger.info(f"Blog Content: {blog_content}")
+            logger.info(f"Blog Research: {str(blog_research)[:100]}")
+            logger.info(f"Blog Content: {str(blog_content)[:100]}")
         except Exception as e:
             logger.exception(f"Failed to log blog outputs: {e}")
 
