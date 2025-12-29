@@ -1,11 +1,11 @@
-import http
 import streamlit as st
 import requests
+import os
+from dotenv import load_dotenv
 
-# from backend.app.core.setting import API_BASE_URL
-
-
-API_BASE_URL = "http://localhost:8000/api"
+# Loading environment variables
+load_dotenv()
+API_BASE_URL = os.getenv("API_BASE_URL")
 
 
 # Helper functions
