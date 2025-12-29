@@ -6,7 +6,11 @@ load_dotenv()
 # Google API configuration as environment variables for ADK
 GOOGLE_GENAI_USE_VERTEXAI = os.getenv("GOOGLE_GENAI_USE_VERTEXAI", "0")
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
-GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
+GEMINI_MODEL = os.getenv("GEMINI_MODEL")
+
+# SerpAPI Configuration for blog search
+SERPAPI_API_KEY = os.getenv("SERPAPI_API_KEY")
+
 
 
 # SerpApi API Key

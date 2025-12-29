@@ -21,10 +21,11 @@ __pycache__/
 
 
 # Project Specific - Logs
-src/logs/
+backend/logs
 logs/
 *.log
 *.log.*
+
 
 # database files
 *.db

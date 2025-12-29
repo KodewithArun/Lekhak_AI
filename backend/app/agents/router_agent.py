@@ -72,17 +72,19 @@ class RouterAgent(BaseAgent):
                     yield event
                 self._log_social_outputs(ctx)
 
+                # Yield final social content from session state
+                async for event in self._yield_social_output(ctx):
+                    yield event
+
             elif pipeline_type == "blog":
                 logger.info("→ Routing to BLOG pipeline")
                 async for event in blog_pipeline_agent.run_async(ctx):
                     yield event
                 self._log_blog_outputs(ctx)
 
-                blog_research_output = ctx.session.state.get("blog_research")
-                if blog_research_output:
-                    logger.info(f" Final Blog Research Output: {blog_research_output}")
-                else:
-                    logger.warning("No 'blog_research' found in context state")
+                # Yield final blog content from session state
+                async for event in self._yield_blog_output(ctx):
+                    yield event
 
             elif pipeline_type == "both":
                 logger.info("→ Routing to BOTH pipelines (parallel)")
@@ -128,6 +130,10 @@ class RouterAgent(BaseAgent):
             self._log_social_outputs(ctx)
             self._log_blog_outputs(ctx)
 
+            # Yield final outputs from session state so AgentClient can capture them
+            async for event in self._yield_final_outputs(ctx):
+                yield event
+
         except Exception as e:
             logger.error(f"Parallel execution error: {e}", exc_info=True)
             yield self._error_event(f"Error during parallel execution: {str(e)}")
@@ -149,10 +155,14 @@ class RouterAgent(BaseAgent):
         """Log blog pipeline outputs for debugging"""
         try:
             blog_research = ctx.session.state.get("blog_research")
-            blog_content = ctx.session.state.get("blog_content")
+            blog_writer = ctx.session.state.get("blog_writer")
+            blog_optimizer = ctx.session.state.get("blog_optimizer")
+            blog_final_output = ctx.session.state.get("blog_final_output")
 
             logger.info(f"Blog Research: {str(blog_research)[:100]}")
-            logger.info(f"Blog Content: {str(blog_content)[:100]}")
+            logger.info(f"Blog Content: {str(blog_writer)[:100]}")
+            logger.info(f"Optimized Blog Content: {str(blog_optimizer)[:100]}")
+            logger.info(f"Final Blog Output: {str(blog_final_output)[:100]}")
         except Exception as e:
             logger.exception(f"Failed to log blog outputs: {e}")
 
@@ -169,3 +179,81 @@ class RouterAgent(BaseAgent):
             author=self.name,
             content=types.Content(role="model", parts=[types.Part(text=error_message)]),
         )
+
+    async def _yield_final_outputs(
+        self, ctx: InvocationContext
+    ) -> AsyncGenerator[Event, None]:
+        """Yield final outputs from session state as final response events"""
+        import json
+
+        # Get social content from session state
+        optimized_social = ctx.session.state.get("optimized_social_content")
+        if optimized_social:
+            # Convert to JSON string if it's a dict
+            if isinstance(optimized_social, dict):
+                social_json = json.dumps(optimized_social)
+            else:
+                social_json = str(optimized_social)
+
+            # Yield as final response event
+            yield Event(
+                author="optimized_social_content",
+                content=types.Content(
+                    role="model", parts=[types.Part(text=social_json)]
+                ),
+            )
+            logger.info("Yielded final social content event")
+
+        # Get blog content from session state
+        blog_final = ctx.session.state.get("blog_final_output")
+        if blog_final:
+            # Convert to JSON string if it's a dict
+            if isinstance(blog_final, dict):
+                blog_json = json.dumps(blog_final)
+            else:
+                blog_json = str(blog_final)
+
+            # Yield as final response event
+            yield Event(
+                author="blog_final_output",
+                content=types.Content(role="model", parts=[types.Part(text=blog_json)]),
+            )
+            logger.info("Yielded final blog content event")
+
+    async def _yield_social_output(
+        self, ctx: InvocationContext
+    ) -> AsyncGenerator[Event, None]:
+        """Yield final social output from session state"""
+        import json
+
+        optimized_social = ctx.session.state.get("optimized_social_content")
+        if optimized_social:
+            if isinstance(optimized_social, dict):
+                social_json = json.dumps(optimized_social)
+            else:
+                social_json = str(optimized_social)
+
+            yield Event(
+                author="optimized_social_content",
+                content=types.Content(
+                    role="model", parts=[types.Part(text=social_json)]
+                ),
+            )
+
+    async def _yield_blog_output(
+        self, ctx: InvocationContext
+    ) -> AsyncGenerator[Event, None]:
+        """Yield final blog output from session state"""
+        import json
+
+        blog_final = ctx.session.state.get("blog_final_output")
+        if blog_final:
+            if isinstance(blog_final, dict):
+                blog_json = json.dumps(blog_final)
+            else:
+                blog_json = str(blog_final)
+
+            yield Event(
+                author="blog_final_output",
+                content=types.Content(role="model", parts=[types.Part(text=blog_json)]),
+            )

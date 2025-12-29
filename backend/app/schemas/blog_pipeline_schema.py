@@ -1,7 +1,7 @@
 """Blog pipeline schema models."""
 
 from typing import List, Optional, Dict
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 
 # for keyword research
@@ -45,49 +45,156 @@ class BlogResearchOutput(BaseModel):
     )
 
 
+# BlogWriter Schema Models
+class BlogSubsection(BaseModel):
+    heading: str = Field(
+        description="H3 subheading. Introduces a sub-point within an H2 section."
+    )
+    content: str = Field(
+        description="Content explaining the H3 sub-point. Max 1000 characters. Supports, expands, or clarifies the main H2 idea."
+    )
+
+
 class BlogSection(BaseModel):
-    heading: Optional[str] = None
-    content: Optional[str] = None
-    key_points: List[str] = []
+    heading: str = Field(
+        description="H2 section title. Clearly states the main idea this section covers and aligns with the reader’s intent."
+    )
+    content: str = Field(
+        description="Primary content for this section. Max 3000 characters. Provides clear, helpful, and original insights."
+    )
+    subsections: Optional[List[BlogSubsection]] = Field(
+        default=None,
+        description="Optional list of H3 subsections used when the section contains multiple steps or concepts.",
+    )
 
 
 class BlogWriterOutput(BaseModel):
-    headline: Optional[str] = None
-    meta_description: Optional[str] = None
-    introduction: Optional[str] = None
-    sections: List[BlogSection] = []
-    conclusion: Optional[str] = None
+
+    title: str = Field(
+        description="H1 blog title under 70 characters. Includes a primary keyword and communicates the main promise of the article."
+    )
+
+    meta_description: str = Field(
+        description="SEO meta description (≤160 chars). Summarizes the blog’s value so users are motivated to click."
+    )
+
+    introduction: str = Field(
+        description="Opening paragraph (≤2000 chars). Hooks the reader, identifies their pain point or curiosity, and explains what the blog will deliver."
+    )
+
+    sections: List[BlogSection] = Field(
+        description="3–5 H2 sections forming the main body. Each section must add value and flow logically from the previous one."
+    )
+
+    conclusion: str = Field(
+        description="Ending paragraph (≤1500 chars). Summarizes the post, reinforces key points, and prepares the reader for the CTA."
+    )
+
+    primary_keywords: List[str] = Field(
+        description="Core SEO keywords. These must appear naturally in the title, introduction, and at least one section."
+    )
+
+    secondary_keywords: List[str] = Field(
+        description="Related long-tail keywords used naturally throughout the content to improve search relevance."
+    )
+
+    data_backed_claims: List[str] = Field(
+        description="2–3 verified facts or statistics included in the article to increase credibility and trust."
+    )
+
+    unique_angle: str = Field(
+        description="What makes this blog different from competitors (e.g., new insight, missing perspective, or improved explanation)."
+    )
+
+    content_format: str = Field(
+        description="The chosen structure for the blog, such as 'how-to', 'listicle', 'conversational', 'problem-solution', 'interview', or 'infographic-style'."
+    )
+
+    target_audience: str = Field(
+        description="The specific reader the blog is written for (e.g., beginners, marketers, founders, students)."
+    )
+
+    tone: str = Field(
+        description="The writing voice used in the blog (e.g., friendly, expert, conversational, direct, or authoritative)."
+    )
+
+    word_count: int = Field(
+        ge=800,
+        le=2000,
+        description="Total length of the article. Must stay between 800–2000 words for readability and SEO value.",
+    )
+
+    cta_text: str = Field(
+        description="The exact call-to-action shown in the conclusion (e.g., 'Download the guide', 'Try the tool', 'Learn more')."
+    )
+
+    sources: Optional[List[str]] = Field(
+        default=None,
+        description="Optional list of URLs used to verify claims, statistics, or research references.",
+    )
 
 
-class SEOOptimization(BaseModel):
-    primary_keyword: Optional[str] = None
-    secondary_keywords: List[str] = []
-    lsi_keywords: List[str] = []
-    keyword_density: Optional[float] = None
+# optimizer output
+class OptimizedHeading(BaseModel):
+    old: str = Field(description="Original H2/H3 heading from the draft.")
+    new: str = Field(description="Improved, clearer, and more engaging heading.")
+    reason: str = Field(
+        description="Why this change improves readability, structure, or SEO."
+    )
 
 
-class ReadabilityMetrics(BaseModel):
-    flesch_score: Optional[float] = None
-    grade_level: Optional[str] = None
-    avg_sentence_length: Optional[float] = None
-    improvements: List[str] = []
+class ContentFix(BaseModel):
+    issue: str = Field(description="Specific content or structure problem detected.")
+    suggestion: str = Field(description="Actionable guidance to fix the issue.")
+    section_reference: str = Field(
+        description="Section or H3 heading where the fix applies."
+    )
+
+
+class SEOImprovement(BaseModel):
+    type: str = Field(
+        description="SEO aspect to improve (title, meta, keyword usage, linking)."
+    )
+    suggestion: str = Field(description="Qualitative instruction for better SEO.")
+    impact: str = Field(
+        description="Explanation of benefit for SEO or user experience."
+    )
 
 
 class BlogOptimizerOutput(BaseModel):
-    final_headline: Optional[str] = None
-    final_meta_description: Optional[str] = None
-    optimized_content: Optional[str] = None
-    seo_optimization: Optional[SEOOptimization] = None
-    readability_metrics: Optional[ReadabilityMetrics] = None
-    image_alt_texts: List[str] = []
-    conversion_elements: List[str] = []
-    publication_checklist: List[str] = []
+    optimized_title: Optional[str] = Field(
+        description="Refined, keyword-focused, human-friendly title."
+    )
+    optimized_meta_description: Optional[str] = Field(
+        description="Improved meta description under 160 characters."
+    )
+    structural_fixes: List[ContentFix] = Field(
+        description="List of actionable content or structure fixes."
+    )
+    heading_improvements: List[OptimizedHeading] = Field(
+        description="Suggested improvements for H2/H3 headings."
+    )
+    seo_suggestions: List[SEOImprovement] = Field(
+        description="Guidance to naturally enhance SEO and readability."
+    )
+    missing_elements: List[str] = Field(
+        description="High-value elements to add (examples, case studies, stats)."
+    )
+    tone_adjustments: str = Field(
+        description="Advice to make the content sound human and match audience tone."
+    )
+    cta_improvement: str = Field(
+        description="Instructions to improve the call-to-action."
+    )
+    summary_of_changes: str = Field(
+        description="Concise summary of main suggested improvements."
+    )
 
 
 # Final outputs
 class FinalBlogOutput(BaseModel):
-    """The final, user-facing output for blog content."""
+    """The final, user-facing output for blog content, ready for publication."""
 
-    final_content: str = Field(
-        description="The formatted blog post, ready for publication."
-    )
+    final_title: Optional[str] = None
+    final_meta_description: Optional[str] = None
+    final_content: str
