@@ -8,10 +8,6 @@ GOOGLE_GENAI_USE_VERTEXAI = os.getenv("GOOGLE_GENAI_USE_VERTEXAI", "0")
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 GEMINI_MODEL = os.getenv("GEMINI_MODEL")
 
-# SerpAPI Configuration for blog search
-SERPAPI_API_KEY = os.getenv("SERPAPI_API_KEY")
-
-
 
 # SerpApi API Key
 SERPAPI_API_KEY = os.getenv("SERPAPI_API_KEY")
