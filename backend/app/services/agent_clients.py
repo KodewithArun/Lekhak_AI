@@ -38,7 +38,6 @@ class AgentClient:
                 return {"ok": False, "error": "empty input"}
             user_content = Content(role="user", parts=[Part(text=message)])
         elif isinstance(message, dict):
-            # Convert dict to JSON string for structured data
             message_text = json.dumps(message)
             user_content = Content(role="user", parts=[Part(text=message_text)])
         else:
@@ -51,7 +50,7 @@ class AgentClient:
 
             response_iter = await _maybe_await(response_iter)
 
-            #  Collect both blog and social content
+            # Collect both blog and social content
             final_content = await self._collect_parallel_content(response_iter)
 
             if final_content:
@@ -75,20 +74,31 @@ class AgentClient:
 
         if hasattr(response_iter, "__aiter__"):
             async for event in response_iter:
-                # Check if the event is a final response from one of our presenter agents
                 if event.is_final_response() and event.content and event.content.parts:
                     author = event.author
                     content_text = event.content.parts[0].text
 
-                    # Store the content based on the author
-                    if author == "blog_presenter":
+                    # Wrap blog content in JSON for consistency
+                    if author == "blog_final_output":
                         self.logger.info("Captured final blog post.")
-                        final_blog_content = content_text
-                    elif author == "social_optimizer":
+                        try:
+                            # Ensure it's valid JSON with 'final_content'
+                            json.loads(content_text)
+                            final_blog_content = content_text
+                        except json.JSONDecodeError:
+                            final_blog_content = json.dumps(
+                                {"final_content": content_text}
+                            )
+
+                    elif author == "optimized_social_content":
                         self.logger.info("Captured final social post from optimizer.")
-                        final_social_content = content_text
+                        try:
+                            json.loads(content_text)
+                            final_social_content = content_text
+                        except json.JSONDecodeError:
+                            final_social_content = json.dumps({"caption": content_text})
+
                     elif author == "router_agent":
-                        # Capture clarification or error messages from router
                         self.logger.info("Captured message from router agent.")
                         clarification_message = content_text
 
@@ -100,35 +110,33 @@ class AgentClient:
         ):
             return {"clarification": clarification_message}
 
-        # Return a dictionary containing both results
         return {"blog": final_blog_content, "social": final_social_content}
 
-    # Handle the new dictionary structure
+    # Extract text from blog/social content
     def extract_text_from_content(self, content: Any) -> str:
         if content is None:
             return ""
 
-        # Handle the new dictionary structure from _collect_parallel_content
         if isinstance(content, dict):
-            # Check for clarification message first
+            # Return clarification if exists
             if content.get("clarification"):
                 return content["clarification"]
 
             blog_content = ""
             social_content = ""
 
+            # Blog content
             if content.get("blog"):
                 try:
-                    # Parse the JSON string to get the clean text
                     blog_data = json.loads(content["blog"])
                     blog_content = blog_data.get("final_content", "")
                 except json.JSONDecodeError:
-                    blog_content = content["blog"]  # Fallback if not valid JSON
+                    blog_content = content["blog"]
 
+            # Social content
             if content.get("social"):
                 try:
                     social_data = json.loads(content["social"])
-                    # Support both old and new schema field names
                     caption = social_data.get("optimized_caption") or social_data.get(
                         "caption", ""
                     )
@@ -146,36 +154,32 @@ class AgentClient:
                         " ".join([f"#{h}" for h in hashtags]) if hashtags else ""
                     )
 
-                    # Build the content with all available parts
                     parts = []
                     if caption:
                         parts.append(f"**Caption:** {caption}")
                     if main_content:
                         parts.append(f"\n{main_content}")
-                    if cta:
-                        parts.append(f"\n\n**CTA:** {cta}")
                     if hashtags_str:
-                        parts.append(f"\n\n{hashtags_str}")
+                        parts.append(f"\n{hashtags_str}")
+                    if cta:
+                        parts.append(f"\nCTA: {cta}")
 
                     social_content = "\n".join(parts).strip()
                 except json.JSONDecodeError:
-                    social_content = content["social"]  # Fallback if not valid JSON
+                    social_content = content["social"]
 
-            # Combine them into a single, well-formatted string for display
+            # Combine blog and social content
             output = ""
             if social_content:
                 output += social_content
             if blog_content:
-                output += blog_content
+                output += ("\n" if output else "") + blog_content
 
             return output.strip()
 
-        # Fallback for old content structure (if you ever run a single pipeline)
+        # Fallback: if content is string or parts
         if hasattr(content, "parts"):
-            txts = []
-            for p in content.parts:
-                if hasattr(p, "text"):
-                    txts.append(str(p.text))
+            txts = [p.text for p in content.parts if hasattr(p, "text")]
             return "\n".join(txts)
         if isinstance(content, str):
             return content
