@@ -1,9 +1,12 @@
 """
 Blog Content Pipeline
-Sequential flow: Researcher: Writer : Optimizer : Presenter
+Sequential flow: Researcher → Writer → Optimizer → Presenter
+
+This pipeline uses Google ADK (Generative AI SDK) with function calling
+to create SEO-optimized blog content for product marketing.
 """
 
-from google.adk.agents import LlmAgent, SequentialAgent
+from google.adk.agents import SequentialAgent, LlmAgent
 from app.core.setting import GEMINI_MODEL
 from app.schemas.blog_pipeline_schema import (
     BlogOptimizerOutput,
@@ -11,65 +14,55 @@ from app.schemas.blog_pipeline_schema import (
     BlogWriterOutput,
     FinalBlogOutput,
 )
+from app.tools.blog_tool import serp_google_search
+from app.prompts.blog_instruction.blog_research_instruction import (
+    blog_research_instruction,
+)
+from app.prompts.blog_instruction.blog_writer_instruction import (
+    blog_writer_instruction,
+)
+from app.prompts.blog_instruction.blog_optimizer_instruction import (
+    blog_optimizer_instruction,
+)
+
 from app.utils.loggers import get_logger
 
+
 logger_blog = get_logger("blog_pipeline")
+
 
 blog_researcher = LlmAgent(
     name="blog_researcher",
     model=GEMINI_MODEL,
-    description="Deep research specialist for long-form blog content.",
+    description=(
+        "Senior Content Strategist & Researcher. "
+        "Responsible for conducting deep, multi-step research to find "
+        "statistics, user personas, search intent, and competitor gaps. "
+        "Uses SERP data to build a comprehensive foundation for high-quality blog content."
+    ),
+    instruction=blog_research_instruction,
+    tools=[serp_google_search],
     output_schema=BlogResearchOutput,
     output_key="blog_research",
-    instruction="Research topic comprehensively for blog content. Focus on: 1) Key concepts and subtopics 2) SEO keywords 3) Data/statistics 4) Expert insights. Structure research to support the content_framework from planner_output.",
 )
+
 
 blog_writer = LlmAgent(
     name="blog_writer",
     model=GEMINI_MODEL,
-    description="Creates comprehensive, SEO-optimized blog articles.",
+    description="Transforms strategic research insights into a structured, SEO-optimized, and audience-focused blog post. Generates human-quality content that fills competitor gaps, incorporates verified data, and follows proven best practices for engagement and readability.",
     output_schema=BlogWriterOutput,
-    output_key="blog_content",
-    instruction="""Write comprehensive blog post (1500-2500 words) using research and planner_output.
-
-STEP 1: Select the best framework based on content_intention from planner_output:
-
-For EDUCATE/INFORM intention, choose from:
-• EDF (Educational Framework): Hook with problem → Explain why it matters → Teach solution → Action steps
-• NLF (Numbered List): Promise value → List key points → Explain each → CTA
-• DDI (Data-Driven Insights): Lead with data → Interpret findings → Show implications → Action steps
-
-For STORYTELLING/INSPIRE intention, choose from:
-• SLA (Story-Lesson-Application): Tell story → Extract insight → Provide action steps
-• STF (Story-Transformation-Lesson): Set context → Show conflict → Share resolution → Extract lesson
-• MRS (Mistake-Realization-Shift): Share mistake → Aha moment → How you changed
-
-For PROMOTE/PERSUADE intention, choose from:
-• BAB (Before-After-Bridge): Current state → Desired outcome → Your solution as bridge
-• PAS (Problem-Agitate-Solution): Identify problem → Amplify pain → Present solution
-• AIDA (Attention-Interest-Desire-Action): Hook attention → Build interest → Create desire → Call to action
-
-For THOUGHT_LEADERSHIP intention, choose from:
-• CA (Contrarian Approach): State common belief → Challenge it → Provide evidence → New perspective
-• HTOF (Hot Take): Bold statement → Explain reasoning → Support with examples → Invite debate
-• DDI (Data-Driven Insights): Lead with data → Interpret findings → Show implications → Action steps
-
-For ENGAGE intention, choose from:
-• VSQ (Value-Story-Question): Share insight → Support with story → Ask engaging question
-• SLA (Story-Lesson-Application): Tell story → Extract insight → Provide action steps
-
-STEP 2: Apply the selected framework structure to organize the entire blog post.
-
-STEP 3: Include compelling headline, clear sections with subheadings, and strong CTA.""",
+    instruction=blog_writer_instruction,
+    output_key="blog_writer",
 )
 
 blog_optimizer = LlmAgent(
     name="blog_optimizer",
     model=GEMINI_MODEL,
-    description="Optimizes blog content for SEO and readability.",
+    description="Refines draft blog content into polished, human-sounding posts that are SEO-optimized, easy to read, and aligned with audience intent",
+    instruction=blog_optimizer_instruction,
     output_schema=BlogOptimizerOutput,
-    output_key="optimized_blog_content",
-    instruction="Optimize for SEO and readability. Enhance: 1) Keyword placement 2) Subheading clarity 3) Content flow 4) Meta description. Provide 'estimated_engagement' as list of objects with 'metric' and 'estimate'.",
+    output_key="blog_optimizer",
 )
 
 blog_presenter = LlmAgent(
@@ -77,7 +70,7 @@ blog_presenter = LlmAgent(
     model=GEMINI_MODEL,
     description="Formats the optimized blog content for the user.",
     output_schema=FinalBlogOutput,
-    output_key="final_blog_post",
+    output_key="blog_final_output",
     instruction="Format optimized blog into professional, well-structured post with markdown. Exclude internal SEO/readability metrics. Ready-to-publish format.",
 )
 

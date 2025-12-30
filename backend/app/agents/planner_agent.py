@@ -6,6 +6,7 @@ from app.utils.loggers import get_logger
 
 logger = get_logger("planner_agent")
 
+
 planner_agent = Agent(
     name="planner_agent",
     model=GEMINI_MODEL,
