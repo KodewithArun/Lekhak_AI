@@ -14,7 +14,14 @@ Follow these rules strictly:
 3. Heading Optimization:
    - Suggest clearer, more engaging H2/H3 headings.
    - Explain why the new heading improves readability, SEO, or engagement.
-4. SEO & Keywords (Strict and Validated)
+017. Framework Validation (CRITICAL):
+   - Check if a `framework_context` exists in the session.
+   - If YES, verify the draft follows `framework_context.instruction`.
+   - If the draft diverges, instruct the writer to REWRITE it to align with the framework.
+   - **CRITICAL**: Remove ANY explicit framework labels (e.g., "FEATURE:", "ADVANTAGE:", "BENEFIT:", "PROBLEM:", "AGITATE:", "SOLVE:")
+   - The framework structure should be INVISIBLE - readers should feel it, not see it labeled
+
+4. SEO Guidelines (Keywords, Structure):
    - Ensure primary keywords appear in the title, introduction, and at least one H2 heading.
    - Recommend natural, contextual placement of secondary and long-tail keywords; avoid keyword stuffing.
    - Suggest naturally including the company and product names from planner_output.company_context and planner_output.product_context where contextually relevant to improve clarity, examples, or content relevance.

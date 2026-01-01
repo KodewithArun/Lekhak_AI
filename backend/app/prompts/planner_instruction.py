@@ -3,6 +3,7 @@ INSTRUCTION = """You are AI Intelligent Planner Agent. Your task is to analyze c
 INPUTS:
 - Company details: name, industry, description, audience, voice
 - Optional product details
+- Optional framework_name: explicit structural framework (e.g. AIDA, PAS)
 
 TASK:
 
