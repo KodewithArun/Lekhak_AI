@@ -1,12 +1,14 @@
 import streamlit as st
 import requests
 import os
+import uuid
 from dotenv import load_dotenv
 
 # Loading environment variables
 load_dotenv()
 API_BASE_URL = os.getenv("API_BASE_URL")
 
+st.set_page_config(layout="wide", page_title="Lekhak AI")
 
 # Helper functions
 def get_companies():
@@ -14,6 +16,17 @@ def get_companies():
         response = requests.get(f"{API_BASE_URL}/companies/")
         if response.status_code == 200:
             return response.json().get("companies", [])
+        return []
+    except Exception as e:
+        st.error(f"Error: {str(e)}")
+        return []
+
+
+def get_frameworks():
+    try:
+        response = requests.get(f"{API_BASE_URL}/frameworks/")
+        if response.status_code == 200:
+            return response.json()
         return []
     except Exception as e:
         st.error(f"Error: {str(e)}")
@@ -63,7 +76,9 @@ def create_product(name, description, company_id):
 
 def get_conversations():
     try:
-        response = requests.get(f"{API_BASE_URL}/conversations/")
+        user_id = st.session_state.get("user_id")
+        params = {"user_id": user_id} if user_id else {}
+        response = requests.get(f"{API_BASE_URL}/conversations/", params=params)
         if response.status_code == 200:
             return response.json().get("conversations", [])
         return []
@@ -72,13 +87,25 @@ def get_conversations():
         return []
 
 
-def generate_content(prompt, company_id=None, product_id=None):
+def generate_content(prompt, company_id=None, product_id=None, framework_id=None):
     try:
-        payload = {"prompt": prompt, "user_id": "streamlit_user"}
+        # Use unique user_id from session state
+        user_id = st.session_state.get("user_id", "streamlit_user")
+        
+        # Generate a unique session_id for every single task to ensure isolation.
+        task_session_id = f"task_{uuid.uuid4().hex[:8]}"
+        
+        payload = {
+            "prompt": prompt, 
+            "user_id": user_id,
+            "session_id": task_session_id
+        }
         if company_id:
             payload["company_id"] = company_id
         if product_id:
             payload["product_id"] = product_id
+        if framework_id:
+            payload["framework_id"] = framework_id
 
         response = requests.post(f"{API_BASE_URL}/content/generated/", json=payload)
         if response.status_code == 200:
@@ -90,8 +117,14 @@ def generate_content(prompt, company_id=None, product_id=None):
         return None
 
 
-# Page config
-st.set_page_config(page_title="Lekhak AI", layout="centered")
+# Page config is handled at the top
+
+
+# Initialize User Session
+if "user_id" not in st.session_state:
+    st.session_state["user_id"] = str(uuid.uuid4())
+    # Optional: Log or display for debug
+    # st.sidebar.text(f"Session: {st.session_state['user_id'][:8]}...")
 
 # Title
 st.title("Lekhak AI")
@@ -99,7 +132,7 @@ st.title("Lekhak AI")
 # Navigation
 page = st.sidebar.radio(
     "Navigation",
-    ["Generate Content", "Create Company", "Create Product", "Chat History"],
+    ["Generate Content", "Create Company", "Create Product", "Framework Library", "Chat History"],
 )
 
 #  GENERATE CONTENT PAGE
@@ -130,6 +163,30 @@ if page == "Generate Content":
             st.info("No products available for this company")
             selected_product_id = None
 
+        # Framework selection
+        frameworks = get_frameworks()
+        selected_framework_id = None
+        if frameworks:
+            framework_options = {f["name"]: f["id"] for f in frameworks}
+            framework_names = list(framework_options.keys())
+            
+            # Find index of "General" to set as default
+            try:
+                default_index = framework_names.index("General")
+            except ValueError:
+                default_index = 0
+            
+            selected_framework_name = st.selectbox(
+                "Select Framework", framework_names, index=default_index
+            )
+            
+            # Find the full object just to get ID
+            selected_fw = next((f for f in frameworks if f["name"] == selected_framework_name), None)
+            if selected_fw:
+                selected_framework_id = selected_fw["id"]
+                # Minimal info (optional, or remove entirely if "separate navigation" means strictly separate)
+                # st.caption(selected_fw.get('description', ''))
+
         # Content request
         user_prompt = st.text_area("Enter your content request", height=150)
 
@@ -138,7 +195,7 @@ if page == "Generate Content":
             if user_prompt:
                 with st.spinner("Generating..."):
                     result = generate_content(
-                        user_prompt, selected_company_id, selected_product_id
+                        user_prompt, selected_company_id, selected_product_id, selected_framework_id
                     )
 
                     if result:
@@ -167,6 +224,7 @@ elif page == "Create Company":
 #  CREATE PRODUCT PAGE
 elif page == "Create Product":
     st.header("Create Product")
+    # ... (rest of Product Logic) ...
 
     companies = get_companies()
 
@@ -190,6 +248,27 @@ elif page == "Create Product":
                     st.success(f"Product '{product_name}' created successfully!")
             else:
                 st.error("Please enter a product name")
+
+#  FRAMEWORK LIBRARY PAGE
+elif page == "Framework Library":
+    st.header("Framework Reference Library")
+    st.markdown("Explore our professional writing methodologies.")
+
+    frameworks = get_frameworks()
+    if frameworks:
+        # Vertical Layout: Full Width Selectbox -> Full Width Content
+        fw_options = {f["name"]: f for f in frameworks}
+        selected_fw_name = st.selectbox("Select Framework to View:", list(fw_options.keys()))
+        
+        fw = fw_options[selected_fw_name]
+        
+        # 2. Framework Instructions (Unified)
+        st.markdown("##### Framework Guidelines")
+        with st.container(border=True):
+            st.markdown(fw.get('instruction', 'No instructions available.').replace('\\n', '\n'))
+
+    else:
+        st.warning("Library is empty.")
 
 #  CHAT HISTORY PAGE
 elif page == "Chat History":
