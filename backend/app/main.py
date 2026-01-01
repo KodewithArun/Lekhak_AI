@@ -1,7 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+
 from app.database import Base, engine
-from app.routers import company, content, conversation, product
+from app.routers import company, content, conversation, framework, product
 from app.utils.loggers import get_logger
 
 logger = get_logger("main")
@@ -53,4 +54,5 @@ app.include_router(product.router, prefix="/api/products", tags=["products"])
 app.include_router(
     conversation.router, prefix="/api/conversations", tags=["conversations"]
 )
+app.include_router(framework.router, prefix="/api/frameworks", tags=["frameworks"])
 app.include_router(content.router, prefix="/api/content", tags=["content"])
