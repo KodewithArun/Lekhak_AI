@@ -3,12 +3,15 @@ Router Agent - Dynamic pipeline routing based on planner output
 Clean, production-ready implementation following Google ADK best practices
 """
 
+import json
 from typing import AsyncGenerator
+
 from google.adk.agents import BaseAgent, ParallelAgent
 from google.adk.agents.invocation_context import InvocationContext
 from google.adk.events import Event
 from google.genai import types
 from typing_extensions import override
+
 from app.agents.pipelines.blog_pipeline import blog_pipeline_agent
 from app.agents.pipelines.social_pipeline import social_pipeline_agent
 from app.schemas.planner_schema import PlannerOutput
@@ -184,8 +187,6 @@ class RouterAgent(BaseAgent):
         self, ctx: InvocationContext
     ) -> AsyncGenerator[Event, None]:
         """Yield final outputs from session state as final response events"""
-        import json
-
         # Get social content from session state
         optimized_social = ctx.session.state.get("optimized_social_content")
         if optimized_social:
@@ -224,8 +225,6 @@ class RouterAgent(BaseAgent):
         self, ctx: InvocationContext
     ) -> AsyncGenerator[Event, None]:
         """Yield final social output from session state"""
-        import json
-
         optimized_social = ctx.session.state.get("optimized_social_content")
         if optimized_social:
             if isinstance(optimized_social, dict):
@@ -244,8 +243,6 @@ class RouterAgent(BaseAgent):
         self, ctx: InvocationContext
     ) -> AsyncGenerator[Event, None]:
         """Yield final blog output from session state"""
-        import json
-
         blog_final = ctx.session.state.get("blog_final_output")
         if blog_final:
             if isinstance(blog_final, dict):

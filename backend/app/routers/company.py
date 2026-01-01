@@ -1,7 +1,9 @@
 from datetime import datetime
+
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.database import get_db
 from app.models.company import Company
 from app.schemas.company import CompanyCreate, CompanyGet, CompanyListResponse
