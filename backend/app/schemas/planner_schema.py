@@ -32,6 +32,9 @@ class UserRequest(BaseModel):
     product_context: Optional[ProductContext] = Field(
         default=None, description="Product information from database"
     )
+    framework_name: Optional[str] = Field(
+        default=None, description="Selected structural framework name (e.g. AIDA)"
+    )
 
 
 # Planner output

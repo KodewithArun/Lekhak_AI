@@ -10,6 +10,7 @@ class Conversation(Base):
     id = Column(Integer, primary_key=True, index=True)
     company_id = Column(Integer, ForeignKey("companies.id"), nullable=False)
     product_id = Column(Integer, ForeignKey("products.id"), nullable=True)
+    user_id = Column(String, nullable=True, index=True)  # Added for session isolation
     user_query = Column(String, nullable=False)
     generated_content = Column(String, nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)

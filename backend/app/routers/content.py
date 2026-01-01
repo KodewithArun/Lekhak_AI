@@ -1,6 +1,8 @@
 from datetime import datetime
+
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.database import get_db
 from app.models.conversations import Conversation
 from app.schemas.content import ContentRequest, ContentResponse
@@ -16,8 +18,10 @@ async def generate_content(request: ContentRequest, db: AsyncSession = Depends(g
         content = await async_generate_content(
             prompt=request.prompt,
             user_id=request.user_id,
+            session_id=request.session_id,
             company_id=request.company_id,
             product_id=request.product_id,
+            framework_id=request.framework_id,
         )
 
         # Save conversation to database if company_id is provided
@@ -26,6 +30,7 @@ async def generate_content(request: ContentRequest, db: AsyncSession = Depends(g
             db_conversation = Conversation(
                 company_id=request.company_id,
                 product_id=request.product_id,
+                user_id=request.user_id,
                 user_query=request.prompt,
                 generated_content=content,
             )

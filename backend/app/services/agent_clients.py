@@ -1,7 +1,8 @@
 import asyncio
 import json
 import logging
-from typing import Any, Dict, Optional
+import time
+from typing import Any, Dict, List, Optional
 from google.adk.runners import Runner
 from google.adk.sessions import DatabaseSessionService
 from google.genai.types import Content, Part
@@ -23,11 +24,15 @@ class AgentClient:
 
     # Create or get existing session
     async def get_or_create_session(
-        self, user_id: str, initial_state: Optional[Dict[str, Any]] = None
+        self,
+        user_id: str,
+        session_id: Optional[str] = None,
+        initial_state: Optional[Dict[str, Any]] = None,
     ):
-        state = initial_state or {"user_name": user_id, "content_history": []}
+        state = initial_state if initial_state is not None else {"user_name": user_id}
+        # Pass session_id to session service if provided
         return await self.session_service.create_session(
-            app_name=self.app_name, user_id=user_id, state=state
+            app_name=self.app_name, user_id=user_id, session_id=session_id, state=state
         )
 
     # Send message to agent and get response
@@ -43,6 +48,11 @@ class AgentClient:
         else:
             return {"ok": False, "error": "invalid message type"}
 
+        self.logger.info(
+            f"Sending message to runner '{self.app_name}' (Session: {session_id})"
+        )
+        start_time = time.time()
+
         try:
             response_iter = self.runner.run_async(
                 user_id=user_id, session_id=session_id, new_message=user_content
@@ -52,6 +62,9 @@ class AgentClient:
 
             # Collect both blog and social content
             final_content = await self._collect_parallel_content(response_iter)
+
+            elapsed_time = time.time() - start_time
+            self.logger.info(f"Agent response received in {elapsed_time:.2f}s")
 
             if final_content:
                 return {

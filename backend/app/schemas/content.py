@@ -9,8 +9,12 @@ class ContentRequest(BaseModel):
     user_id: str = Field(
         default="default_user", description="User ID for session management"
     )
+    session_id: Optional[str] = Field(
+        default=None, description="Unique session/task ID for content isolation"
+    )
     company_id: Optional[int] = None
     product_id: Optional[int] = None
+    framework_id: Optional[int] = None
 
 
 class ContentResponse(BaseModel):
