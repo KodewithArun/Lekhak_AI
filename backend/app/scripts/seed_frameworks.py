@@ -2,8 +2,15 @@ import asyncio
 
 from sqlalchemy import delete, select
 
-from app.database import SessionLocal
+from app.database import SessionLocal, engine, Base
 from app.models.framework import Framework
+
+
+async def create_tables():
+    """Create all tables in the database."""
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+    print("Tables created successfully.")
 
 
 async def seed_frameworks():
@@ -124,5 +131,10 @@ Content must progress Problem → Agitate → Solution. The solution should not 
         print(f"Seeding complete: {added} new + {updated} updated.")
 
 
+async def main():
+    await create_tables()
+    await seed_frameworks()
+
+
 if __name__ == "__main__":
-    asyncio.run(seed_frameworks())
+    asyncio.run(main())
