@@ -12,6 +12,7 @@ class Company(Base):
     name = Column(String, unique=True, index=True, nullable=False)
     industry = Column(String, nullable=True)
     description = Column(String, nullable=True)
+    url = Column(String, nullable=True)
 
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
     updated_at = Column(
