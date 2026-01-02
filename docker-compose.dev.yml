@@ -1,0 +1,90 @@
+# ============================================================
+# Lekhak AI - Development Docker Compose
+# ============================================================
+# Usage:
+#   docker-compose -f docker-compose.dev.yml up -d
+# 
+# This config includes:
+#   - Hot reload for backend code
+#   - pgAdmin for database management
+# ============================================================
+
+services:
+  # ----------------------------------------------------------
+  # PostgreSQL Database
+  # ----------------------------------------------------------
+  postgres:
+    image: postgres:16-alpine
+    container_name: lekhak_db_dev
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+      POSTGRES_DB: ${DB_NAME:-lekhak_ai}
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    volumes:
+      - postgres_data_dev:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres} -d ${DB_NAME:-lekhak_ai}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - lekhak_dev_network
+
+  # ----------------------------------------------------------
+  # Backend API (Development with Hot Reload)
+  # ----------------------------------------------------------
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: lekhak_api_dev
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      # Mount source code for hot reload
+      - ./backend:/app/backend:cached
+    networks:
+      - lekhak_dev_network
+
+  # ----------------------------------------------------------
+  # pgAdmin - Database Management UI
+  # ----------------------------------------------------------
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: lekhak_pgadmin
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-admin@lekhak.ai}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-admin}
+      PGADMIN_CONFIG_SERVER_MODE: "False"
+    ports:
+      - "5050:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    depends_on:
+      - postgres
+    networks:
+      - lekhak_dev_network
+
+networks:
+  lekhak_dev_network:
+    name: lekhak_dev_network
+    driver: bridge
+
+volumes:
+  postgres_data_dev:
+    name: lekhak_postgres_data_dev
+  pgadmin_data:
+    name: lekhak_pgadmin_data
