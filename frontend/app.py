@@ -10,6 +10,7 @@ API_BASE_URL = os.getenv("API_BASE_URL")
 
 st.set_page_config(layout="wide", page_title="Lekhak AI")
 
+
 # Helper functions
 def get_companies():
     try:
@@ -33,11 +34,16 @@ def get_frameworks():
         return []
 
 
-def create_company(name, industry, description):
+def create_company(name, industry, description, url):
     try:
         response = requests.post(
             f"{API_BASE_URL}/companies/",
-            json={"name": name, "industry": industry, "description": description},
+            json={
+                "name": name,
+                "industry": industry,
+                "description": description,
+                "url": url,
+            },
         )
         if response.status_code == 200:
             return response.json()
@@ -59,11 +65,16 @@ def get_products_by_company(company_id):
         return []
 
 
-def create_product(name, description, company_id):
+def create_product(name, description, url, company_id):
     try:
         response = requests.post(
             f"{API_BASE_URL}/products/",
-            json={"name": name, "description": description, "company_id": company_id},
+            json={
+                "name": name,
+                "description": description,
+                "url": url,
+                "company_id": company_id,
+            },
         )
         if response.status_code == 200:
             return response.json()
@@ -91,15 +102,11 @@ def generate_content(prompt, company_id=None, product_id=None, framework_id=None
     try:
         # Use unique user_id from session state
         user_id = st.session_state.get("user_id", "streamlit_user")
-        
+
         # Generate a unique session_id for every single task to ensure isolation.
         task_session_id = f"task_{uuid.uuid4().hex[:8]}"
-        
-        payload = {
-            "prompt": prompt, 
-            "user_id": user_id,
-            "session_id": task_session_id
-        }
+
+        payload = {"prompt": prompt, "user_id": user_id, "session_id": task_session_id}
         if company_id:
             payload["company_id"] = company_id
         if product_id:
@@ -123,8 +130,7 @@ def generate_content(prompt, company_id=None, product_id=None, framework_id=None
 # Initialize User Session
 if "user_id" not in st.session_state:
     st.session_state["user_id"] = str(uuid.uuid4())
-    # Optional: Log or display for debug
-    # st.sidebar.text(f"Session: {st.session_state['user_id'][:8]}...")
+
 
 # Title
 st.title("Lekhak AI")
@@ -132,7 +138,13 @@ st.title("Lekhak AI")
 # Navigation
 page = st.sidebar.radio(
     "Navigation",
-    ["Generate Content", "Create Company", "Create Product", "Framework Library", "Chat History"],
+    [
+        "Generate Content",
+        "Create Company",
+        "Create Product",
+        "Framework Library",
+        "Chat History",
+    ],
 )
 
 #  GENERATE CONTENT PAGE
@@ -169,19 +181,21 @@ if page == "Generate Content":
         if frameworks:
             framework_options = {f["name"]: f["id"] for f in frameworks}
             framework_names = list(framework_options.keys())
-            
+
             # Find index of "General" to set as default
             try:
                 default_index = framework_names.index("General")
             except ValueError:
                 default_index = 0
-            
+
             selected_framework_name = st.selectbox(
                 "Select Framework", framework_names, index=default_index
             )
-            
+
             # Find the full object just to get ID
-            selected_fw = next((f for f in frameworks if f["name"] == selected_framework_name), None)
+            selected_fw = next(
+                (f for f in frameworks if f["name"] == selected_framework_name), None
+            )
             if selected_fw:
                 selected_framework_id = selected_fw["id"]
                 # Minimal info (optional, or remove entirely if "separate navigation" means strictly separate)
@@ -195,7 +209,10 @@ if page == "Generate Content":
             if user_prompt:
                 with st.spinner("Generating..."):
                     result = generate_content(
-                        user_prompt, selected_company_id, selected_product_id, selected_framework_id
+                        user_prompt,
+                        selected_company_id,
+                        selected_product_id,
+                        selected_framework_id,
                     )
 
                     if result:
@@ -212,10 +229,11 @@ elif page == "Create Company":
     company_name = st.text_input("Company Name")
     industry = st.text_input("Industry")
     description = st.text_area("Description")
+    url = st.text_input("Website URL")
 
     if st.button("Create Company", type="primary"):
         if company_name:
-            result = create_company(company_name, industry, description)
+            result = create_company(company_name, industry, description, url)
             if result:
                 st.success(f"Company '{company_name}' created successfully!")
         else:
@@ -233,6 +251,7 @@ elif page == "Create Product":
     else:
         product_name = st.text_input("Product Name")
         description = st.text_area("Description")
+        url = st.text_input("Product URL")
 
         # Company selection
         company_options = {c["name"]: c["id"] for c in companies}
@@ -243,7 +262,9 @@ elif page == "Create Product":
 
         if st.button("Create Product", type="primary"):
             if product_name:
-                result = create_product(product_name, description, selected_company_id)
+                result = create_product(
+                    product_name, description, url, selected_company_id
+                )
                 if result:
                     st.success(f"Product '{product_name}' created successfully!")
             else:
@@ -256,16 +277,20 @@ elif page == "Framework Library":
 
     frameworks = get_frameworks()
     if frameworks:
-        # Vertical Layout: Full Width Selectbox -> Full Width Content
+        # 1. Framework Selection
         fw_options = {f["name"]: f for f in frameworks}
-        selected_fw_name = st.selectbox("Select Framework to View:", list(fw_options.keys()))
-        
+        selected_fw_name = st.selectbox(
+            "Select Framework to View:", list(fw_options.keys())
+        )
+
         fw = fw_options[selected_fw_name]
-        
+
         # 2. Framework Instructions (Unified)
         st.markdown("##### Framework Guidelines")
         with st.container(border=True):
-            st.markdown(fw.get('instruction', 'No instructions available.').replace('\\n', '\n'))
+            st.markdown(
+                fw.get("instruction", "No instructions available.").replace("\\n", "\n")
+            )
 
     else:
         st.warning("Library is empty.")
