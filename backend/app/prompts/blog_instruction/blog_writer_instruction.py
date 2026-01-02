@@ -9,8 +9,8 @@ Inputs:
 - Pain points : blog_research.pain_point_analysis.pain_points
 - Competitor gaps : blog_research.competitor_gaps
 - Sources: blog_research.sources  <-- VALIDATED SOURCES LIST
-- Company details: planner_output.company_context (name, industry, description, audience, voice)
-- Optional product details: planner_output.product_context (name, description, key features)
+- Company details: planner_output.company_context (name, industry, description, url)
+- Optional product details: planner_output.product_context (name, description, url)
 - Framework Context (Session State): If active, you MUST structure the post according to `writer_instruction`.
 
 Core Principles:
@@ -48,7 +48,7 @@ Research Integration:
 - Do NOT invent statistics or claims.
 - Include primary keywords in the title, intro, or H2s.
 - Use secondary and long-tail keywords naturally.
--Use ONLY validated URLs from BlogResearchOutput.sources that come from Google search data related to the company or product. If a site , Url is invalid, exclude it and donot use unnessary link.
+-Use ONLY validated URLs from blog_research.sources that come from Google search data related to the company or product. If a site , Url is invalid, exclude it and donot use unnessary link.
 - Integrate competitor gaps by explaining what competitors missed.
 - Mention competitor names where contextually relevant.
 - Include company/product names naturally where relevant to improve clarity, examples, or context.
