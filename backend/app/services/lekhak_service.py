@@ -1,16 +1,23 @@
 """Service for generating content using Lekhak AI with company and product context."""
 
+import time
 from typing import Optional
+
 from google.adk.runners import Runner
 from google.adk.sessions import DatabaseSessionService
 from sqlalchemy import select
+
 from app.agents.content_creator_agent import content_creator_agent
 from app.core.setting import APP_NAME, DATABASE_URL
 from app.database import SessionLocal
 from app.models.company import Company
+from app.models.framework import Framework
 from app.models.product import Product
 from app.schemas.planner_schema import CompanyContext, ProductContext
 from app.services.agent_clients import AgentClient
+from app.utils.loggers import get_logger
+
+logger = get_logger("lekhak_service")
 
 # Global singleton instances - created once and reused across all requests
 _session_service = None
@@ -51,6 +58,7 @@ async def _build_user_request(
             name=company.name,
             industry=company.industry,
             description=company.description,
+            url=company.url,
         )
 
         product_context = None
@@ -63,6 +71,7 @@ async def _build_user_request(
                     product_id=product.id,
                     name=product.name,
                     description=product.description,
+                    url=product.url,
                 )
 
         user_request = {
@@ -81,29 +90,89 @@ async def _build_user_request(
 async def async_generate_content(
     prompt: str,
     user_id: str = "test_user",
+    session_id: Optional[str] = None,
     company_id: Optional[int] = None,
     product_id: Optional[int] = None,
+    framework_id: Optional[int] = None,
 ) -> str:
-    """Generate content with optional company and product context."""
+    start_time = time.time()
+    logger.info(f" START GENERATION (Task: {session_id})")
 
-    if company_id:
-        user_request = await _build_user_request(prompt, company_id, product_id)
-    else:
-        user_request = {"instruction": prompt}
+    default_state = {"user_name": user_id}
 
-    # Get singleton agent client instance
+    # Context collection
+    db_start = time.time()
+    user_request = {"instruction": prompt}  # Initialize user_request
+    framework_context = None  # Initialize framework_context
+    async with SessionLocal() as db:
+        # Build user request with company and product context
+        if company_id:
+            user_request = await _build_user_request(prompt, company_id, product_id)
+        # else: user_request already initialized
+
+        # Fetch framework (use AIDA as default if not specified)
+        target_framework = None
+
+        if framework_id:
+            result = await db.execute(
+                select(Framework).where(Framework.id == framework_id)
+            )
+            target_framework = result.scalar_one_or_none()
+        else:
+            # Default to AIDA framework
+            result = await db.execute(select(Framework).where(Framework.name == "AIDA"))
+            target_framework = result.scalar_one_or_none()
+
+        if target_framework:
+            logger.info(f"Framework selected: {target_framework.name}")
+
+            # Store framework details in state (Pure State Management)
+            framework_context = {
+                "name": target_framework.name,
+                "description": target_framework.description,
+                "instruction": target_framework.instruction,
+            }
+            default_state["framework_context"] = framework_context
+
+            # Set framework name for routing/metadata
+            if isinstance(user_request, dict):
+                user_request["framework_name"] = target_framework.name
+        else:
+            logger.warning("No framework found - AIDA default should be applied")
+
+    # Initialize agent client and create session
+    session_start = time.time()
     client = _get_agent_client()
-
-    session = await client.get_or_create_session(user_id)
+    effective_session_id = session_id or user_id
+    session = await client.get_or_create_session(
+        user_id, session_id=effective_session_id, initial_state=default_state
+    )
     session_id = session.id
 
-    resp = await client.send_message(user_id, session_id, user_request)
+    # Update session state to ensure current request's context/framework is used.
+    for key, value in default_state.items():
+        session.state[key] = value
 
-    if resp.get("ok"):
-        return resp["content"]
+    # Verify framework in session state
+    if "framework_context" in session.state:
+        logger.info(
+            f"Framework context verified in session {session_id}: {session.state['framework_context']['name']}"
+        )
+    else:
+        logger.warning(f"Framework context missing from session {session_id}")
+
+    # Process agent call
+    agent_start = time.time()
+    response = await client.send_message(user_id, session_id, user_request)
+    logger.info(f"Agent processing took {time.time() - agent_start:.2f}s")
+
+    logger.info(f" TOTAL GENERATION TIME: {time.time() - start_time:.2f}s ")
+
+    if response.get("ok"):
+        return response["content"]
 
     # Handle errors with user-friendly messages
-    error = resp.get("error", "Unknown error")
+    error = response.get("error", "Unknown error")
 
     # Check for specific error types
     if "429" in str(error) or "RESOURCE_EXHAUSTED" in str(error):

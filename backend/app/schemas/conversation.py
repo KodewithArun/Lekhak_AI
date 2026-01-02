@@ -18,6 +18,7 @@ class ConversationGet(ConversationBase):
     id: int
     company_id: int
     product_id: Optional[int] = None
+    user_id: Optional[str] = None
     created_at: datetime
 
     class Config:

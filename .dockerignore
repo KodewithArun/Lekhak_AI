@@ -1,0 +1,91 @@
+# ============================================================
+# Lekhak AI - Docker Ignore
+# Excludes files from Docker build context
+# ============================================================
+
+# Version Control
+.git
+.gitignore
+.gitattributes
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+.eggs/
+*.egg
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+.hypothesis/
+
+# Virtual Environments
+.venv/
+venv/
+env/
+ENV/
+
+# IDE & Editors
+.idea/
+.vscode/
+*.swp
+*.swo
+*.sublime-*
+.project
+.pydevproject
+*.code-workspace
+
+# Docker (not needed inside container)
+Dockerfile*
+docker-compose*.yml
+.docker/
+.dockerignore
+
+# Logs (mounted as volume)
+*.log
+logs/
+backend/logs/*.log
+
+# Documentation
+docs/
+*.md
+!README.md
+
+# Tests
+tests/
+*_test.py
+test_*.py
+conftest.py
+pytest.ini
+
+# Build Artifacts
+build/
+dist/
+*.manifest
+*.spec
+
+# Environment Files (passed via docker-compose)
+.env
+.env.*
+!.env.example
+
+# Frontend (backend-only build)
+frontend/
+
+# Misc
+.DS_Store
+Thumbs.db
+*.bak
+*.tmp
+*.temp
+.cache/
+uv.lock
+.python-version

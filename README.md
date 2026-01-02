@@ -1,50 +1,204 @@
-## Lekhak AI
+# Lekhak AI
 
-Lekhak AI is an AI-powered content creation platform designed to streamline and automate the process of generating high-quality written material. Leveraging Google's Agent Development Kit (ADK) for advanced agent orchestration and Streamlit for an intuitive web interface, Lekhak AI enables users to plan, route, and produce content efficiently. The platform integrates with PostgreSQL for robust data management and uses modular agents to handle tasks such as request analysis, content generation, and formatting. Whether you're creating blog posts, social media updates, or other written content, Lekhak AI provides a scalable and extensible solution for modern content workflows.
+AI-powered content generation platform built with Google's Agent Development Kit (ADK), FastAPI, and PostgreSQL.
 
-## Project Status
+## Overview
 
-### Completed Features
+Lekhak AI automates content creation through a multi-agent system that researches, writes, and optimizes blog posts and social media content. The platform uses intelligent routing to determine content type and applies proven persuasion frameworks (AIDA, PAS) for structured output.
 
-#### Backend Infrastructure
+### Key Features
 
-- **Async SQLAlchemy Integration**: Migrated from synchronous to async database operations
-- **Database Models**: Company, Product, and Conversation models with proper relationships
-- **Startup Event**: Automatic database table creation on FastAPI application startup
-- **PostgreSQL Integration**: Full async support driver
+- **Multi-Agent Architecture** - Specialized agents for planning, research, writing, and optimization
+- **Dual Content Pipelines** - Separate workflows for blog posts and social media content
+- **Brand Context Awareness** - Generates content aligned with company and product information
+- **Framework Selection** - Supports AIDA, PAS, and other content frameworks
+- **Async Architecture** - Built with async Python for high performance
 
-#### AI Agent System
+## Quick Start
 
-- **Content Creator Agent**: Master orchestration agent coordinating planner and router
-- **Planner Agent**: Intelligent request analysis and pipeline routing with company/product context awareness
-- **Router Agent**: Dynamic pipeline selection (social, blog, both, or none) based on planner output
+### Prerequisites
 
-#### API Endpoints (Async)
+- Docker and Docker Compose
+- Google AI API key ([Get one here](https://aistudio.google.com/apikey))
+- SerpAPI key ([Get one here](https://serpapi.com/))
 
-- **Companies API**: Create, list, and retrieve companies with async operations
-- **Products API**: Manage products with company relationships
-- **Conversations API**: Track generated content history
-- **Content Generation API**: Main endpoint for AI-powered content creation with context
+### Installation
 
-#### Services & Business Logic
+```bash
+# Clone repository
+git clone https://github.com/your-username/Lekhak-AI.git
+cd Lekhak-AI
 
-- **Lekhak Service**: Content generation orchestration with company/product context integration
-- **Agent Client**: Session management, message handling, and parallel content collection
-- **Context Building**: Automatic company and product context injection from database
-- **Error Handling**: User-friendly error messages for rate limits, quota exceeded, and API failures
+# Configure environment
+cp .env.example .env
+# Add your API keys to .env
 
-## Updated Features
+# Start services
+docker-compose up -d
+```
 
-- Social Media Content Generation Pipeline
+### Access
 
-  1. Social Research Agent along with social_search tool using SerpAPI
-  2. Social Content Generator Agent
-  3. Social Content Optimizer Agent
+- API: http://localhost:8000
+- API Documentation: http://localhost:8000/docs
+- Health Check: http://localhost:8000/health
 
-- Blog Content Generation Pipeline
-  1. Blog Research Agent along with blog_search tool using SerpAPI for google search results.
-  2. Blog Content Writer Agent that creates blog content based on research output.
-  3. Blog Content Optimizer Agent that refines and polishes the draft blog content.
-  4. Blog Content Presenter Agent who present the final output in user friendly way.
+## Docker Commands
 
-### Recent Updates (December 2025)
+```bash
+docker-compose up -d          # Start services
+docker-compose down           # Stop services
+docker-compose logs -f        # View logs
+docker-compose up -d --build  # Rebuild and start
+docker-compose down -v        # Stop and remove volumes
+```
+
+### Development Mode
+
+```bash
+docker-compose -f docker-compose.dev.yml up -d
+```
+
+Includes hot reload and pgAdmin at http://localhost:5050.
+
+## Local Development
+
+### Prerequisites
+
+- Python 3.12+
+- PostgreSQL 16+
+- [uv](https://docs.astral.sh/uv/) (Python package manager)
+
+### Setup
+
+```bash
+# Clone repository
+git clone https://github.com/your-username/Lekhak-AI.git
+cd Lekhak-AI
+
+# Install dependencies with uv
+uv sync
+
+# Configure environment
+cp .env.example .env
+# Add your API keys to .env
+
+# Start database
+docker-compose up -d postgres
+
+# Run backend
+cd backend
+uv run uvicorn app.main:app --reload
+
+# Run frontend (separate terminal)
+cd frontend
+uv run streamlit run app.py
+```
+
+## Architecture
+
+```
+Frontend (Streamlit)
+        |
+        v
+Backend (FastAPI)
+        |
+        +-- Routers (API endpoints)
+        +-- Services (Business logic)
+        +-- Agent System
+                |
+                +-- Content Creator Agent (Master)
+                        |
+                        +-- Planner Agent
+                        +-- Router Agent
+                                |
+                                +-- Blog Pipeline
+                                |       +-- Research Agent
+                                |       +-- Writer Agent
+                                |       +-- Optimizer Agent
+                                |       +-- Presenter Agent
+                                |
+                                +-- Social Pipeline
+                                        +-- Research Agent
+                                        +-- Generator Agent
+                                        +-- Optimizer Agent
+        |
+        v
+External Services: PostgreSQL, Google AI (Gemini), SerpAPI
+```
+
+## Project Structure
+
+```
+Lekhak-AI/
+├── backend/
+│   ├── app/
+│   │   ├── agents/           # AI agent definitions
+│   │   │   └── pipelines/    # Blog and social pipelines
+│   │   ├── core/             # Configuration
+│   │   ├── models/           # Database models
+│   │   ├── routers/          # API endpoints
+│   │   ├── schemas/          # Pydantic schemas
+│   │   ├── services/         # Business logic
+│   │   ├── tools/            # Agent tools
+│   │   └── prompts/          # Agent instructions
+│   └── logs/
+├── frontend/
+│   └── app.py
+├── docker-compose.yml
+├── docker-compose.dev.yml
+├── Dockerfile
+├── Dockerfile.dev
+├── Makefile
+└── pyproject.toml
+```
+
+## API Reference
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | /api/content/generate | Generate content |
+| GET | /api/companies | List companies |
+| POST | /api/companies | Create company |
+| GET | /api/products | List products |
+| POST | /api/products | Create product |
+| GET | /api/conversations | Get conversation history |
+
+Full documentation available at http://localhost:8000/docs.
+
+## Configuration
+
+| Variable | Description | Required |
+|----------|-------------|----------|
+| GOOGLE_API_KEY | Google AI API key | Yes |
+| SERPAPI_API_KEY | SerpAPI key | Yes |
+| GEMINI_MODEL | Model name (default: gemini-2.5-flash) | No |
+| DB_HOST | Database host (default: localhost) | No |
+| DB_PORT | Database port (default: 5432) | No |
+| DB_NAME | Database name (default: lekhak_ai) | No |
+| DB_USER | Database user (default: postgres) | No |
+| DB_PASSWORD | Database password | No |
+
+## Makefile Commands
+
+```bash
+make up          # Start production
+make down        # Stop services
+make dev         # Start development
+make logs        # View logs
+make build       # Rebuild containers
+make clean       # Remove containers and volumes
+make db-shell    # Open database shell
+```
+
+## Tech Stack
+
+- **Backend**: FastAPI, SQLAlchemy (async), Pydantic
+- **AI**: Google Agent Development Kit (ADK), Gemini
+- **Database**: PostgreSQL 16
+- **Frontend**: Streamlit
+- **Infrastructure**: Docker, Docker Compose
+
+## License
+
+MIT License - see [LICENSE](LICENSE) for details.

@@ -5,6 +5,7 @@ from pydantic import BaseModel
 class ProductBase(BaseModel):
     name: str
     description: str
+    url: str
 
 
 class ProductCreate(ProductBase):

@@ -7,6 +7,7 @@ class CompanyBase(BaseModel):
     name: str
     industry: str
     description: str
+    url: str
 
 
 class CompanyCreate(CompanyBase):

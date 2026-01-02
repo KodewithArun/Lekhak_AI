@@ -1,6 +1,8 @@
+from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.database import get_db
 from app.models.conversations import Conversation
 from app.schemas.conversation import (
@@ -29,10 +31,14 @@ async def create_conversation(
     return db_conversation
 
 
-# Get a list of all conversations
+# Get a list of all conversations (optionally filtered by user_id)
 @router.get("/", response_model=ConversationListResponse)
-async def list_conversations(db: AsyncSession = Depends(get_db)):
-    result = await db.execute(select(Conversation))
+async def list_conversations(user_id: Optional[str] = None, db: AsyncSession = Depends(get_db)):
+    query = select(Conversation)
+    if user_id:
+        query = query.where(Conversation.user_id == user_id)
+        
+    result = await db.execute(query)
     all_conversations = result.scalars().all()
     return ConversationListResponse(conversations=all_conversations)
 

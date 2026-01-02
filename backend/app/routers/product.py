@@ -1,7 +1,9 @@
 from datetime import datetime
+
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.database import get_db
 from app.models.company import Company
 from app.models.product import Product
@@ -22,6 +24,7 @@ async def create_product(product: ProductCreate, db: AsyncSession = Depends(get_
     db_product = Product(
         name=product.name,
         description=product.description,
+        url=product.url,
         company_id=product.company_id,
         created_at=datetime.utcnow(),
         updated_at=datetime.utcnow(),
