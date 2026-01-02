@@ -24,6 +24,7 @@ async def create_product(product: ProductCreate, db: AsyncSession = Depends(get_
     db_product = Product(
         name=product.name,
         description=product.description,
+        url=product.url,
         company_id=product.company_id,
         created_at=datetime.utcnow(),
         updated_at=datetime.utcnow(),

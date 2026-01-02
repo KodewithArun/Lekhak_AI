@@ -18,6 +18,7 @@ async def create_company(company: CompanyCreate, db: AsyncSession = Depends(get_
         name=company.name,
         industry=company.industry,
         description=company.description,
+        url=company.url,
         created_at=datetime.utcnow(),
         updated_at=datetime.utcnow(),
     )
