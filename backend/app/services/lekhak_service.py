@@ -1,8 +1,7 @@
 """Service for generating content using Lekhak AI with company and product context."""
 
-import logging
 import time
-from typing import Any, Dict, List, Optional
+from typing import Optional
 
 from google.adk.runners import Runner
 from google.adk.sessions import DatabaseSessionService
@@ -59,6 +58,7 @@ async def _build_user_request(
             name=company.name,
             industry=company.industry,
             description=company.description,
+            url=company.url,
         )
 
         product_context = None
@@ -71,6 +71,7 @@ async def _build_user_request(
                     product_id=product.id,
                     name=product.name,
                     description=product.description,
+                    url=product.url,
                 )
 
         user_request = {
@@ -95,10 +96,7 @@ async def async_generate_content(
     framework_id: Optional[int] = None,
 ) -> str:
     start_time = time.time()
-    logger.info(f"--- START GENERATION (Task: {session_id}) ---")
-    logger.info(
-        f"Generating content for user={user_id}, company={company_id}, product={product_id}, framework={framework_id}"
-    )
+    logger.info(f" START GENERATION (Task: {session_id})")
 
     default_state = {"user_name": user_id}
 
@@ -141,7 +139,6 @@ async def async_generate_content(
                 user_request["framework_name"] = target_framework.name
         else:
             logger.warning("No framework found - AIDA default should be applied")
-    logger.info(f"Database lookups took {time.time() - db_start:.2f}s")
 
     # Initialize agent client and create session
     session_start = time.time()
@@ -151,7 +148,6 @@ async def async_generate_content(
         user_id, session_id=effective_session_id, initial_state=default_state
     )
     session_id = session.id
-    logger.info(f"Session creation took {time.time() - session_start:.2f}s")
 
     # Update session state to ensure current request's context/framework is used.
     for key, value in default_state.items():
@@ -170,7 +166,7 @@ async def async_generate_content(
     response = await client.send_message(user_id, session_id, user_request)
     logger.info(f"Agent processing took {time.time() - agent_start:.2f}s")
 
-    logger.info(f"--- TOTAL GENERATION TIME: {time.time() - start_time:.2f}s ---")
+    logger.info(f" TOTAL GENERATION TIME: {time.time() - start_time:.2f}s ")
 
     if response.get("ok"):
         return response["content"]
