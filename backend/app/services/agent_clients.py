@@ -92,7 +92,7 @@ class AgentClient:
                     content_text = event.content.parts[0].text
 
                     # Wrap blog content in JSON for consistency
-                    if author == "blog_final_output":
+                    if author == "blog_optimizer":
                         self.logger.info("Captured final blog post.")
                         try:
                             # Ensure it's valid JSON with 'final_content'
@@ -103,7 +103,7 @@ class AgentClient:
                                 {"final_content": content_text}
                             )
 
-                    elif author == "optimized_social_content":
+                    elif author in ["optimized_social_content", "social_optimizer"]:
                         self.logger.info("Captured final social post from optimizer.")
                         try:
                             json.loads(content_text)
@@ -142,7 +142,28 @@ class AgentClient:
             if content.get("blog"):
                 try:
                     blog_data = json.loads(content["blog"])
-                    blog_content = blog_data.get("final_content", "")
+                    
+                    title = blog_data.get("final_title") or blog_data.get("title", "")
+                    meta = blog_data.get("final_meta_description") or blog_data.get("meta_description", "")
+                    body = blog_data.get("final_content") or blog_data.get("content", "")
+                    
+                    # New verification fields
+                    sources = blog_data.get("references_for_verification", [])
+
+                    parts = []
+                    if title:
+                        parts.append(f"# {title}\n")
+                    if meta:
+                        parts.append(f"{meta}\n")
+                    
+                    parts.append(body)
+
+                    if sources:
+                        parts.append("\n---\n### Sources & References")
+                        for s in sources:
+                            parts.append(f"- {s}")
+
+                    blog_content = "\n".join(parts).strip()
                 except json.JSONDecodeError:
                     blog_content = content["blog"]
 
@@ -150,28 +171,53 @@ class AgentClient:
             if content.get("social"):
                 try:
                     social_data = json.loads(content["social"])
-                    caption = social_data.get("optimized_caption") or social_data.get(
-                        "caption", ""
+                    
+                    # Support both new and old field names for robustness
+                    caption = (
+                        social_data.get("caption") 
+                        or social_data.get("optimized_caption") 
+                        or ""
                     )
-                    main_content = social_data.get(
-                        "optimized_content"
-                    ) or social_data.get("main_content", "")
-                    hashtags = social_data.get("final_hashtags") or social_data.get(
-                        "hashtags", []
+                    main_content = (
+                        social_data.get("content") 
+                        or social_data.get("optimized_content") 
+                        or social_data.get("main_content", "")
                     )
-                    cta = social_data.get("platform_cta") or social_data.get(
-                        "call_to_action", ""
+                    hashtags = (
+                        social_data.get("hashtags") 
+                        or social_data.get("final_hashtags") 
+                        or []
                     )
-
-                    hashtags_str = (
-                        " ".join([f"#{h}" for h in hashtags]) if hashtags else ""
+                    cta = (
+                        social_data.get("cta") 
+                        or social_data.get("platform_cta") 
+                        or social_data.get("call_to_action", "")
                     )
+                    trending = social_data.get("trending_now", [])
+                    sources = social_data.get("sources", [])
 
                     parts = []
                     if caption:
-                        parts.append(f"**Caption:** {caption}")
+                        parts.append(f"**Caption:** {caption}\n")
+                    
                     if main_content:
-                        parts.append(f"\n{main_content}")
+                        parts.append(main_content)
+                    
+                    if cta:
+                        parts.append(f"\n**CTA:** {cta}")
+                    
+                    if hashtags:
+                        hashtags_str = " ".join([f"#{h.lstrip('#')}" for h in hashtags])
+                        parts.append(f"\n{hashtags_str}")
+                    
+                    if trending:
+                        trending_str = ", ".join(trending)
+                        parts.append(f"\n{trending_str}")
+                    
+                    if sources:
+                        parts.append("\n**Sources & References:**")
+                        for s in sources:
+                            parts.append(f"- {s}")
 
                     social_content = "\n".join(parts).strip()
                 except json.JSONDecodeError:
