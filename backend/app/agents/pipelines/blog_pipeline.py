@@ -1,6 +1,6 @@
 """
 Blog Content Pipeline
-Sequential flow: Researcher → Writer → Optimizer → Presenter
+Sequential flow: Researcher → Writer → Optimizer
 
 This pipeline uses Google ADK (Generative AI SDK) with function calling
 to create SEO-optimized blog content for product marketing.
@@ -12,7 +12,6 @@ from app.schemas.blog_pipeline_schema import (
     BlogOptimizerOutput,
     BlogResearchOutput,
     BlogWriterOutput,
-    FinalBlogOutput,
 )
 from app.tools.blog_tool import serp_google_search
 from app.prompts.blog_instruction.blog_research_instruction import (
@@ -65,18 +64,9 @@ blog_optimizer = LlmAgent(
     output_key="blog_optimizer",
 )
 
-blog_presenter = LlmAgent(
-    name="blog_presenter",
-    model=GEMINI_MODEL,
-    description="Formats the optimized blog content for the user.",
-    output_schema=FinalBlogOutput,
-    output_key="blog_final_output",
-    instruction="Format optimized blog into professional, well-structured post with markdown. Exclude internal SEO/readability metrics. Ready-to-publish format.",
-)
-
 blog_pipeline_agent = SequentialAgent(
     name="blog_pipeline",
-    description="Complete blog content creation pipeline. Flow: Research → Write → Optimize → Present",
-    sub_agents=[blog_researcher, blog_writer, blog_optimizer, blog_presenter],
+    description="Complete blog content creation pipeline. Flow: Research → Write → Optimize",
+    sub_agents=[blog_researcher, blog_writer, blog_optimizer],
 )
 logger_blog.info("Blog pipeline initialized")
