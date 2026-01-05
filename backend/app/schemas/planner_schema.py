@@ -9,31 +9,25 @@ class CompanyContext(BaseModel):
     """Company context from database."""
 
     company_id: int
-    name: str = Field(max_length=100)
-    industry: str = Field(max_length=100)
-    description: str = Field(max_length=500)
-    url: str = Field(max_length=200)
+    name: str
+    industry: str
+    description: str
+    url: str
 
 
 class ProductContext(BaseModel):
     """Product/Service context from database."""
 
     product_id: int
-    name: str = Field(max_length=100)
-    description: str = Field(max_length=800)
-    url: str = Field(max_length=200)
+    name: str
+    description: str
+    url: str
 
 
 # User request for planning
 class UserRequest(BaseModel):
     instruction: str = Field(description="User's natural language content request")
     tone: str = Field(default="professional", description="Content tone")
-    company_context: Optional[CompanyContext] = Field(
-        default=None, description="Company information from database"
-    )
-    product_context: Optional[ProductContext] = Field(
-        default=None, description="Product information from database"
-    )
     framework_name: Optional[str] = Field(
         default=None, description="Selected structural framework name (e.g. AIDA)"
     )
@@ -44,18 +38,14 @@ class PlannerOutput(BaseModel):
     should_proceed: bool = Field(
         default=True, description="True if content generation can proceed"
     )
-    user_query: str = Field(
-        max_length=500, description="Original user query (summarized)"
-    )
+    user_query: str = Field(description="Original user query (summarized)")
     topic: str = Field(
-        default="unknown", max_length=100, description="Main content topic"
+        description="Main topic of the content by understanding user query"
     )
     pipeline_type: Literal["social", "blog", "both", "none"] = Field(
         description="Selected content pipeline"
     )
-    platform: str = Field(
-        default="general", max_length=50, description="Target platform"
-    )
+    platform: str = Field(default="linkedin", description="Target platform")
     content_intention: Literal[
         "educate",
         "promote",
@@ -71,12 +61,5 @@ class PlannerOutput(BaseModel):
     )
     clarification_needed: Optional[str] = Field(
         default=None,
-        max_length=200,
         description="Message requesting clarification from user if should_proceed is False",
-    )
-    company_context: Optional[CompanyContext] = Field(
-        default=None, description="Company information from database"
-    )
-    product_context: Optional[ProductContext] = Field(
-        default=None, description="Product information from database"
     )
