@@ -162,39 +162,34 @@ class SEOImprovement(BaseModel):
 
 
 class BlogOptimizerOutput(BaseModel):
-    optimized_title: Optional[str] = Field(
+    final_title: Optional[str] = Field(
         description="Refined, keyword-focused, human-friendly title."
     )
-    optimized_meta_description: Optional[str] = Field(
+    final_meta_description: Optional[str] = Field(
         description="Improved meta description under 160 characters."
     )
+    final_content: str = Field(
+        description="The complete, optimized, and polished blog content ready for publication."
+    )
     structural_fixes: List[ContentFix] = Field(
-        description="List of actionable content or structure fixes."
+        description="List of actionable content or structure fixes applied."
     )
     heading_improvements: List[OptimizedHeading] = Field(
-        description="Suggested improvements for H2/H3 headings."
+        description="Improvements made to H2/H3 headings."
     )
     seo_suggestions: List[SEOImprovement] = Field(
-        description="Guidance to naturally enhance SEO and readability."
+        description="SEO enhancements applied to the content."
     )
     missing_elements: List[str] = Field(
-        description="High-value elements to add (examples, case studies, stats)."
+        description="High-value elements added (examples, case studies, stats)."
     )
     tone_adjustments: str = Field(
-        description="Advice to make the content sound human and match audience tone."
+        description="Adjustments made to match audience tone and sound human."
     )
-    cta_improvement: str = Field(
-        description="Instructions to improve the call-to-action."
-    )
+    cta_improvement: str = Field(description="Enhancements made to the call-to-action.")
     summary_of_changes: str = Field(
-        description="Concise summary of main suggested improvements."
+        description="Concise summary of main improvements made."
     )
-
-
-# Final outputs
-class FinalBlogOutput(BaseModel):
-    """The final, user-facing output for blog content, ready for publication."""
-
-    final_title: Optional[str] = None
-    final_meta_description: Optional[str] = None
-    final_content: str
+    references_for_verification: List[str] = Field(
+        description="List of all verified source URLs used in the content."
+    )
