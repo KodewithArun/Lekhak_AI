@@ -109,7 +109,7 @@ class AgentClient:
                             json.loads(content_text)
                             final_social_content = content_text
                         except json.JSONDecodeError:
-                            final_social_content = json.dumps({"caption": content_text})
+                            final_social_content = json.dumps({"content": content_text})
 
                     elif author == "router_agent":
                         self.logger.info("Captured message from router agent.")
@@ -194,7 +194,11 @@ class AgentClient:
                         or social_data.get("call_to_action", "")
                     )
                     trending = social_data.get("trending_now", [])
-                    sources = social_data.get("sources", [])
+                    sources_list = (
+                         social_data.get("sources")
+                         or social_data.get("source_references")
+                         or []
+                    )
 
                     parts = []
                     if caption:
@@ -214,10 +218,18 @@ class AgentClient:
                         trending_str = ", ".join(trending)
                         parts.append(f"\n{trending_str}")
                     
-                    if sources:
+                    # Handle structured source references
+                    if sources_list:
                         parts.append("\n**Sources & References:**")
-                        for s in sources:
-                            parts.append(f"- {s}")
+                        for ref in sources_list:
+                            # Handle both dict (from JSON) and object (if pydantic model)
+                            if isinstance(ref, dict):
+                                s_str = f"{ref.get('source', 'Source')}: {ref.get('url', '')}"
+                                if ref.get('claim'):
+                                    s_str = f"{ref['claim']} ({s_str})"
+                            else:
+                                s_str = str(ref)
+                            parts.append(f"- {s_str}")
 
                     social_content = "\n".join(parts).strip()
                 except json.JSONDecodeError:

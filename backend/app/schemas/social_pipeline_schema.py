@@ -216,19 +216,19 @@ class OptimizedContent(BaseModel):
         description="The social media platform for this content (e.g., LinkedIn, Instagram, X/Twitter, Facebook)."
     )
 
-    optimized_caption: str = Field(
+    caption: str = Field(
         description="A concise, catchy line to hook the audience."
     )
 
-    optimized_content: str = Field(
+    content: str = Field(
         description="The fully assembled post content including Body, CTA, Hashtags, and formatted Sources at the bottom."
     )
 
-    final_hashtags: List[str] = Field(
+    hashtags: List[str] = Field(
         description="A list of platform-relevant and trending hashtags for discoverability."
     )
 
-    platform_cta: Optional[str] = Field(
+    cta: Optional[str] = Field(
         default=None,
         description="Optional call-to-action to encourage user engagement or conversion.",
     )
@@ -238,7 +238,7 @@ class OptimizedContent(BaseModel):
         description="Structured hooks for A/B testing (Primary = Variant A, Secondary = Variant B).",
     )
 
-    source_references: Optional[List[SourceReference]] = Field(
+    sources: Optional[List[SourceReference]] = Field(
         default=None,
         description="List of source references preserved from writer output.",
     )
