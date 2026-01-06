@@ -221,7 +221,7 @@ class OptimizedContent(BaseModel):
     )
 
     content: str = Field(
-        description="The fully assembled post content including Body, CTA, Hashtags, and formatted Sources at the bottom."
+        description="The fully assembled post BODY. DO NOT include the hook/caption, CTA, or Hashtags here as they are provided in separate fields."
     )
 
     hashtags: List[str] = Field(

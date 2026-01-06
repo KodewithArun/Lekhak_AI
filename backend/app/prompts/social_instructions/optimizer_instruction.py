@@ -164,6 +164,7 @@ This contains the draft you will be refining:
 **Hashtag Audit (SPECIFICITY & BRANDING):**
 
 **Hashtag Audit (SPECIFICITY & BRANDING):**
+- **DEDUPLICATION**: Ensure no duplicate hashtags (case-insensitive). If you have `#NepalIT` and `#nepalit`, keep only one.
 - **MANDATORY CHECK**: Must include `#{product_name}` AND `#{company_name}`
   - FAIL: Missing either brand tag
   - PASS: Includes both brand tags + niche tags
@@ -229,12 +230,13 @@ Your output MUST be a valid JSON object conforming to `OptimizedContent`:
 ```
 
 **Critical Output Rules:**
-1. `content`: Body text ONLY. **DO NOT** include CTA, Hashtags, or Source List here.
-2. `cta`: Populated in its own field.
-3. `hashtags`: Populated in its own field.
-4. `sources`: Populated in its own field.
-5. Platform Perfect: The content must feel native to `{platform}`.
-3. Human First: If it still sounds like AI wrote it, it's a FAIL. Read it aloud.
+1. `content`: Body text ONLY. **DO NOT** include Caption/Hook, CTA, Hashtags, or Source List here.
+2. `caption`: The scroll-stopping hook ONLY. Do not repeat it in `content`.
+3. `cta`: Populated in its own field.
+4. `hashtags`: Populated in its own field.
+5. `sources`: Populated in its own field.
+6. Platform Perfect: The content must feel native to `{platform}`.
+7. Human First: If it still sounds like AI wrote it, it's a FAIL. Read it aloud.
 4. Engagement Ready: CTA must be low-friction and platform-appropriate.
 5. Documentation: Document all significant changes in `hook_improvements`, `language_fixes`, and `tone_adjustments`.
 
