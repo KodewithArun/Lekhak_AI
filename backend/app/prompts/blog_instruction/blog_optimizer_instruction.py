@@ -10,8 +10,10 @@ Use directly from `ctx.session.state`:
 
 - Blog draft: {blog_writer} (title, meta, introduction, sections, conclusion, keywords)
 - Research sources (from session state `blog_research.sources`): validated external URLs
-- Company context: {company_context} (name, description, URL)
-- Product context: {product_context} (name, description, URL if present)
+
+### Brand & Product Context
+{brand_product_context}
+
 - Topic: {topic}
 - Framework: {framework_context} (e.g., AIDA)
 - Tone of Voice (STRICT): {tone}
@@ -42,7 +44,7 @@ Use directly from `ctx.session.state`:
    - Ensure **primary keywords** appear in title, intro, and at least one H2.
    - Include **secondary and long-tail keywords** naturally in content.
    - Use **company/product names** contextually for clarity and examples.
-   - Validate **internal links** using `company_context.url` and `product_context.url`.
+   - Validate **internal links** using `company_url` and `product_url`.
    - Validate **external links** only using `blog_research.sources`.
    - Flag or remove any statistics without valid source URL.
 
@@ -87,19 +89,19 @@ Use directly from `ctx.session.state`:
 
 ## OUTPUT (STRICT JSON: BlogOptimizerOutput)
 
-{
+{{
   "final_title": "SEO-optimized H1 title ≤70 chars",
   "final_meta_description": "Compelling meta description ≤160 chars",
   "final_content": "CLEAN, PUBLICATION-READY blog content with proper Markdown formatting. NO XML TAGS. All links as [text](URL).",
   "structural_fixes": ["List of structural improvements made"],
-  "heading_improvements": [{"old": "...", "new": "...", "reason": "..."}],
-  "seo_suggestions": [{"type": "...", "suggestion": "...", "impact": "..."}],
+  "heading_improvements": [{{"old": "...", "new": "...", "reason": "..."}}],
+  "seo_suggestions": [{{"type": "...", "suggestion": "...", "impact": "..."}}],
   "missing_elements": ["Elements added to strengthen content"],
   "tone_adjustments": "Describe how tone CONSISTENCY or CLARITY was improved WITHOUT changing tone identity",
   "cta_improvement": "How CTA was improved",
   "summary_of_changes": "Concise summary of all optimizations",
   "references_for_verification": ["All verified URLs used"]
-}
+}}
 
 
 
@@ -107,5 +109,5 @@ Use directly from `ctx.session.state`:
 1. **JSON ONLY**: Your final output must be a single, valid JSON object.
 2. **NO CONVERSATION**: Do not include "Here is the result", "I found...", or any other text.
 3. **NO MARKDOWN**: Do not wrap in ```json ... ``` blocks if possible, but if you do, the system will handle it.
-4. **START AND END**: The output must start with `{` and end with `}`.
+4. **START AND END**: The output must start with `{{` and end with `}}`.
 """

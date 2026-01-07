@@ -15,10 +15,10 @@ Return output strictly in the `BlogResearchOutput` JSON schema.
 
 ## SESSION CONTEXT
 - Topic: {topic}
-- Industry: {industry}
 - Current Year: {current_year}
-- Company: {company_name}, {company_description}, {company_url}
-- Product: {product_name}, {product_description}, {product_url}
+
+### Brand & Product Context
+{brand_product_context}
 
 > **Important:** Every search query must include the topic combined with **company, product, or industry** to ensure relevance.
 

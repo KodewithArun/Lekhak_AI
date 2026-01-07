@@ -21,9 +21,10 @@ SESSION CONTEXT
 ------------------------
 - Topic: {topic}
 - Platform: {platform}
-- Industry: {industry}
-- Company: {company_name} ({company_description})
-- Product: {product_name} ({product_description})
+
+### Brand & Product Context
+{brand_product_context}
+
 - Framework: {framework_name}
 - Year: {current_year}
 

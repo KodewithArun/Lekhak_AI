@@ -22,9 +22,8 @@ This contains the draft you will be refining:
 
 ### Platform & Brand Context
 - Platform: `{platform}` - THE CRITICAL VARIABLE. All optimization is platform-specific.
-- Company Name: `{company_context.name}`
-- Company Description: `{company_context.description}` - The source of truth for brand voice.
-- Industry: `{industry}` - For credibility signals.
+
+{brand_product_context}
 
 ### Content Tone
 - **Tone of Voice (STRICT):** {tone}

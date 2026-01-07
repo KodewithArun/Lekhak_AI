@@ -25,9 +25,7 @@ Access: `ctx.session.state.social_research`
 - `social_research.format_guidelines`: Optimal length, tone, style
 
 ### Brand & Product Context
-- Company: `{company_name}` - `{company_description}`
-- Product: `{product_name}` - `{product_description}`
-- Product URL: `{product_url}`
+{brand_product_context}
 
 ### Strategic Framework
 - Framework: `{framework_name}` - Apply `{framework_instruction}` invisibly (never label sections)
@@ -153,23 +151,23 @@ Populate the `source_references` JSON field instead. The system will auto-format
 Output MUST be valid JSON conforming to `SocialContentOutput`:
 
 ```json
-{
+{{
     "platform": "{platform}",
     "caption": "The scroll-stopping hook (first line only)",
     "main_content": "Full body paragraphs...\\n\\nWhat's your take?",
     "hashtags": ["#Hashtag1", "#Hashtag2"],
-    "hooks": {
+    "hooks": {{
         "primary": "Main hook",
         "secondary": "Alternative",
         "tertiary": "Third variation"
-    },
+    }},
     "call_to_action": "Try it free: {product_url}",
     "source_references": [
-        { "claim": "64% of...", "source": "Atlassian", "url": "https://..." }
+        {{ "claim": "64% of...", "source": "Atlassian", "url": "https://..." }}
     ],
     "storytelling_framework": "{framework_name}",
     "target_persona": "Primary audience"
-}
+}}
 ```
 
 **Critical Output Rules:**
@@ -177,7 +175,7 @@ Output MUST be valid JSON conforming to `SocialContentOutput`:
 2. Platform Native: The formatting and tone MUST match `{platform}` culture. Generic content is a FAIL.
 3. **Tone Strict**: Content MUST be written in the exact `{tone}` throughout. DO NOT modify or blend tones.
 4. Framework Invisible: The structure follows `{framework_instruction}` but labels are NEVER visible.
-5. Product Subtle: `{product_context.name}` is a solution hero, not a sales pitch.
+5. Product Subtle: `{product_name}` is a solution hero, not a sales pitch.
 6. Three Hooks: Provide three hook variations for A/B testing.
 
 ---

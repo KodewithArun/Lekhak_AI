@@ -175,7 +175,7 @@ if page == "Generate Content":
             )
             selected_product_id = product_options[selected_product_name]
         else:
-            st.info("No products available for this company")
+            st.info("No products found — the company itself may be the product.")
             selected_product_id = None
 
         # Framework selection

@@ -97,6 +97,113 @@ PAS is a pain-driven persuasion model that identifies a problem, intensifies the
 Content must progress Problem → Agitate → Solution. The solution should not appear until the pain is fully established.
             """,
         ),
+        Framework(
+            name="BAB",
+            description="Before-After-Bridge: Transformation focus",
+            instruction="""
+**BAB FRAMEWORK**
+
+BAB is a transformation-focused persuasion model that contrasts the current negative state with a future positive state, then provides the path to get there. It is highly effective for case studies and testimonial-driven content.
+
+**REQUIRED ELEMENTS:**
+
+1. **BEFORE (Current State)**
+   - Depicts the current world with the problem
+   - Highlights the struggle, limitations, or frustration
+   - Validates the reader's current feelings
+   - Social: "Still manually updating spreadsheets?" / "Tired of X?"
+   - Blog: Detailed analysis of the challenges currently faced by the industry/persona
+
+2. **AFTER (Future State)**
+   - Visualizes the world where the problem is solved
+   - Focuses on relief, speed, efficiency, or success
+   - Paints a picture of the "Promised Land"
+   - Social: "Imagine finishing work by 2 PM every Friday."
+   - Blog: Description of the ideal workflow or outcome
+
+3. **BRIDGE (The Solution)**
+   - Connects the Before to the After
+   - Presents your product/service as the vehicle for transformation
+   - Explains the "How" simply
+   - Social: "Here is how [Product] gets you there."
+   - Blog: Implementation steps or methodology
+
+Content must contrast the Before and After vividly before introducing the Bridge.
+            """,
+        ),
+        Framework(
+            name="FAB",
+            description="Features-Advantages-Benefits: Product-centric persuasion",
+            instruction="""
+**FAB FRAMEWORK**
+
+FAB is a product-centric model that translates technical attributes into user value. It is essential for product launches, feature updates, and bottom-of-funnel content.
+
+**REQUIRED ELEMENTS:**
+
+1. **FEATURES (What it is)**
+   - Factual description of the product or feature
+   - Technical specs or capabilities
+   - Neutral tone
+   - Social: "Our new AI scheduler..."
+   - Blog: Technical breakdown of the release
+
+2. **ADVANTAGES (What it does)**
+   - Explains the immediate function of the feature
+   - Compares it to previous versions or competitors
+   - "Which means that..."
+   - Social: "...automatically sorts your calendar..."
+   - Blog: Functional analysis and performance metrics
+
+3. **BENEFITS (Why it matters)**
+   - The emotional or tangible end-result for the user
+   - Saves time, makes money, reduces stress
+   - Social: "...so you never miss a client meeting again."
+   - Blog: ROI calculation or strategic impact
+
+Content must move from the concrete (Feature) to the functional (Advantage) to the emotional/strategic (Benefit).
+            """,
+        ),
+        Framework(
+            name="4Ps",
+            description="Promise-Picture-Proof-Push: High-converting copy",
+            instruction="""
+**4Ps FRAMEWORK**
+
+The 4Ps framework is a classic copywriting formula designed to close sales or drive high-intent actions. It appeals to both logic and emotion.
+
+**REQUIRED ELEMENTS:**
+
+1. **PROMISE**
+   - The big claim or headline benefit
+   - Attracts attention with a desirable outcome
+   - Social: "Double your leads in 30 days."
+   - Blog: The core value proposition of the article
+
+2. **PICTURE**
+   - VIVID visualization of the promise being fulfilled
+   - Uses sensory language
+   - Allows the reader to "see" themselves ensuring the benefit
+   - Social: "No more cold calling. Just warm inboxes."
+   - Blog: Scenario walkthrough or narrative example
+
+3. **PROOF**
+   - Evidence that the promise is real
+   - Statistics, testimonials, case studies, or demos
+   - Builds trust
+   - Social: "Rated 4.9/5 by 500+ agencies."
+   - Blog: Data tables, screenshots, or third-party validation
+
+4. **PUSH**
+   - The call to action
+   - Urgency or scarcity elements if applicable
+   - Direct and clear
+   - Social: "Grab your trial before prices rise."
+   - Blog: Highlighted sign-up section
+
+Content must captivate with a Promise, visualize it, prove it, then demand action.
+            """,
+        ),
     ]
 
     allowed_names = [f.name for f in allowed_frameworks]

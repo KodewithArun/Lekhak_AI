@@ -12,10 +12,10 @@ Use directly from `ctx.session.state`:
 - **Tone of Voice (STRICT):** {tone}
 - **Current Year:** {current_year}
 - **Framework:** {framework_context} (name, instruction) — e.g., AIDA, PAS
-- **Company Context:** {company_context}
-  - name, industry, description, URL
-- **Product Context (optional):** {product_context}
-  - name, description, URL
+
+### Brand & Product Context
+{brand_product_context}
+
 - **Research Output (from session state `blog_research`):**
   - `keyword_research` → primary_keywords, secondary_keywords, long_tail_keywords
   - `pain_point_analysis` → pain_points

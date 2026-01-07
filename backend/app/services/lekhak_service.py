@@ -43,11 +43,15 @@ def _get_agent_client() -> AgentClient:
 
 
 async def _get_context_data(
-    company_id: Optional[int] = None,
+    company_id: int,
     product_id: Optional[int] = None,
     framework_id: Optional[int] = None,
+    use_company_as_product: bool = False,
 ) -> dict:
     """Get company, product, and framework context from database.
+
+    If product_id is not provided and use_company_as_product is True (or product_id
+    is None with a valid company), company information will be used as product context.
 
     Returns a dict with keys: company_context, product_context, framework_context
     All values are dicts ready for session state injection.
@@ -89,6 +93,22 @@ async def _get_context_data(
                 context["product_description"] = product.description
                 context["product_url"] = product.url
 
+        # Use company as product if no product_id provided and company exists
+        elif "company_context" in context:
+            company_ctx = context["company_context"]
+            logger.info(
+                f"Using company '{company_ctx['name']}' as product (auto-fallback)"
+            )
+            context["product_context"] = ProductContext(
+                product_id=0,  # Virtual product ID
+                name=company_ctx["name"],
+                description=company_ctx["description"],
+                url=company_ctx["url"],
+            ).model_dump()
+            context["product_name"] = company_ctx["name"]
+            context["product_description"] = company_ctx["description"]
+            context["product_url"] = company_ctx["url"]
+
         # Query framework (default to AIDA if not specified)
         if framework_id:
             result = await db.execute(
@@ -115,17 +135,73 @@ async def _get_context_data(
 
     context["current_year"] = str(datetime.now().year)
 
+    # Generate unified brand_product_context for efficient prompt injection
+    # This follows Google ADK best practice: pre-render context in Python, keep prompts simple
+    _build_brand_product_context(context, use_company_as_product)
+
     return context
+
+
+def _build_brand_product_context(context: dict, use_company_as_product: bool) -> None:
+    """Build a unified brand_product_context string for prompt injection.
+    
+    This pre-renders the company/product context into a single string that adapts
+    based on whether the company IS the product (like Google) or they are separate.
+    
+    Benefits:
+    - Reduces token count in prompts
+    - Avoids redundant information when company=product
+    - Follows ADK best practice of minimal session state
+    """
+    company_ctx = context.get("company_context")
+    product_ctx = context.get("product_context")
+    
+    if not company_ctx:
+        context["brand_product_context"] = "(No company context provided)"
+        return
+    
+    if use_company_as_product or (product_ctx and product_ctx.get("product_id") == 0):
+        # Brand IS the product (e.g., Google, Apple, Nike)
+        context["brand_product_context"] = f"""**Brand:** {company_ctx['name']}
+**Description:** {company_ctx['description']}
+**Industry:** {company_ctx.get('industry', 'Technology')}
+**URL:** {company_ctx['url']}
+
+> This brand represents both the company and its core product/service. 
+> Focus content on brand identity, values, and unified messaging."""
+        logger.info(f"Built unified brand context for '{company_ctx['name']}'")
+    
+    elif product_ctx:
+        # Separate company and product (e.g., InspiringLab → Lekhak)
+        context["brand_product_context"] = f"""**Company:** {company_ctx['name']}
+**Company Description:** {company_ctx['description']}
+**Industry:** {company_ctx.get('industry', 'Technology')}
+
+**Product:** {product_ctx['name']}
+**Product Description:** {product_ctx['description']}
+**Product URL:** {product_ctx['url']}
+
+> Create content that highlights both the company's credibility and the product's value."""
+        logger.info(f"Built separate company/product context: {company_ctx['name']} → {product_ctx['name']}")
+    
+    else:
+        # Company only, no product
+        context["brand_product_context"] = f"""**Company:** {company_ctx['name']}
+**Description:** {company_ctx['description']}
+**Industry:** {company_ctx.get('industry', 'Technology')}
+**URL:** {company_ctx['url']}"""
+        logger.info(f"Built company-only context for '{company_ctx['name']}'")
 
 
 async def async_generate_content(
     prompt: str,
+    company_id: int,
     user_id: str = "test_user",
     session_id: Optional[str] = None,
-    company_id: Optional[int] = None,
     product_id: Optional[int] = None,
     framework_id: Optional[int] = None,
-    tone: Optional[str] = None,
+    tone: str = "professional",
+    use_company_as_product: bool = False,
 ) -> str:
     start_time = time.time()
     logger.info(f" START GENERATION (Task: {session_id})")
@@ -134,7 +210,10 @@ async def async_generate_content(
     user_request = {"instruction": prompt}
 
     # Fetch all context data in one call (company, product, framework)
-    context_data = await _get_context_data(company_id, product_id, framework_id)
+    # If use_company_as_product is True or product_id is None, company info may be used as product
+    context_data = await _get_context_data(
+        company_id, product_id, framework_id, use_company_as_product
+    )
     default_state.update(context_data)
 
     # Set framework name in user request for planner routing
