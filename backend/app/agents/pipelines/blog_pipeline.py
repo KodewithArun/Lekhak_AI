@@ -6,7 +6,9 @@ This pipeline uses Google ADK (Generative AI SDK) with function calling
 to create SEO-optimized blog content for product marketing.
 """
 
-from google.adk.agents import SequentialAgent, LlmAgent
+from google.adk.agents import LlmAgent, SequentialAgent
+
+from app.callbacks.json_callbacks import repair_json_after_model
 from app.core.setting import GEMINI_MODEL
 from app.schemas.blog_pipeline_schema import (
     BlogOptimizerOutput,
@@ -29,7 +31,7 @@ from app.utils.loggers import get_logger
 
 logger_blog = get_logger("blog_pipeline")
 
-
+# Research agent with JSON repair callback
 blog_researcher = LlmAgent(
     name="blog_researcher",
     model=GEMINI_MODEL,
@@ -43,9 +45,10 @@ blog_researcher = LlmAgent(
     tools=[serp_google_search],
     output_schema=BlogResearchOutput,
     output_key="blog_research",
+    after_model_callback=repair_json_after_model,
 )
 
-
+# Writer agent with JSON repair callback
 blog_writer = LlmAgent(
     name="blog_writer",
     model=GEMINI_MODEL,
@@ -53,8 +56,10 @@ blog_writer = LlmAgent(
     output_schema=BlogWriterOutput,
     instruction=blog_writer_instruction,
     output_key="blog_writer",
+    after_model_callback=repair_json_after_model,
 )
 
+# Optimizer agent with JSON repair callback
 blog_optimizer = LlmAgent(
     name="blog_optimizer",
     model=GEMINI_MODEL,
@@ -62,6 +67,7 @@ blog_optimizer = LlmAgent(
     instruction=blog_optimizer_instruction,
     output_schema=BlogOptimizerOutput,
     output_key="blog_optimizer",
+    after_model_callback=repair_json_after_model,
 )
 
 blog_pipeline_agent = SequentialAgent(
@@ -69,4 +75,4 @@ blog_pipeline_agent = SequentialAgent(
     description="Complete blog content creation pipeline. Flow: Research → Write → Optimize",
     sub_agents=[blog_researcher, blog_writer, blog_optimizer],
 )
-logger_blog.info("Blog pipeline initialized")
+logger_blog.info("Blog pipeline initialized with JSON repair callbacks")
