@@ -15,6 +15,7 @@ class ContentRequest(BaseModel):
     company_id: Optional[int] = None
     product_id: Optional[int] = None
     framework_id: Optional[int] = None
+    tone: Optional[str] = None
 
 
 class ContentResponse(BaseModel):

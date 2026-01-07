@@ -16,10 +16,15 @@ TASK:
      - topic (keep it SHORT - max 10 words)
      - platform (linkedin | instagram | twitter | facebook | blog | general)
      - content_intention
+     - tone (pass through the provided tone exactly)
    OPTIONAL:
      - target_audience
-     - tone (professional | casual | friendly | authoritative)
      - requirements (list of additional user instructions)
+     
+IMPORTANT TONE RULE:
+- A user-selected tone is provided in the input (UserRequest).
+- You MUST pass through the provided tone exactly in the output.
+- DO NOT infer, modify, or override the tone.
 
 3. Route request:
    - pipeline_type: "social" | "blog" | "both" | "none"

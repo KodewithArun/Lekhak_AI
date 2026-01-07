@@ -46,6 +46,7 @@ class PlannerOutput(BaseModel):
         description="Selected content pipeline"
     )
     platform: str = Field(default="linkedin", description="Target platform")
+    tone: str = Field(description="Selected tone for content generation")
     content_intention: Literal[
         "educate",
         "promote",

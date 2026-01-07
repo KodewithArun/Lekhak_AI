@@ -26,6 +26,11 @@ This contains the draft you will be refining:
 - Company Description: `{company_context.description}` - The source of truth for brand voice.
 - Industry: `{industry}` - For credibility signals.
 
+### Content Tone
+- **Tone of Voice (STRICT):** {tone}
+- You MUST maintain the exact specified tone throughout optimization
+- DO NOT alter the tone - only refine expression within the same tone
+
 ---
 
 ## THE OPTIMIZATION PROTOCOL
@@ -249,7 +254,7 @@ Before submitting, run through this final checklist:
 - [ ] Have ALL banned AI words/phrases been removed and rewritten?
 - [ ] Is sentence rhythm varied (Short-Short-Long)?
 - [ ] Are contractions used throughout?
-- [ ] Does the tone match `{company_context.description}` brand voice?
+- [ ] Does the tone match the specified `{tone}` exactly (not just brand voice)?
 - [ ] Is the CTA low-friction and platform-appropriate?
 - [ ] Are hashtags relevant, correctly placed, and not spammy?
 - [ ] Would YOU engage with this post if you saw it on `{platform}`?

@@ -98,7 +98,9 @@ def get_conversations():
         return []
 
 
-def generate_content(prompt, company_id=None, product_id=None, framework_id=None):
+def generate_content(
+    prompt, company_id=None, product_id=None, framework_id=None, tone=None
+):
     try:
         # Use unique user_id from session state
         user_id = st.session_state.get("user_id", "streamlit_user")
@@ -113,7 +115,8 @@ def generate_content(prompt, company_id=None, product_id=None, framework_id=None
             payload["product_id"] = product_id
         if framework_id:
             payload["framework_id"] = framework_id
-
+        if tone:
+            payload["tone"] = tone
         response = requests.post(f"{API_BASE_URL}/content/generated/", json=payload)
         if response.status_code == 200:
             return response.json()
@@ -201,6 +204,23 @@ if page == "Generate Content":
                 # Minimal info (optional, or remove entirely if "separate navigation" means strictly separate)
                 # st.caption(selected_fw.get('description', ''))
 
+        # select the tone of voice
+        tone = st.selectbox(
+            "Select Tone of Voice",
+            [
+                "Professional",
+                "Casual",
+                "Conversational",
+                "Friendly",
+                "Formal",
+                "Authoritative",
+                "Inspirational",
+                "Educational",
+                "Emotional",
+                "Storytelling",
+            ],
+        )
+
         # Content request
         user_prompt = st.text_area("Enter your content request", height=150)
 
@@ -209,10 +229,11 @@ if page == "Generate Content":
             if user_prompt:
                 with st.spinner("Generating..."):
                     result = generate_content(
-                        user_prompt,
-                        selected_company_id,
-                        selected_product_id,
-                        selected_framework_id,
+                        prompt=user_prompt,
+                        company_id=selected_company_id,
+                        product_id=selected_product_id,
+                        framework_id=selected_framework_id,
+                        tone=tone,
                     )
 
                     if result:

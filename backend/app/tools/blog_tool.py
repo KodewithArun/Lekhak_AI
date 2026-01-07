@@ -38,7 +38,7 @@ def serp_google_search(
             "engine": "google",
             "hl": "en",
             "gl": "us",
-            "num": 15,
+            "num": 8,
         }
 
         logger.info(f"Performing SERPAPI search for query: '{query}'")
@@ -189,6 +189,8 @@ def extract_pain_points(serp_data: Dict[str, Any]) -> List[str]:
     pain_points = []
 
     for q in serp_data.get("people_also_ask", []):
+        if q is None:
+            continue
         q_lower = q.lower()
         # look for keywords indicating pain points
         if any(
@@ -207,6 +209,8 @@ def extract_pain_points(serp_data: Dict[str, Any]) -> List[str]:
             pain_points.append(q)
 
     for s in serp_data.get("related_searches", []):
+        if s is None:
+            continue
         s_lower = s.lower()
         # look for comparison or problem-related terms
         if any(w in s_lower for w in ["vs", "alternatives", "problems", "review"]):

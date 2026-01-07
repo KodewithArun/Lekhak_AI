@@ -106,7 +106,7 @@ async def _get_context_data(
                 "description": framework.description,
                 "instruction": framework.instruction,
             }
-            context["framework_name"] = framework.name 
+            context["framework_name"] = framework.name
             context["framework_description"] = framework.description
             context["framework_instruction"] = framework.instruction
             logger.info(f"Framework selected: {framework.name}")
@@ -125,6 +125,7 @@ async def async_generate_content(
     company_id: Optional[int] = None,
     product_id: Optional[int] = None,
     framework_id: Optional[int] = None,
+    tone: Optional[str] = None,
 ) -> str:
     start_time = time.time()
     logger.info(f" START GENERATION (Task: {session_id})")
@@ -139,6 +140,10 @@ async def async_generate_content(
     # Set framework name in user request for planner routing
     if "framework_context" in context_data:
         user_request["framework_name"] = context_data["framework_context"]["name"]
+
+    # Set tone in user request (planner will handle storing in session)
+    selected_tone = tone or "professional"
+    user_request["tone"] = selected_tone
 
     # Initialize agent client and create session
     client = _get_agent_client()

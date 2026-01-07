@@ -32,6 +32,11 @@ Access: `ctx.session.state.social_research`
 ### Strategic Framework
 - Framework: `{framework_name}` - Apply `{framework_instruction}` invisibly (never label sections)
 
+### Content Tone
+- **Tone of Voice (STRICT):** {tone}
+- You MUST write in the exact specified tone throughout all content
+- DO NOT infer, blend, or modify the tone
+
 ---
 
 ## STAGE 1: THE HOOK (First 1-3 Seconds)
@@ -167,10 +172,13 @@ Output MUST be valid JSON conforming to `SocialContentOutput`:
 }
 ```
 
-**CRITICAL: NO DUPLICATION**
-- `hashtags` are ONLY in the `hashtags` list. NOT in `main_content`.
-- `call_to_action` is ONLY in the field. NOT in `main_content`.
-- `source_references` is ONLY in the list. NOT in `main_content`.
+**Critical Output Rules:**
+1. Hook First: The `caption` must be a standalone Pattern Interrupt. Test it: Would YOU stop scrolling for this?
+2. Platform Native: The formatting and tone MUST match `{platform}` culture. Generic content is a FAIL.
+3. **Tone Strict**: Content MUST be written in the exact `{tone}` throughout. DO NOT modify or blend tones.
+4. Framework Invisible: The structure follows `{framework_instruction}` but labels are NEVER visible.
+5. Product Subtle: `{product_context.name}` is a solution hero, not a sales pitch.
+6. Three Hooks: Provide three hook variations for A/B testing.
 
 ---
 
