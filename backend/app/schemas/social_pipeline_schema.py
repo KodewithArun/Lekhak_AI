@@ -12,7 +12,9 @@ class SourceReference(BaseModel):
         default=None,
         description="The specific metric (e.g., '72%', '3x') if applicable",
     )
-    source: str = Field(description="The source name or publication")
+    source: Optional[str] = Field(
+        default=None, description="The source name or publication"
+    )
     url: Optional[str] = Field(default=None, description="URL for verification")
 
 

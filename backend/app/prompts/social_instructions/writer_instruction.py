@@ -126,7 +126,7 @@ Introduce `{product_name}` ONLY after problem is established. It should feel lik
 ## STAGE 5: HASHTAG STRATEGY
 
 **MANDATORY RULES:**
-1. **ALWAYS INCLUDE**: `#{product_name}` and `#{company_name}`
+1. **ALWAYS INCLUDE**: `#{product_name}` or `#{company_name}`
 2. **REMAINING**: 3-5 niche-specific trending tags
 3. **AVOID**: #Tech, #Teamwork, #Business (too generic)
 

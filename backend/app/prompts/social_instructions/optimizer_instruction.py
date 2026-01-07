@@ -31,183 +31,180 @@ This contains the draft you will be refining:
 - You MUST maintain the exact specified tone throughout optimization
 - DO NOT alter the tone - only refine expression within the same tone
 
----
-
-## THE OPTIMIZATION PROTOCOL
-
-### STAGE 1: THE "VIBE CHECK" (Platform Authenticity Audit)
-
-**Objective:** Ensure the content FEELS like it belongs on `{platform}`. Users can instantly detect "off-platform" content.
-
-**Platform-Specific Vibe Calibration:**
-
-**If `{platform}` is LinkedIn:**
-- Vibe: Smart professional sharing insights. Not corporate, not casual.
-- Voice Check: Does it sound like a respected peer, not a marketing department?
-- Format Check: Line breaks every 1-2 sentences? Short paragraphs? 3-5 hashtags at end?
-- Red Flags:
-  - Too casual ("Hey guys!" - NO)
-  - Too corporate ("We are pleased to announce..." - NO)
-  - Wall of text (NO)
-- Fixes:
-  - Add more line breaks.
-  - Replace corporate language with first-person insights.
-  - Ensure the opening line is a hook, not a greeting.
-
-**If `{platform}` is Twitter/X:**
-- Vibe: Sharp, opinionated, fast. Like a smart friend sharing a hot take.
-- Voice Check: Is every single word necessary? Can you cut 20%?
-- Format Check: Under 280 chars for single tweets? Thread numbered correctly? 1-3 hashtags max?
-- Red Flags:
-  - Too formal (NO)
-  - Overly promotional (NO)
-  - Long sentences (NO)
-- Fixes:
-  - Cut ruthlessly. Every word must earn its place.
-  - Make it punchier. Replace passive voice with active.
-  - Add a bold or contrarian edge if it feels flat.
-
-**If `{platform}` is Instagram:**
-- Vibe: Authentic, relatable, visually-conscious. Like a creator sharing a moment.
-- Voice Check: Does it feel personal? Is there emotional resonance?
-- Format Check: Hook in first line? Emojis strategically placed (3-5)? CTA at end? Hashtags in caption or first comment?
-- Red Flags:
-  - Too professional/corporate (NO)
-  - Wall of text without breaks (NO)
-  - Forced hashtags (NO)
-- Fixes:
-  - Add relatable language ("I've been there too").
-  - Use emojis to break up text and add personality.
-  - Ensure the CTA is soft and community-oriented.
-
-**If `{platform}` is Facebook:**
-- Vibe: Friendly, conversational, community-focused. Like sharing with friends.
-- Voice Check: Would you say this to a friend at a dinner party?
-- Format Check: Questions to drive comments? Inclusive language? 1-3 hashtags max or none?
-- Red Flags:
-  - Too formal (NO)
-  - No questions or engagement prompts (BAD)
-  - Excessive hashtags (NO)
-- Fixes:
-  - Add a question at the end to drive comments.
-  - Use "you" and "we" to create connection.
-  - Keep it conversational.
+### Framework
+- **Framework (STRICT):** {framework_instruction} 
+- You MUST maintain the exact specified framework throughout optimization
+- DO NOT alter the framework - only refine expression within the same framework
 
 ---
 
-### STAGE 2: THE "ANTI-AI" FIREWALL (Language Humanization)
-
-**Objective:** Remove all traces of robotic, AI-generated language that kills engagement.
-
-** CRITICAL: NO EMOJIS ALLOWED **
-- REMOVE ALL EMOJIS from the content. Zero exceptions.
-- No emoji bullets (no ✨, ✅, 📉, 🔗, etc.)
-- Use plain text bullets (-, *) or numbered lists instead.
-- If the Writer used emojis, REMOVE THEM ALL.
-
-**Banned Words & Phrases (MANDATORY REWRITE):**
-
-| Category | Banned Phrases | Replacement Strategy |
-|---|---|---|
-| Generic Openers | "In today's digital world...", "Have you ever thought about...", "Imagine a world where...", "Imagine this:" | Start with a hook or bold statement. |
-| AI Power Words | "Unlock", "Unleash", "Elevate", "Empower", "Transform", "Revolutionize", "Supercharge", "Supercharged", "Smash", "Conquer", "Skyrocket", "Turbocharge" | Use specific, concrete language. "Get", "Learn", "See", "Try", "Use". |
-| Hype Words | "Game-changing", "Next-level", "World-class", "Cutting-edge", "State-of-the-art", "Seamless", "Robust", "Dynamic", "Synergy", "Leverage" | Delete or replace with specifics. |
-| Military/Sports Metaphors | "In lockstep", "Tanking", "Crushing it", "Killing it", "Dominate", "Conquer", "Battle-tested" | Use normal language instead. |
-| Weak Connectives | "Furthermore", "Moreover", "Additionally", "In conclusion" | Delete or use conversational bridges: "And", "But", "So". |
-| Corporate Speak | "We are thrilled to announce...", "Our team is excited to share...", "We're pleased to offer...", "We designed our platform to..." | First-person insight or direct statement. |
-| Signposting | "It's important to note...", "As mentioned earlier...", "Let me explain...", "Here's the thing:" | Just say the thing directly. |
-| Filler Phrases | "In fact", "Actually", "Basically", "Essentially", "Literally" | Delete these entirely. |
-
-**Sentence Rhythm Optimization:**
-- Apply "Short-Short-Long" pattern for natural variety.
-- AI tends to write sentences of similar length. Mix it up.
-- Short sentence. Another short one. Then a longer, more descriptive sentence that gives the reader room to breathe.
-
-**Contractions Enforcement:**
-- Replace "do not" with "don't"
-- Replace "it is" with "it's"
-- Replace "you will" with "you'll"
-- This makes the content feel conversational.
-
-**Relatable Asides:**
-- Add 1-2 human touches: "(Let's be honest...)", "(I know, I know...)", "(Hear me out on this.)"
-- These break the "perfect AI" pattern and build connection.
+### Your Mission
+Apply three optimization layers:
+1. **Platform Native Adaptation**: Make content feel native to `{platform}`
+2. **Human Language Polish**: Remove all AI-sounding language
+3. **Algorithm Optimization**: Enhance for reach and engagement
 
 ---
 
-### STAGE 3: REACH OPTIMIZATION (Algorithm-Friendly Enhancements)
+## OPTIMIZATION PROTOCOL
 
-**Objective:** Optimize the content for maximum algorithmic reach on `{platform}`.
+### LAYER 1: PLATFORM NATIVENESS AUDIT
 
-**Hook Polish (MAKE IT BOLDER):**
-- The `caption` (hook) is the single most important element.
-- Does it create curiosity? Does it trigger emotion? Does it make the user NEED to read more?
-- If the Writer's hook is weak, REWRITE IT using the STAT-FIRST formula:
-  - WEAK: "Is your communication clarity costing you?"
-  - STRONG: "Your team loses 3+ hours/week to one invisible problem."
-- Always prefer leading with a specific number when statistics are available.
-- Test against the "Scroll Test": Would this make YOU stop scrolling?
+**Platform-Specific Requirements:**
 
-**Engagement Trigger Optimization:**
-- Ensure the content ends with an engagement prompt:
-  - LinkedIn: "What's your take?" / "Agree or disagree?"
-  - Twitter/X: "Retweet if you agree" / "Reply with your [X]"
-  - Instagram: "Save this for later." / "Share with someone who needs this"
-  - Facebook: "Tag a friend" / "What do you think?"
+**LinkedIn (Professional Insight Network):**
+- Target Audience: Professionals, decision-makers, B2B
+- Optimal Format:
+  - Hook: Professional curiosity or contrarian insight
+  - Body: Line breaks every 1-2 sentences, bullet points, professional tone
+  - Length: 900-1500 characters
+  - Hashtags: 3-5 at end, no emojis
+  - CTA: "Learn more" or "What's your take?"
+- Red Flags: Too casual, emojis, excessive hashtags, corporate speak
+- Fixes: Add professional insights, use data-backed claims, end with discussion question
 
-**Generic Headline Ban:**
-- ❌ BAN: "Understanding [Topic]...", "Navigating the landscape of...", "Unlocking the power of..." (Too journalistic/AI).
-- ✅ USE: Direct statements, questions, or "I've been thinking about..."
+**Twitter/X (Real-Time Conversation Platform):**
+- Target Audience: News-seekers, influencers, quick scanners
+- Optimal Format:
+  - Hook: Punchy, bold, under 280 chars
+  - Body: Short sentences, active voice, thread if needed
+  - Length: Single tweet 280 chars max, threads 3-5 tweets
+  - Hashtags: 1-3 max, no emojis
+  - CTA: "Reply with" or "Retweet if"
+- Red Flags: Long sentences, formal language, multiple CTAs
+- Fixes: Cut ruthlessly, make it punchy, add hot take angle
 
-**CTA Optimization (SHARPER & FASTER):**
-- **Formula:** `[Specific Benefit] in [Timeframe/Effort] -> {product_url}`
-- ❌ WEAK: "Use technology to investigate the ecosystem." (Process-focused, boring)
-- ✅ STRONG: "Explore Nepal’s IT landscape in minutes: {product_url}" (Outcome-focused)
-- ✅ STRONG: "Find your next dev role today: {product_url}"
-- Ensure `cta` is populated with this sharper version.
+**Instagram (Visual & Community Platform):**
+- Target Audience: Creators, visual learners, communities
+- Optimal Format:
+  - Hook: Emotional, relatable first line
+  - Body: Clean paragraphs, story-like flow
+  - Length: 500-800 characters
+  - Hashtags: 5-8 at end, no emojis
+  - CTA: "Save this" or "Share with"
+- Red Flags: Too corporate, walls of text, no emotional hook
+- Fixes: Add personal voice, create visual language, make it save-worthy
 
-**Hashtag Audit (SPECIFICITY & BRANDING):**
+**Facebook (Community & Connection Platform):**
+- Target Audience: General users, communities, groups
+- Optimal Format:
+  - Hook: Question or relatable statement
+  - Body: Conversational, community-focused
+  - Length: 400-800 characters
+  - Hashtags: 0-3 max, no emojis
+  - CTA: "Tag a friend" or "Share your experience"
+- Red Flags: Formal tone, no engagement prompts, too promotional
+- Fixes: Make it conversational, add we/you language, end with question
 
-**Hashtag Audit (SPECIFICITY & BRANDING):**
-- **DEDUPLICATION**: Ensure no duplicate hashtags (case-insensitive). If you have `#NepalIT` and `#nepalit`, keep only one.
-- **MANDATORY CHECK**: Must include `#{product_name}` AND `#{company_name}`
-  - FAIL: Missing either brand tag
-  - PASS: Includes both brand tags + niche tags
-- Verify remaining hashtags are:
-  - NOT generic (#Tech, #Teamwork, #Business - too broad, remove these)
-  - Niche-specific (#DistributedTeams, #DevOps, #EngineeringManagement)
-  - Role-specific (#TechLeaders, #CTOLife, #StartupFounders)
-- Replace any generic hashtags with niche/trending alternatives
-- Ensure total count matches platform rules (e.g., LinkedIn ~5)
+**CRITICAL FOR ALL PLATFORMS: NO EMOJIS**
+- Remove ALL emojis from content
+- Use plain text bullets (*, -) or numbered lists
+- This is non-negotiable for this brand
 
-**Source Citation Audit:**
-- EVERY statistic must have inline citation (source name + year)
-- FAIL: "64% of employees waste time on this." (no source)
-- PASS: "64% of employees waste time on this (Atlassian 2024)."
-- If a stat has no source, either add one from research or remove the stat
+### LAYER 2: HUMAN LANGUAGE POLISH
+
+**AI Language Detection & Removal:**
+
+**Banned Categories (REWRITE IMMEDIATELY):**
+
+1. **AI Power Words** (Replace with specific language):
+   - "unlock, unleash, elevate, empower, transform"
+   - "get, learn, see, try, use, find"
+
+2. **Corporate Jargon** (Replace with plain language):
+   - "leverage, synergy, robust, seamless, dynamic"
+   - "use, work together, strong, smooth, active"
+
+3. **Generic Openers** (Replace with direct hooks):
+   - "In today's digital world..." "Have you ever..."
+   - Direct statement or question
+
+4. **Weak Connectives** (Delete or simplify):
+   - "Furthermore, Moreover, Additionally"
+   - "And, But, So, Also" or just delete
+
+5. **Hype Language** (Replace with specifics):
+   - "game-changing, next-level, revolutionary"
+   - Describe what actually changed or improved
+
+**Human Language Techniques:**
+
+1. **Sentence Rhythm**:
+   - Vary sentence lengths
+   - Pattern: Short. Short. Longer explanation.
+   - Avoid uniform sentence structure
+
+2. **Contractions**:
+   - Use: don't, can't, won't, it's, you're
+   - Makes content conversational
+
+3. **Relatable Asides**:
+   - Add: "(Let's be real...)", "(I know...)", "(Here's what I found...)"
+   - Builds human connection
+
+4. **Active Voice**:
+   - "It has been found that..." (passive)
+   - "I found that..." or "Research shows..." (active)
+
+5. **Specificity Over Generality**:
+   - "Improve your results"
+   - "Save 3 hours per week on admin tasks"
+
+### LAYER 3: ALGORITHM & ENGAGEMENT OPTIMIZATION
+
+**Hook Optimization (Most Critical):**
+- Apply the "Scroll Test": Would YOU stop scrolling for this?
+- Prefer STAT-FIRST when data available: "[X]% of [audience] [pain]"
+- Make it bold, specific, curiosity-driven
+- NEVER start with brand/product name
+
+**Engagement Engineering:**
+- End with platform-appropriate engagement prompt:
+  - LinkedIn: "What's your biggest challenge with this?"
+  - Twitter/X: "Reply with your take"
+  - Instagram: "Save this for when you need it"
+  - Facebook: "Tag someone who should see this"
+
+**CTA Optimization:**
+- Format: `[Benefit] in [Time/Effort]: {product_url}`
+- Examples:
+  - "Find Nepal's top IT companies in minutes: {product_url}"
+  - "Try it free for 14 days: {product_url}"
+  - "Learn how it works: {product_url}"
+
+**Hashtag Strategy:**
+**Mandatory:**
+1. `#{product_name.replace(" ", "")}`
+2. `#{company_name.replace(" ", "")}`
+
+**Quality Rules:**
+- Remove duplicates (case-insensitive)
+- No generic tags (#Tech, #Business, #Marketing)
+- Use niche tags from research
+- Platform-appropriate quantities:
+  - LinkedIn: 3-5 total
+  - Twitter/X: 1-3 total
+  - Instagram: 5-8 total
+  - Facebook: 0-3 total
+
+**Source Verification:**
+- All statistics must have inline citation: "(Source Year)"
+- Verify claims are accurate to research
+- Populate `sources` field with all used sources
+
+### LAYER 4: BRAND & TONE ALIGNMENT
+
+**Tone Enforcement:**
+- Tone: `{tone}`
+- Read entire content aloud - does it consistently match?
+- Do NOT blend or modify the specified tone
+
+**Brand Voice Check:**
+- Align with `{company_description}` personality
+- Ensure industry terminology is accurate
+- Maintain professional credibility
 
 ---
-
-### STAGE 4: BRAND VOICE ALIGNMENT
-
-**Objective:** Ensure the content sounds like `{company_context.name}`, not a generic brand.
-
-**Voice Calibration:**
-Analyze `{company_context.description}` and calibrate:
-
-| Persona Type | Optimization Style |
-|---|---|
-| Bold / Disruptive | Make it punchier. Add contrarian edge. Use confident assertions. |
-| Trusted Advisor | Make it warmer. Add supportive language. Use "we" and empathy. |
-| Technical Expert | Ensure precision. Verify data accuracy. Add specific terms. |
-| Friendly Guide | Make it casual. Add humor or personality. Use everyday language. |
-
-**Industry Credibility:**
-- Ensure `{industry}` terminology is used correctly.
-- 1-2 insider terms signal authenticity to the target audience.
-
----
-
 ## SCHEMA ENFORCEMENT
 
 Your output MUST be a valid JSON object conforming to `OptimizedContent`:

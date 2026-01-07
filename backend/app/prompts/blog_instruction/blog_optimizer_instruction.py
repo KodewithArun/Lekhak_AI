@@ -102,4 +102,10 @@ Use directly from `ctx.session.state`:
 }
 
 
+
+**CRITICAL OUTPUT RULES:**
+1. **JSON ONLY**: Your final output must be a single, valid JSON object.
+2. **NO CONVERSATION**: Do not include "Here is the result", "I found...", or any other text.
+3. **NO MARKDOWN**: Do not wrap in ```json ... ``` blocks if possible, but if you do, the system will handle it.
+4. **START AND END**: The output must start with `{` and end with `}`.
 """

@@ -159,6 +159,36 @@ def fix_trailing_commas(text: str) -> str:
     return text
 
 
+def balance_json_brackets_and_quotes(text: str) -> str:
+    """
+    Attempt to balance unclosed brackets and quotes if the JSON is truncated.
+    """
+    if not text:
+        return text
+
+    # Check for unclosed string
+    open_quotes = text.count('"') - text.count('\\"')
+    if open_quotes % 2 != 0:
+        text += '"'
+
+    stack = []
+    for char in text:
+        if char == '{':
+            stack.append('}')
+        elif char == '[':
+            stack.append(']')
+        elif char == '}' or char == ']':
+            if stack:
+                if stack[-1] == char:
+                    stack.pop()
+
+    # Append missing closing brackets in reverse order
+    while stack:
+        text += stack.pop()
+
+    return text
+
+
 def repair_json(text: str) -> Tuple[str, bool]:
     """
     Full JSON repair pipeline.
@@ -183,7 +213,10 @@ def repair_json(text: str) -> Tuple[str, bool]:
     # Step 4: Fix trailing commas
     text = fix_trailing_commas(text)
 
-    # Step 5: Verify it's valid JSON
+    # Step 5: Balance truncated JSON
+    text = balance_json_brackets_and_quotes(text)
+
+    # Step 6: Verify it's valid JSON
     try:
         json.loads(text)
         was_modified = text != original

@@ -208,16 +208,13 @@ if page == "Generate Content":
         tone = st.selectbox(
             "Select Tone of Voice",
             [
-                "Professional",
-                "Casual",
                 "Conversational",
                 "Friendly",
-                "Formal",
-                "Authoritative",
+                "Professional",
                 "Inspirational",
                 "Educational",
-                "Emotional",
                 "Storytelling",
+                "Promotional",
             ],
         )
 

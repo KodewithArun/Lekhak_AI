@@ -93,6 +93,8 @@ For each planned query:
 
 ### Step 5: Build Output (JSON Only)
 
+**CRITICAL: Return valid JSON only. No strings, no markdown, no conversation.**
+
 Return exactly in this format:
 
 {
@@ -120,4 +122,10 @@ Return exactly in this format:
 - Queries should be **merged intelligently** to minimize API calls.
 - Prioritize **actionable insights**, verified keywords, and sources for high-quality blog content.
 - **Always call `serp_google_search(query)` explicitly** for each query; do not skip.
+
+**CRITICAL OUTPUT RULES:**
+1. **JSON ONLY**: Your final output must be a single, valid JSON object.
+2. **NO CONVERSATION**: Do not include "Here is the result", "I found...", or any other text.
+3. **NO MARKDOWN**: Do not wrap in ```json ... ``` blocks if possible, but if you do, the system will handle it.
+4. **START AND END**: The output must start with `{` and end with `}`.
 """
