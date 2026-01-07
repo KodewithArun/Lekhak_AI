@@ -73,9 +73,9 @@ class RouterAgent(BaseAgent):
             ctx.session.state["topic"] = planner_output.topic
             ctx.session.state["platform"] = planner_output.platform
             ctx.session.state["tone"] = planner_output.tone
-            ctx.session.state["content_intention"] = planner_output.content_intention
+
             logger.info(
-                f"Context injected: topic='{planner_output.topic}', platform='{planner_output.platform}', tone='{planner_output.tone}', content_intention='{planner_output.content_intention}'"
+                f"Context injected: topic='{planner_output.topic}', platform='{planner_output.platform}', tone='{planner_output.tone}'"
             )
 
             if pipeline_type == "social":

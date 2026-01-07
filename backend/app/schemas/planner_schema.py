@@ -47,19 +47,6 @@ class PlannerOutput(BaseModel):
     )
     platform: str = Field(default="linkedin", description="Target platform")
     tone: str = Field(description="Selected tone for content generation")
-    content_intention: Literal[
-        "educate",
-        "promote",
-        "engage",
-        "storytelling",
-        "persuade",
-        "inform",
-        "inspire",
-        "thought_leadership",
-    ] = Field(
-        default="inform",
-        description="Primary intention/purpose of the content",
-    )
     clarification_needed: Optional[str] = Field(
         default=None,
         description="Message requesting clarification from user if should_proceed is False",

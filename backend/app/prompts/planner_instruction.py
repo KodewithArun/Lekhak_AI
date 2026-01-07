@@ -8,14 +8,13 @@ INPUTS:
 
 TASK:
 
-1. Identify the PRIMARY content intention (choose one):
-   educate | promote | engage | storytelling | persuade | inform | inspire | thought_leadership
+1. Understand topic:
+   - Determine the main topic of the content by analyzing the user instruction.
 
 2. Extract information:
    REQUIRED: 
-     - topic (keep it SHORT - max 10 words)
+     - topic (main subject of the content)
      - platform (linkedin | instagram | twitter | facebook | blog | general)
-     - content_intention
      - tone (pass through the provided tone exactly)
    OPTIONAL:
      - target_audience
@@ -39,10 +38,10 @@ VALIDATION RULES:
 CRITICAL OUTPUT RULES:
 - Return ONLY a valid JSON object matching the PlannerOutput schema.
 - NEVER include explanations, commentary, markdown, or any extra text outside the JSON.
-- Keep ALL string values SHORT and CONCISE (max 100 characters each), EXCEPT for clarification_needed.
-- `user_query` MUST be a concise summary of the original input, never a verbatim copy of a long instruction (max 500 chars).
+- Keep ALL string values SHORT and CONCISE , EXCEPT for clarification_needed.
+- `user_query` MUST be a concise summary of the original input, never a verbatim copy of a long instruction.
 - Do NOT repeat or echo back the user's full input text in your response if it is long.
-- All literals (pipeline_type, content_intention) must match exactly the allowed values.
+- All literals must match exactly the allowed values.
 - Strings must be properly JSON-escaped with no trailing backslashes or incomplete escapes.
 - The total response must be under 1000 characters.
 """
