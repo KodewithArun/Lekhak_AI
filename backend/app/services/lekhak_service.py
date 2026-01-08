@@ -99,12 +99,16 @@ async def _get_context_data(
             logger.info(
                 f"Using company '{company_ctx['name']}' as product (auto-fallback)"
             )
-            context["product_context"] = ProductContext(
-                product_id=0,  # Virtual product ID
-                name=company_ctx["name"],
-                description=company_ctx["description"],
-                url=company_ctx["url"],
-            ).model_dump()
+        # Use company as product if no product_id provided and company exists
+        elif "company_context" in context:
+            company_ctx = context["company_context"]
+            logger.info(
+                f"Using company '{company_ctx['name']}' as product (auto-fallback)"
+            )
+            
+            context["is_company_as_product"] = True
+            
+            # Map company details to product fields for template compatibility
             context["product_name"] = company_ctx["name"]
             context["product_description"] = company_ctx["description"]
             context["product_url"] = company_ctx["url"]
@@ -160,7 +164,7 @@ def _build_brand_product_context(context: dict, use_company_as_product: bool) ->
         context["brand_product_context"] = "(No company context provided)"
         return
     
-    if use_company_as_product or (product_ctx and product_ctx.get("product_id") == 0):
+    if use_company_as_product or context.get("is_company_as_product"):
         # Brand IS the product (e.g., Google, Apple, Nike)
         context["brand_product_context"] = f"""**Brand:** {company_ctx['name']}
 **Description:** {company_ctx['description']}
