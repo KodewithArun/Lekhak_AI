@@ -99,12 +99,6 @@ async def _get_context_data(
             logger.info(
                 f"Using company '{company_ctx['name']}' as product (auto-fallback)"
             )
-        # Use company as product if no product_id provided and company exists
-        elif "company_context" in context:
-            company_ctx = context["company_context"]
-            logger.info(
-                f"Using company '{company_ctx['name']}' as product (auto-fallback)"
-            )
             
             context["is_company_as_product"] = True
             
