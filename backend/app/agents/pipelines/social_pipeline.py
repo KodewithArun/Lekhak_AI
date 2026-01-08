@@ -5,7 +5,6 @@ Sequential flow: Researcher → Writer → Optimizer
 
 from google.adk.agents import LlmAgent, SequentialAgent
 
-from app.callbacks.json_callbacks import repair_json_after_model
 from app.tools.social_search_tool import serp_platform_search
 from app.core.setting import GEMINI_MODEL
 from app.schemas.social_pipeline_schema import (
@@ -26,7 +25,7 @@ from app.prompts.social_instructions.optimizer_instruction import (
 
 logger = get_logger("social_pipeline")
 
-# Research agent with JSON repair callback
+
 social_researcher = LlmAgent(
     name="social_researcher",
     model=GEMINI_MODEL,
@@ -35,10 +34,9 @@ social_researcher = LlmAgent(
     tools=[serp_platform_search],
     output_schema=SocialResearchOutput,
     output_key="social_research",
-    after_model_callback=repair_json_after_model,
 )
 
-# Writer agent with JSON repair callback
+
 social_writer = LlmAgent(
     name="social_writer",
     model=GEMINI_MODEL,
@@ -46,10 +44,9 @@ social_writer = LlmAgent(
     instruction=SOCIAL_AGENT_INSTRUCTION,
     output_schema=SocialContentOutput,
     output_key="social_content",
-    after_model_callback=repair_json_after_model,
 )
 
-# Optimizer agent with JSON repair callback
+
 social_optimizer = LlmAgent(
     name="social_optimizer",
     model=GEMINI_MODEL,
@@ -57,7 +54,6 @@ social_optimizer = LlmAgent(
     instruction=OPTIMIZER_AGENT_INSTRUCTION,
     output_schema=OptimizedContent,
     output_key="optimized_social_content",
-    after_model_callback=repair_json_after_model,
 )
 
 social_pipeline_agent = SequentialAgent(
