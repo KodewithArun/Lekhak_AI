@@ -134,6 +134,9 @@ def generate_content(
 if "user_id" not in st.session_state:
     st.session_state["user_id"] = str(uuid.uuid4())
 
+if "tone_input_mode" not in st.session_state:
+    st.session_state.tone_input_mode = None  # None | "select" | "custom"
+
 
 # Title
 st.title("Lekhak AI")
@@ -205,17 +208,44 @@ if page == "Generate Content":
                 # st.caption(selected_fw.get('description', ''))
 
         # select the tone of voice
-        tone = st.selectbox(
-            "Select Tone of Voice",
-            [
-                "Conversational",
-                "Friendly",
-                "Professional",
-                "Inspirational",
-                "Educational",
-                "Storytelling",
-                "Promotional",
-            ],
+
+        st.info(
+            "Select only one tone. If you enter a custom tone, it will be used even if a predefined tone is selected."
+        )
+
+        # Create two columns for a cleaner layout
+        col1, col2 = st.columns([1, 2])
+
+        with col1:
+            selected_tone = st.selectbox(
+                "Choose a tone",
+                [
+                    "Professional",
+                    "Conversational",
+                    "Friendly",
+                    "Inspirational",
+                    "Educational",
+                    "Storytelling",
+                    "Promotional",
+                ],
+            )
+
+        with col2:
+            custom_tone_input = st.text_input(
+                "Or define a custom tone",
+                placeholder="e.g. calm, confident, founder-style explanation",
+            )
+
+        # Determine last input used
+        if custom_tone_input.strip():  # if user typed something
+            st.session_state.tone_input_mode = "custom"
+        elif selected_tone:  # if user selected dropdown
+            st.session_state.tone_input_mode = "select"
+
+        final_tone = (
+            custom_tone_input.strip()
+            if st.session_state.tone_input_mode == "custom"
+            else selected_tone
         )
 
         # Content request
@@ -230,7 +260,7 @@ if page == "Generate Content":
                         company_id=selected_company_id,
                         product_id=selected_product_id,
                         framework_id=selected_framework_id,
-                        tone=tone,
+                        tone=final_tone,
                     )
 
                     if result:
