@@ -1,7 +1,7 @@
 """Base schema with OpenAI structured output compatibility.
 
 OpenAI's structured output API requires all JSON schemas to have
-`additionalProperties: false` set. This base class configures Pydantic
+all fields marked as required. This base class configures Pydantic
 to generate compliant schemas automatically.
 """
 
@@ -10,15 +10,16 @@ from pydantic import BaseModel, ConfigDict
 
 class StrictSchema(BaseModel):
     """
-    Base model for all schemas used with OpenAI structured output.
+    Base model for all schemas used with structured output.
 
-    This ensures the generated JSON schema includes `additionalProperties: false`
-    and all fields are marked as required, which is mandatory for OpenAI's strict mode.
+    This ensures the generated JSON schema includes all fields
+    marked as required, ensuring compatibility across different providers.
     """
 
     model_config = ConfigDict(
-        # This adds "additionalProperties": false to the JSON schema
-        extra="forbid",
+        extra="ignore",
+        # used ignore to avoid automatic "additionalProperties": false
+        # which Gemini does not support. OpenAI compatibility is handled via LiteLLM patch.
     )
 
     @classmethod
@@ -35,11 +36,8 @@ class StrictSchema(BaseModel):
     def _make_schema_strict(cls, schema: dict) -> dict:
         """Recursively make schema strict for OpenAI."""
         if schema.get("type") == "object" and "properties" in schema:
-            # Force all properties to be required
             schema["required"] = list(schema["properties"].keys())
-            schema["additionalProperties"] = False
 
-        # Recurse into definitions if present
         if "$defs" in schema:
             for def_name, def_schema in schema["$defs"].items():
                 cls._make_schema_strict(def_schema)
