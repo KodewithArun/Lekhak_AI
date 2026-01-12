@@ -27,6 +27,7 @@ SESSION CONTEXT
 - Topic: {topic}
 - Platform: {platform}
 - Industry (if known): {industry}
+- Specific User Pitch/Angle: {user_pitch}
 
 ### Brand & Product Context
 {brand_product_context}
@@ -35,7 +36,7 @@ SESSION CONTEXT
 - Year: {current_year}
 
 IMPORTANT:
-You are researching the BUSINESS TOPIC and CUSTOMER PROBLEM SPACE.
+You are researching the BUSINESS TOPIC and CUSTOMER PROBLEM SPACE based on the Specific User Pitch/Angle provided.
 You are NOT researching social media performance or influencers.
 
 ------------------------

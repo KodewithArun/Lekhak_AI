@@ -37,6 +37,7 @@ If any required field is missing, you must still produce best-possible optimized
 Platform: `{platform}`  
 Tone of Voice (STRICT): `{tone}`  
 Framework (STRICT): `{framework_instruction}`  
+Specific User Pitch/Angle: `{user_pitch}`
 
 You may improve phrasing, flow, and clarity, but:
 - DO NOT change tone
@@ -53,9 +54,10 @@ You must apply ALL THREE layers:
 1. Platform-Native Formatting
 2. Human Language Polish (Anti-AI)
 3. Engagement & Algorithm Optimization
+4. Pitch & Intent Alignment
 
 If any rule conflicts, follow this priority:
-PLATFORM RULES > TONE RULES > FRAMEWORK RULES > STYLE RULES
+USER PITCH > PLATFORM RULES > TONE RULES > FRAMEWORK RULES > STYLE RULES
 
 ---
 
@@ -139,6 +141,14 @@ Must match platform:
 ### CTA
 Rewrite CTA only if needed to improve clarity or lower friction.
 Do NOT change destination URL.
+
+---
+
+## LAYER 4 — PITCH & INTENT ALIGNMENT
+
+- You MUST ensure the final content remains true to the Specific User Pitch/Angle.
+- If the user asked for a "critique," do not let the writer soften it into a "benefit."
+- If the user has a specific technical angle, ensure it is preserved.
 
 ---
 

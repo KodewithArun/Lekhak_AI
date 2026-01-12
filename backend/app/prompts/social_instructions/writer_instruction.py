@@ -46,6 +46,10 @@ DO NOT invent statistics.
 ### Brand & Product Context
 {brand_product_context}
 
+### User Intent
+Specific Pitch/Angle: {user_pitch}
+- Your core message MUST align with this specific pitch.
+
 ### Strategic Framework
 Framework: {framework_name}
 Instruction: {framework_instruction}
