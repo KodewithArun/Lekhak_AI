@@ -1,12 +1,21 @@
 import os
 from dotenv import load_dotenv
 
+from pathlib import Path
 load_dotenv()
+
+# Base Directory (Project Root)
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 # Google API configuration as environment variables for ADK
 GOOGLE_GENAI_USE_VERTEXAI = os.getenv("GOOGLE_GENAI_USE_VERTEXAI", "0")
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
-GEMINI_MODEL = os.getenv("GEMINI_MODEL")
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+
+# Model Configuration
+GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
+OPENAI_MODEL = os.getenv("OPENAI_MODEL", "openai/gpt-4o")
+ACTIVE_PROVIDER = os.getenv("ACTIVE_PROVIDER") 
 
 
 # SerpApi API Key
