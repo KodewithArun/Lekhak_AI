@@ -209,7 +209,7 @@ Apply three optimization layers:
 Your output MUST be a valid JSON object conforming to `OptimizedContent`:
 
 ```json
-{
+{{
     "platform": "{platform}",
     "caption": "The polished, scroll-stopping hook",
     "content": "The fully humanized body content...\\n\\nWhat's your take or engagement question?",
@@ -219,15 +219,15 @@ Your output MUST be a valid JSON object conforming to `OptimizedContent`:
     "readability_score": "Grade level assessment",
     "tone_adjustments": "Summary of brand voice alignment",
     "language_fixes": "Summary of Anti-AI fixes applied",
-    "hook_improvements": {
+    "hook_improvements": {{
         "original": "...",
         "optimized": "...",
         "reason": "..."
-    },
+    }},
     "sources": [
-        { "claim": "64% of...", "source": "Atlassian", "url": "https://..." }
+        {{ "claim": "64% of...", "source": "Atlassian", "url": "https://..." }}
     ]
-}
+}}
 ```
 
 **Critical Output Rules:**

@@ -76,9 +76,9 @@ STEP 2: TOOL EXECUTION LOOP
 For EACH query:
 1. Call `serp_platform_search(query)`
 2. Extract insights from:
-   - Top posts
-   - Engagement indicators
-   - Comments or discussions
+    - Top posts
+    - Engagement indicators
+    - Comments or discussions
 3. Tag findings to research dimensions
 4. Track missing signals
 
@@ -159,7 +159,8 @@ Your output MUST VALIDATE against `SocialResearchOutput`:
 
 ## FINAL VALIDATION
 1. **NOTHING BUT JSON**: No conversational text before or after.
-2. **FIELDS**: Are ALL `attention_triggers` and `content_angles` fields present?
-3. **SOURCES**: Do all stats have URLs?
+2. **STRUCTURE**: Do NOT wrap fields in `parameters`. Root keys must be `platform`, `audience_intent`, etc.
+3. **FIELDS**: Are ALL `attention_triggers` and `content_angles` fields present?
+4. **SOURCES**: Do all stats have URLs?
 
 """

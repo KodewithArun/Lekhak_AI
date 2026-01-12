@@ -1,6 +1,7 @@
 """Service for generating content using Lekhak AI with company and product context."""
 
 import time
+import uuid
 from datetime import datetime
 from typing import Optional
 
@@ -224,7 +225,8 @@ async def async_generate_content(
 
     # Initialize agent client and create session
     client = _get_agent_client()
-    effective_session_id = session_id or user_id
+    # Use provided session_id or generate a new unique one to ensure fresh state
+    effective_session_id = session_id or f"session_{uuid.uuid4()}"
     session = await client.get_or_create_session(
         user_id, session_id=effective_session_id, initial_state=default_state
     )

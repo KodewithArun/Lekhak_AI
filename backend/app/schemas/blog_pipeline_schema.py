@@ -1,11 +1,13 @@
 """Blog pipeline schema models."""
 
 from typing import List, Optional, Dict
-from pydantic import BaseModel, Field, field_validator
+from pydantic import Field, field_validator
+
+from app.schemas.base import StrictSchema
 
 
 # for keyword research
-class KeywordResearch(BaseModel):
+class KeywordResearch(StrictSchema):
     primary_keywords: List[str] = Field(
         description="Primary SEO keywords extracted from SERP data"
     )
@@ -18,7 +20,7 @@ class KeywordResearch(BaseModel):
 
 
 # for competitor research
-class CompetitorResearch(BaseModel):
+class CompetitorResearch(StrictSchema):
     competitor_names: List[str] = Field(
         description="Competitor or alternative product/service names found in SERP results"
     )
@@ -28,14 +30,14 @@ class CompetitorResearch(BaseModel):
 
 
 # for pain point analysis
-class PainPointAnalysis(BaseModel):
+class PainPointAnalysis(StrictSchema):
     pain_points: List[str] = Field(
         description="List of user pain points derived from product features and target audience"
     )
 
 
 # blog research output
-class BlogResearchOutput(BaseModel):
+class BlogResearchOutput(StrictSchema):
     keyword_research: KeywordResearch
     competitor_research: CompetitorResearch
     pain_point_analysis: PainPointAnalysis
@@ -46,7 +48,7 @@ class BlogResearchOutput(BaseModel):
 
 
 # BlogWriter Schema Models
-class BlogSubsection(BaseModel):
+class BlogSubsection(StrictSchema):
     heading: str = Field(
         description="H3 subheading. Introduces a sub-point within an H2 section."
     )
@@ -55,7 +57,7 @@ class BlogSubsection(BaseModel):
     )
 
 
-class BlogSection(BaseModel):
+class BlogSection(StrictSchema):
     heading: str = Field(
         description="H2 section title. Clearly states the main idea this section covers and aligns with the reader’s intent."
     )
@@ -68,7 +70,7 @@ class BlogSection(BaseModel):
     )
 
 
-class BlogWriterOutput(BaseModel):
+class BlogWriterOutput(StrictSchema):
 
     title: str = Field(
         description="H1 blog title under 70 characters. Includes a primary keyword and communicates the main promise of the article."
@@ -135,7 +137,7 @@ class BlogWriterOutput(BaseModel):
 
 
 # optimizer output
-class OptimizedHeading(BaseModel):
+class OptimizedHeading(StrictSchema):
     old: str = Field(description="Original H2/H3 heading from the draft.")
     new: str = Field(description="Improved, clearer, and more engaging heading.")
     reason: str = Field(
@@ -143,7 +145,7 @@ class OptimizedHeading(BaseModel):
     )
 
 
-class ContentFix(BaseModel):
+class ContentFix(StrictSchema):
     issue: str = Field(description="Specific content or structure problem detected.")
     suggestion: str = Field(description="Actionable guidance to fix the issue.")
     section_reference: str = Field(
@@ -151,7 +153,7 @@ class ContentFix(BaseModel):
     )
 
 
-class SEOImprovement(BaseModel):
+class SEOImprovement(StrictSchema):
     type: str = Field(
         description="SEO aspect to improve (title, meta, keyword usage, linking)."
     )
@@ -161,7 +163,7 @@ class SEOImprovement(BaseModel):
     )
 
 
-class BlogOptimizerOutput(BaseModel):
+class BlogOptimizerOutput(StrictSchema):
     final_title: Optional[str] = Field(
         description="Refined, keyword-focused, human-friendly title."
     )

@@ -1,11 +1,13 @@
 """Planner schema models for AI content planning."""
 
 from typing import Literal, Optional
-from pydantic import BaseModel, Field
+from pydantic import Field
+
+from app.schemas.base import StrictSchema
 
 
 # Company and Product context
-class CompanyContext(BaseModel):
+class CompanyContext(StrictSchema):
     """Company context from database."""
 
     company_id: int
@@ -15,7 +17,7 @@ class CompanyContext(BaseModel):
     url: str
 
 
-class ProductContext(BaseModel):
+class ProductContext(StrictSchema):
     """Product/Service context from database."""
 
     product_id: int
@@ -25,7 +27,7 @@ class ProductContext(BaseModel):
 
 
 # User request for planning
-class UserRequest(BaseModel):
+class UserRequest(StrictSchema):
     instruction: str = Field(description="User's natural language content request")
     tone: str = Field(default="professional", description="Content tone")
     framework_name: Optional[str] = Field(
@@ -34,7 +36,7 @@ class UserRequest(BaseModel):
 
 
 # Planner output
-class PlannerOutput(BaseModel):
+class PlannerOutput(StrictSchema):
     should_proceed: bool = Field(
         default=True, description="True if content generation can proceed"
     )
@@ -45,7 +47,7 @@ class PlannerOutput(BaseModel):
     pipeline_type: Literal["social", "blog", "both", "none"] = Field(
         description="Selected content pipeline"
     )
-    platform: str = Field(default="linkedin", description="Target platform")
+    platform: str = Field(default="linkedin", description="Target platform (e.g. linkedin, twitter, blog)")
     tone: str = Field(description="Selected tone for content generation")
     clarification_needed: Optional[str] = Field(
         default=None,

@@ -1,8 +1,3 @@
-"""
-Router Agent - Dynamic pipeline routing based on planner output
-Clean, production-ready implementation following Google ADK best practices
-"""
-
 import json
 from typing import AsyncGenerator
 
@@ -14,26 +9,36 @@ from typing_extensions import override
 
 from app.agents.pipelines.blog_pipeline import blog_pipeline_agent
 from app.agents.pipelines.social_pipeline import social_pipeline_agent
+from app.callbacks.agent_callbacks import (
+    after_agent_callback,
+    before_agent_callback,
+)
 from app.schemas.planner_schema import PlannerOutput
 from app.utils.loggers import get_logger
 
-
+# Logger for the router agent
 logger = get_logger("router_agent")
 
 
 class RouterAgent(BaseAgent):
     """
-    Pure orchestrator agent that routes to appropriate content pipelines.
-    Does not manipulate data - lets agents access what they need directly.
+    The Router Agent acts as a traffic controller.
+    
+    It reads the plan created by the Planner Agent and directs the flow
+    to the appropriate content creation pipelines (Blog, Social, or both).
     """
 
     def __init__(self):
         super().__init__(
             name="router_agent",
-            description="Intelligent routing agent that dynamically selects content pipelines.",
-            sub_agents=[],  # Pure orchestrator
+            description="Intelligent routing orchestrator that directs strategy execution",
+            sub_agents=[],  # Sub-agents are managed dynamically in run()
+            
+            # High-level tracking for the router's lifecycle
+            before_agent_callback=[before_agent_callback],
+            after_agent_callback=[after_agent_callback],
         )
-        logger.info("Router agent initialized as pure orchestrator")
+        logger.info("Router agent initialized with production audit hooks")
 
     @override
     async def _run_async_impl(
