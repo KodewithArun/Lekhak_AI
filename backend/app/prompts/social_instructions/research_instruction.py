@@ -31,6 +31,7 @@ SESSION CONTEXT
 
 ### Brand & Product Context
 {brand_product_context}
+{company_name} - {product_name}
 
 - Framework: {framework_name}
 - Year: {current_year}
@@ -63,37 +64,49 @@ STEP 1: STRATEGIC QUERY DESIGN (BUSINESS-FIRST)
 
 Generate and execute AT LEAST 8 topic-focused queries:
 
-Query A — Customer Problems
-- Goal: Identify real pain points and frustrations
-- Example: "biggest problems faced by people or businesses related to {topic}"
+Query Template Guidelines:
 
-Query B — Motivations & Goals
-- Goal: Understand what success means to users
-- Example: "what do customers want to achieve with {topic}"
+Query A — Company/Product Relevance
+- Goal: Understand how the topic relates to your brand, product, or platform.
+- Example: "How {company_name} or {product_name} addresses challenges in {topic} or contributes to {topic} solutions"
 
-Query C — Existing Solutions
-- Goal: Identify tools, services, workflows
-- Example: "best tools or services for {topic}"
 
-Query D — Competitors
-- Goal: Find dominant providers and alternatives
-- Example: "companies providing {topic} solutions"
+Query B — Customer Problems / Pain Points
+- Goal: Identify real frustrations, obstacles, and unmet needs experienced by the target audience.
+- Example: "Biggest problems faced by individuals, professionals, or businesses related to {topic}"
 
-Query E — Complaints & Gaps
-- Goal: Discover unmet needs
-- Example: "common complaints about {topic} tools or services"
+Query C — Motivations & Goals
+- Goal: Understand what success looks like for users or clients, and what drives adoption
+- Example: "What do users or businesses want to achieve with {topic} or using solutions related to {topic}"
 
-Query F — Trends & Industry Direction
-- Goal: Ensure current relevance
-- Example: "{topic} industry trends {current_year}"
+Query D — Existing Solutions / Workflows
+- Goal: Discover current tools, platforms, services, or workflows addressing the topic.
+- Example: “Best tools, services, or platforms currently used for {topic}”
 
-Query G — Trust & Authority
-- Goal: Find credible institutions or experts
-- Example: "{topic} research report industry authority"
+Query E — Competitors / Alternatives
+- Goal: Identify dominant providers, alternatives, or substitutes in the space.
+- Example: “Companies or platforms providing {topic} solutions or alternatives”
 
-Query H — Regional or Sector Context (if relevant)
-- Goal: Local or niche adoption signals
-- Example: "{topic} adoption in {industry} industry" 
+Query F — Complaints & Gaps / Unmet Needs
+- Goal: Explore gaps, frustrations, or shortcomings in current solutions.
+- Example: “Common complaints, limitations, or gaps about {topic} tools, services, or workflows”
+
+Query G — Trends & Industry Direction
+- Goal: Ensure the content is relevant, timely, and aligned with industry evolution.
+- Example: “Current trends, developments, and future direction of the {topic} industry in {current_year}”
+
+Query H — Trust, Authority & Credibility
+- Goal: Find credible research, thought leaders, reports, or authoritative sources.
+- Example: “Authoritative research reports, expert analysis, or thought leaders on {topic}”
+
+Query I — Sector Context / Local Adoption
+- Goal: Understand local or niche adoption signals, regional trends, or market behavior.
+- Example: “Adoption and usage of {topic} in the {industry} sector or in {region/country}”
+
+Query J — Official News / Updates
+- Goal: Collect recent developments, announcements, or news from official or reliable sources.
+- Example: “Relevant news, updates, or government statements about {topic} from official sources”
+
 
 DO NOT use:
 - site:linkedin.com or other social domains
