@@ -8,6 +8,7 @@ from app.callbacks.agent_callbacks import (
 from app.callbacks.model_callbacks import (
     log_model_request_callback,
     repair_json_callback,
+    log_token_usage_callback,
 )
 from app.callbacks.tool_callbacks import (
     after_tool_callback,
@@ -46,7 +47,7 @@ social_researcher = LlmAgent(
     before_agent_callback=[before_agent_callback],
     after_agent_callback=[after_agent_callback],
     before_model_callback=[log_model_request_callback],
-    after_model_callback=[repair_json_callback],
+    after_model_callback=[repair_json_callback, log_token_usage_callback],
     before_tool_callback=[before_tool_callback],
     after_tool_callback=[after_tool_callback],
     on_tool_error_callback=[log_tool_error_callback],
@@ -63,7 +64,7 @@ social_writer = LlmAgent(
     before_agent_callback=[before_agent_callback],
     after_agent_callback=[after_agent_callback],
     before_model_callback=[log_model_request_callback],
-    after_model_callback=[repair_json_callback],
+    after_model_callback=[repair_json_callback, log_token_usage_callback],
 )
 
 
@@ -77,7 +78,7 @@ social_optimizer = LlmAgent(
     before_agent_callback=[before_agent_callback],
     after_agent_callback=[after_agent_callback],
     before_model_callback=[log_model_request_callback],
-    after_model_callback=[repair_json_callback],
+    after_model_callback=[repair_json_callback, log_token_usage_callback],
 )
 
 

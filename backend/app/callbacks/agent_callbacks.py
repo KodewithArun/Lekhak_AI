@@ -4,8 +4,10 @@ from typing import Any, Dict, Optional
 from google.adk.agents.callback_context import CallbackContext
 from google.genai import types
 
-# Global logger for agent-related callbacks
-logger = logging.getLogger("callbacks.agent")
+from app.utils.loggers import get_logger
+
+# Global logger for agent-related callbacks - uses custom file logger
+logger = get_logger("callbacks.agent")
 
 
 async def before_agent_callback(

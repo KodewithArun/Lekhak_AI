@@ -6,9 +6,10 @@ from google.adk.models.llm_request import LlmRequest
 from google.adk.models.llm_response import LlmResponse
 
 from app.utils.json_utils import extract_json
+from app.utils.loggers import get_logger
 
-# Global logger for model-related callbacks
-logger = logging.getLogger("callbacks.model")
+# Global logger for model-related callbacks - uses custom file logger
+logger = get_logger("callbacks.model")
 
 
 async def log_model_request_callback(
@@ -57,4 +58,68 @@ async def repair_json_callback(
                     )
                     part.text = cleaned_text
     return None  # Return None to use the (potentially modified) response
+
+
+
+async def log_token_usage_callback(
+    callback_context: CallbackContext, llm_response: LlmResponse
+) -> Optional[LlmResponse]:
+    """
+    Tracks and logs token usage for cost monitoring.
+    Works with both Google Gemini (native) and OpenAI (via wrapper).
+    """
+    try:
+        input_tokens = 0
+        output_tokens = 0
+        
+        # 1. Try generic dictionary access (OpenAI/LiteLLM usually has this)
+        usage_dict = getattr(llm_response, "usage", None)
+        
+        # 2. Try Google Native format (usage_metadata)
+        usage_metadata = getattr(llm_response, "usage_metadata", None)
+
+        if usage_metadata:
+            # Google GenerativeAI format (handling both object and dict)
+            if isinstance(usage_metadata, dict):
+                input_tokens = usage_metadata.get("prompt_token_count", 0) or usage_metadata.get("prompt_tokens", 0)
+                output_tokens = usage_metadata.get("candidates_token_count", 0) or usage_metadata.get("completion_tokens", 0)
+            else:
+                # Try snake_case (standard)
+                input_tokens = getattr(usage_metadata, "prompt_token_count", 0)
+                output_tokens = getattr(usage_metadata, "candidates_token_count", 0)
+                
+                # Try camelCase (some versions) if zero
+                if input_tokens == 0:
+                     input_tokens = getattr(usage_metadata, "promptTokenCount", 0)
+                if output_tokens == 0:
+                     output_tokens = getattr(usage_metadata, "candidatesTokenCount", 0)
+
+        elif usage_dict:
+            # OpenAI / LiteLLM format
+            if isinstance(usage_dict, dict):
+                input_tokens = usage_dict.get("prompt_tokens", 0)
+                output_tokens = usage_dict.get("completion_tokens", 0)
+            else:
+                input_tokens = getattr(usage_dict, "prompt_tokens", 0)
+                output_tokens = getattr(usage_dict, "completion_tokens", 0)
+        
+        total_tokens = input_tokens + output_tokens
+        
+        if total_tokens > 0:
+            logger.info(
+                f"[Token Usage] Agent: {callback_context.agent_name} | "
+                f"Input: {input_tokens} | Output: {output_tokens} | Total: {total_tokens}"
+            )
+        else:
+            # Debug log to help find why it's missing (only on warning level to avoid spam)
+            logger.warning(
+                f"[Token Usage Missing] Agent: {callback_context.agent_name}. "
+                f"Has usage_metadata: {bool(usage_metadata)}, Has usage: {bool(usage_dict)}"
+            )
+            
+    except Exception as e:
+        logger.error(f"Failed to track token usage: {e}")
+        
+    return None
+
 

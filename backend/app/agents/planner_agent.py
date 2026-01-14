@@ -7,6 +7,7 @@ from app.callbacks.agent_callbacks import (
 from app.callbacks.model_callbacks import (
     log_model_request_callback,
     repair_json_callback,
+    log_token_usage_callback,
 )
 from app.llm.providers import get_model
 from app.prompts.planner_instruction import INSTRUCTION
@@ -36,7 +37,7 @@ planner_agent = Agent(
     
     # We use repair_json_callback to ensure that any conversational text added 
     # by the model doesn't break our strict Pydantic validation.
-    after_model_callback=[repair_json_callback],
+    after_model_callback=[repair_json_callback, log_token_usage_callback],
 )
 
 

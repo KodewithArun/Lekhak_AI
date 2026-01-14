@@ -4,8 +4,10 @@ from typing import Any, Optional
 from google.adk.tools.base_tool import BaseTool
 from google.adk.tools.tool_context import ToolContext
 
-# Global logger for tool-related callbacks
-logger = logging.getLogger("callbacks.tool")
+from app.utils.loggers import get_logger
+
+# Global logger for tool-related callbacks - uses custom file logger
+logger = get_logger("callbacks.tool")
 
 
 async def before_tool_callback(
