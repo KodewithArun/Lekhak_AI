@@ -1,10 +1,12 @@
 """Social media pipeline schema models."""
 
 from typing import List, Optional
-from pydantic import BaseModel, Field
+from pydantic import Field
+
+from app.schemas.base import StrictSchema
 
 
-class SourceReference(BaseModel):
+class SourceReference(StrictSchema):
     """Model for source references (credibility signals, quotes, case studies)."""
 
     claim: str = Field(description="The statement, quote, or case study")
@@ -12,18 +14,20 @@ class SourceReference(BaseModel):
         default=None,
         description="The specific metric (e.g., '72%', '3x') if applicable",
     )
-    source: str = Field(description="The source name or publication")
+    source: Optional[str] = Field(
+        default=None, description="The source name or publication"
+    )
     url: Optional[str] = Field(default=None, description="URL for verification")
 
 
 # Nested models for SocialResearchOutput
-class AudienceIntent(BaseModel):
+class AudienceIntent(StrictSchema):
     primary: List[str] = Field(description="Primary audience intent")
     secondary: List[str] = Field(description="Secondary audience intent")
     tertiary: List[str] = Field(description="Tertiary audience intent")
 
 
-class AttentionTriggers(BaseModel):
+class AttentionTriggers(StrictSchema):
     problem_awareness: List[str] = Field(description="Problem awareness triggers")
     novelty: List[str] = Field(description="Novelty triggers")
     credibility: List[str] = Field(description="Credibility triggers")
@@ -31,7 +35,7 @@ class AttentionTriggers(BaseModel):
     benefit_orientation: List[str] = Field(description="Benefit orientation triggers")
 
 
-class ContentAngles(BaseModel):
+class ContentAngles(StrictSchema):
     thought_leadership: str = Field(description="Challenging the status quo")
     use_case_scenarios: str = Field(description="Real-world application")
     feature_deep_dive: str = Field(description="Technical exploration")
@@ -39,14 +43,14 @@ class ContentAngles(BaseModel):
     problem_solution: str = Field(description="Direct problem solving")
 
 
-class FormatGuidelines(BaseModel):
+class FormatGuidelines(StrictSchema):
     tone: str = Field(description="Tone of the content")
     length: str = Field(description="Length guidelines")
     hashtags: str = Field(description="Hashtag strategy")
     engagement_style: str = Field(description="Engagement style")
 
 
-class CompetitorInsight(BaseModel):
+class CompetitorInsight(StrictSchema):
     """Model for competitor content analysis."""
 
     competitor_name: Optional[str] = Field(
@@ -67,7 +71,7 @@ class CompetitorInsight(BaseModel):
     )
 
 
-class TimingContext(BaseModel):
+class TimingContext(StrictSchema):
     """Model for timing and seasonality insights."""
 
     trending_now: Optional[List[str]] = Field(
@@ -81,7 +85,7 @@ class TimingContext(BaseModel):
     )
 
 
-class AudiencePersona(BaseModel):
+class AudiencePersona(StrictSchema):
     """Model for audience persona segmentation."""
 
     persona_name: Optional[str] = Field(
@@ -99,7 +103,7 @@ class AudiencePersona(BaseModel):
     )
 
 
-class SocialResearchOutput(BaseModel):
+class SocialResearchOutput(StrictSchema):
     """
     Deep research output used by the Social Content Agent.
     Designed to be extremely detailed, structured, and actionable.
@@ -161,13 +165,13 @@ class SocialResearchOutput(BaseModel):
 # Social writing output schemas
 
 
-class Hooks(BaseModel):
+class Hooks(StrictSchema):
     primary: str = Field(description="Primary hook")
     secondary: str = Field(description="Secondary hook")
     tertiary: Optional[str] = Field(default=None, description="Tertiary hook")
 
 
-class SocialContentOutput(BaseModel):
+class SocialContentOutput(StrictSchema):
     platform: str = Field(
         description="The platform for which the content is being generated (LinkedIn, Instagram, X/Twitter, Facebook)."
     )
@@ -211,24 +215,24 @@ class SocialContentOutput(BaseModel):
 #  Optimized content schema
 
 
-class OptimizedContent(BaseModel):
+class OptimizedContent(StrictSchema):
     platform: str = Field(
         description="The social media platform for this content (e.g., LinkedIn, Instagram, X/Twitter, Facebook)."
     )
 
-    optimized_caption: str = Field(
+    caption: str = Field(
         description="A concise, catchy line to hook the audience."
     )
 
-    optimized_content: str = Field(
-        description="The fully assembled post content including Body, CTA, Hashtags, and formatted Sources at the bottom."
+    content: str = Field(
+        description="The fully assembled post BODY. DO NOT include the hook/caption, CTA, or Hashtags here as they are provided in separate fields."
     )
 
-    final_hashtags: List[str] = Field(
+    hashtags: List[str] = Field(
         description="A list of platform-relevant and trending hashtags for discoverability."
     )
 
-    platform_cta: Optional[str] = Field(
+    cta: Optional[str] = Field(
         default=None,
         description="Optional call-to-action to encourage user engagement or conversion.",
     )
@@ -238,7 +242,7 @@ class OptimizedContent(BaseModel):
         description="Structured hooks for A/B testing (Primary = Variant A, Secondary = Variant B).",
     )
 
-    source_references: Optional[List[SourceReference]] = Field(
+    sources: Optional[List[SourceReference]] = Field(
         default=None,
         description="List of source references preserved from writer output.",
     )

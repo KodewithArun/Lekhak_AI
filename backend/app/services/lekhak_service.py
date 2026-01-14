@@ -1,6 +1,8 @@
 """Service for generating content using Lekhak AI with company and product context."""
 
 import time
+import uuid
+from datetime import datetime
 from typing import Optional
 
 from google.adk.runners import Runner
@@ -41,109 +43,190 @@ def _get_agent_client() -> AgentClient:
     return _agent_client
 
 
-async def _build_user_request(
-    prompt: str, company_id: int, product_id: Optional[int] = None
+async def _get_context_data(
+    company_id: int,
+    product_id: Optional[int] = None,
+    framework_id: Optional[int] = None,
+    use_company_as_product: bool = False,
 ) -> dict:
-    """Build structured UserRequest with company and product context."""
+    """Get company, product, and framework context from database.
+
+    If product_id is not provided and use_company_as_product is True (or product_id
+    is None with a valid company), company information will be used as product context.
+
+    Returns a dict with keys: company_context, product_context, framework_context
+    All values are dicts ready for session state injection.
+    """
+    context = {}
+
     async with SessionLocal() as db:
         # Query company
-        result = await db.execute(select(Company).where(Company.id == company_id))
-        company = result.scalar_one_or_none()
+        if company_id:
+            result = await db.execute(select(Company).where(Company.id == company_id))
+            company = result.scalar_one_or_none()
 
-        if not company:
-            return {"instruction": prompt}
+            if company:
+                context["company_context"] = CompanyContext(
+                    company_id=company.id,
+                    name=company.name,
+                    industry=company.industry,
+                    description=company.description,
+                    url=company.url,
+                ).model_dump()
+                context["company_name"] = company.name
+                context["company_description"] = company.description
+                context["company_url"] = company.url
+                context["industry"] = company.industry
 
-        company_context = CompanyContext(
-            company_id=company.id,
-            name=company.name,
-            industry=company.industry,
-            description=company.description,
-            url=company.url,
-        )
-
-        product_context = None
+        # Query product
         if product_id:
-            # Query product
             result = await db.execute(select(Product).where(Product.id == product_id))
             product = result.scalar_one_or_none()
+
             if product:
-                product_context = ProductContext(
+                context["product_context"] = ProductContext(
                     product_id=product.id,
                     name=product.name,
                     description=product.description,
                     url=product.url,
-                )
+                ).model_dump()
+                context["product_name"] = product.name
+                context["product_description"] = product.description
+                context["product_url"] = product.url
 
-        user_request = {
-            "instruction": prompt,
-            "company_context": (
-                company_context.model_dump() if company_context else None
-            ),
-            "product_context": (
-                product_context.model_dump() if product_context else None
-            ),
-        }
+        # Use company as product if no product_id provided and company exists
+        elif "company_context" in context:
+            company_ctx = context["company_context"]
+            logger.info(
+                f"Using company '{company_ctx['name']}' as product (auto-fallback)"
+            )
+            
+            context["is_company_as_product"] = True
+            
+            # Map company details to product fields for template compatibility
+            context["product_name"] = company_ctx["name"]
+            context["product_description"] = company_ctx["description"]
+            context["product_url"] = company_ctx["url"]
 
-        return user_request
+        # Query framework (default to AIDA if not specified)
+        if framework_id:
+            result = await db.execute(
+                select(Framework).where(Framework.id == framework_id)
+            )
+            framework = result.scalar_one_or_none()
+        else:
+            # Default to AIDA framework
+            result = await db.execute(select(Framework).where(Framework.name == "AIDA"))
+            framework = result.scalar_one_or_none()
+
+        if framework:
+            context["framework_context"] = {
+                "name": framework.name,
+                "description": framework.description,
+                "instruction": framework.instruction,
+            }
+            context["framework_name"] = framework.name
+            context["framework_description"] = framework.description
+            context["framework_instruction"] = framework.instruction
+            logger.info(f"Framework selected: {framework.name}")
+        else:
+            logger.warning("No framework found - AIDA default should be applied")
+
+    context["current_year"] = str(datetime.now().year)
+
+    # Generate unified brand_product_context for efficient prompt injection
+    # This follows Google ADK best practice: pre-render context in Python, keep prompts simple
+    _build_brand_product_context(context, use_company_as_product)
+
+    return context
+
+
+def _build_brand_product_context(context: dict, use_company_as_product: bool) -> None:
+    """Build a unified brand_product_context string for prompt injection.
+    
+    This pre-renders the company/product context into a single string that adapts
+    based on whether the company IS the product (like Google) or they are separate.
+    
+    Benefits:
+    - Reduces token count in prompts
+    - Avoids redundant information when company=product
+    - Follows ADK best practice of minimal session state
+    """
+    company_ctx = context.get("company_context")
+    product_ctx = context.get("product_context")
+    
+    if not company_ctx:
+        context["brand_product_context"] = "(No company context provided)"
+        return
+    
+    if use_company_as_product or context.get("is_company_as_product"):
+        # Brand IS the product (e.g., Google, Apple, Nike)
+        context["brand_product_context"] = f"""**Brand:** {company_ctx['name']}
+**Description:** {company_ctx['description']}
+**Industry:** {company_ctx.get('industry', 'Technology')}
+**URL:** {company_ctx['url']}
+
+> This brand represents both the company and its core product/service. 
+> Focus content on brand identity, values, and unified messaging."""
+        logger.info(f"Built unified brand context for '{company_ctx['name']}'")
+    
+    elif product_ctx:
+        # Separate company and product (e.g., InspiringLab → Lekhak)
+        context["brand_product_context"] = f"""**Company:** {company_ctx['name']}
+**Company Description:** {company_ctx['description']}
+**Industry:** {company_ctx.get('industry', 'Technology')}
+
+**Product:** {product_ctx['name']}
+**Product Description:** {product_ctx['description']}
+**Product URL:** {product_ctx['url']}
+
+> Create content that highlights both the company's credibility and the product's value."""
+        logger.info(f"Built separate company/product context: {company_ctx['name']} → {product_ctx['name']}")
+    
+    else:
+        # Company only, no product
+        context["brand_product_context"] = f"""**Company:** {company_ctx['name']}
+**Description:** {company_ctx['description']}
+**Industry:** {company_ctx.get('industry', 'Technology')}
+**URL:** {company_ctx['url']}"""
+        logger.info(f"Built company-only context for '{company_ctx['name']}'")
 
 
 async def async_generate_content(
     prompt: str,
+    company_id: int,
     user_id: str = "test_user",
     session_id: Optional[str] = None,
-    company_id: Optional[int] = None,
     product_id: Optional[int] = None,
     framework_id: Optional[int] = None,
+    tone: str = "professional",
+    use_company_as_product: bool = False,
 ) -> str:
     start_time = time.time()
     logger.info(f" START GENERATION (Task: {session_id})")
 
     default_state = {"user_name": user_id}
+    user_request = {"instruction": prompt}
 
-    # Context collection
-    db_start = time.time()
-    user_request = {"instruction": prompt}  # Initialize user_request
-    framework_context = None  # Initialize framework_context
-    async with SessionLocal() as db:
-        # Build user request with company and product context
-        if company_id:
-            user_request = await _build_user_request(prompt, company_id, product_id)
-        # else: user_request already initialized
+    # Fetch all context data in one call (company, product, framework)
+    # If use_company_as_product is True or product_id is None, company info may be used as product
+    context_data = await _get_context_data(
+        company_id, product_id, framework_id, use_company_as_product
+    )
+    default_state.update(context_data)
 
-        # Fetch framework (use AIDA as default if not specified)
-        target_framework = None
+    # Set framework name in user request for planner routing
+    if "framework_context" in context_data:
+        user_request["framework_name"] = context_data["framework_context"]["name"]
 
-        if framework_id:
-            result = await db.execute(
-                select(Framework).where(Framework.id == framework_id)
-            )
-            target_framework = result.scalar_one_or_none()
-        else:
-            # Default to AIDA framework
-            result = await db.execute(select(Framework).where(Framework.name == "AIDA"))
-            target_framework = result.scalar_one_or_none()
-
-        if target_framework:
-            logger.info(f"Framework selected: {target_framework.name}")
-
-            # Store framework details in state (Pure State Management)
-            framework_context = {
-                "name": target_framework.name,
-                "description": target_framework.description,
-                "instruction": target_framework.instruction,
-            }
-            default_state["framework_context"] = framework_context
-
-            # Set framework name for routing/metadata
-            if isinstance(user_request, dict):
-                user_request["framework_name"] = target_framework.name
-        else:
-            logger.warning("No framework found - AIDA default should be applied")
+    # Set tone in user request (planner will handle storing in session)
+    selected_tone = tone or "professional"
+    user_request["tone"] = selected_tone
 
     # Initialize agent client and create session
-    session_start = time.time()
     client = _get_agent_client()
-    effective_session_id = session_id or user_id
+    # Use provided session_id or generate a new unique one to ensure fresh state
+    effective_session_id = session_id or f"session_{uuid.uuid4()}"
     session = await client.get_or_create_session(
         user_id, session_id=effective_session_id, initial_state=default_state
     )

@@ -98,7 +98,9 @@ def get_conversations():
         return []
 
 
-def generate_content(prompt, company_id=None, product_id=None, framework_id=None):
+def generate_content(
+    prompt, company_id=None, product_id=None, framework_id=None, tone=None
+):
     try:
         # Use unique user_id from session state
         user_id = st.session_state.get("user_id", "streamlit_user")
@@ -113,7 +115,8 @@ def generate_content(prompt, company_id=None, product_id=None, framework_id=None
             payload["product_id"] = product_id
         if framework_id:
             payload["framework_id"] = framework_id
-
+        if tone:
+            payload["tone"] = tone
         response = requests.post(f"{API_BASE_URL}/content/generated/", json=payload)
         if response.status_code == 200:
             return response.json()
@@ -130,6 +133,9 @@ def generate_content(prompt, company_id=None, product_id=None, framework_id=None
 # Initialize User Session
 if "user_id" not in st.session_state:
     st.session_state["user_id"] = str(uuid.uuid4())
+
+if "tone_input_mode" not in st.session_state:
+    st.session_state.tone_input_mode = None  # None | "select" | "custom"
 
 
 # Title
@@ -172,7 +178,7 @@ if page == "Generate Content":
             )
             selected_product_id = product_options[selected_product_name]
         else:
-            st.info("No products available for this company")
+            st.info("No products found — the company itself may be the product.")
             selected_product_id = None
 
         # Framework selection
@@ -201,6 +207,47 @@ if page == "Generate Content":
                 # Minimal info (optional, or remove entirely if "separate navigation" means strictly separate)
                 # st.caption(selected_fw.get('description', ''))
 
+        # select the tone of voice
+
+        st.info(
+            "Select only one tone. If you enter a custom tone, it will be used even if a predefined tone is selected."
+        )
+
+        # Create two columns for a cleaner layout
+        col1, col2 = st.columns([1, 2])
+
+        with col1:
+            selected_tone = st.selectbox(
+                "Choose a tone",
+                [
+                    "Professional",
+                    "Conversational",
+                    "Friendly",
+                    "Inspirational",
+                    "Educational",
+                    "Storytelling",
+                    "Promotional",
+                ],
+            )
+
+        with col2:
+            custom_tone_input = st.text_input(
+                "Or define a custom tone",
+                placeholder="e.g. calm, confident, founder-style explanation",
+            )
+
+        # Determine last input used
+        if custom_tone_input.strip():  # if user typed something
+            st.session_state.tone_input_mode = "custom"
+        elif selected_tone:  # if user selected dropdown
+            st.session_state.tone_input_mode = "select"
+
+        final_tone = (
+            custom_tone_input.strip()
+            if st.session_state.tone_input_mode == "custom"
+            else selected_tone
+        )
+
         # Content request
         user_prompt = st.text_area("Enter your content request", height=150)
 
@@ -209,10 +256,11 @@ if page == "Generate Content":
             if user_prompt:
                 with st.spinner("Generating..."):
                     result = generate_content(
-                        user_prompt,
-                        selected_company_id,
-                        selected_product_id,
-                        selected_framework_id,
+                        prompt=user_prompt,
+                        company_id=selected_company_id,
+                        product_id=selected_product_id,
+                        framework_id=selected_framework_id,
+                        tone=final_tone,
                     )
 
                     if result:

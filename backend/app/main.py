@@ -1,9 +1,12 @@
+import warnings
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.database import Base, engine
 from app.routers import company, content, conversation, framework, product
 from app.utils.loggers import get_logger
+
+warnings.filterwarnings("ignore", category=Warning)
 
 logger = get_logger("main")
 

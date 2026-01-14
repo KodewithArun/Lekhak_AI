@@ -22,6 +22,8 @@ async def generate_content(request: ContentRequest, db: AsyncSession = Depends(g
             company_id=request.company_id,
             product_id=request.product_id,
             framework_id=request.framework_id,
+            tone=request.tone,
+            use_company_as_product=request.use_company_as_product,
         )
 
         # Save conversation to database if company_id is provided

@@ -1,8 +1,3 @@
-"""
-Router Agent - Dynamic pipeline routing based on planner output
-Clean, production-ready implementation following Google ADK best practices
-"""
-
 import json
 from typing import AsyncGenerator
 
@@ -14,26 +9,36 @@ from typing_extensions import override
 
 from app.agents.pipelines.blog_pipeline import blog_pipeline_agent
 from app.agents.pipelines.social_pipeline import social_pipeline_agent
+from app.callbacks.agent_callbacks import (
+    after_agent_callback,
+    before_agent_callback,
+)
 from app.schemas.planner_schema import PlannerOutput
 from app.utils.loggers import get_logger
 
-
+# Logger for the router agent
 logger = get_logger("router_agent")
 
 
 class RouterAgent(BaseAgent):
     """
-    Pure orchestrator agent that routes to appropriate content pipelines.
-    Does not manipulate data - lets agents access what they need directly.
+    The Router Agent acts as a traffic controller.
+    
+    It reads the plan created by the Planner Agent and directs the flow
+    to the appropriate content creation pipelines (Blog, Social, or both).
     """
 
     def __init__(self):
         super().__init__(
             name="router_agent",
-            description="Intelligent routing agent that dynamically selects content pipelines.",
-            sub_agents=[],  # Pure orchestrator
+            description="Intelligent routing orchestrator that directs strategy execution",
+            sub_agents=[],  # Sub-agents are managed dynamically in run()
+            
+            # High-level tracking for the router's lifecycle
+            before_agent_callback=[before_agent_callback],
+            after_agent_callback=[after_agent_callback],
         )
-        logger.info("Router agent initialized as pure orchestrator")
+        logger.info("Router agent initialized with production audit hooks")
 
     @override
     async def _run_async_impl(
@@ -68,6 +73,16 @@ class RouterAgent(BaseAgent):
 
             # Step 4: Route to appropriate pipeline
             pipeline_type = planner_output.pipeline_type.lower()
+
+            # Inject planner variables into session state
+            ctx.session.state["topic"] = planner_output.topic
+            ctx.session.state["platform"] = planner_output.platform
+            ctx.session.state["tone"] = planner_output.tone
+            ctx.session.state["user_pitch"] = planner_output.user_query
+
+            logger.info(
+                f"Context injected: topic='{planner_output.topic}', platform='{planner_output.platform}', tone='{planner_output.tone}', pitch='{planner_output.user_query}'"
+            )
 
             if pipeline_type == "social":
                 logger.info("→ Routing to SOCIAL pipeline")
@@ -160,12 +175,10 @@ class RouterAgent(BaseAgent):
             blog_research = ctx.session.state.get("blog_research")
             blog_writer = ctx.session.state.get("blog_writer")
             blog_optimizer = ctx.session.state.get("blog_optimizer")
-            blog_final_output = ctx.session.state.get("blog_final_output")
 
             logger.info(f"Blog Research: {str(blog_research)[:100]}")
             logger.info(f"Blog Content: {str(blog_writer)[:100]}")
             logger.info(f"Optimized Blog Content: {str(blog_optimizer)[:100]}")
-            logger.info(f"Final Blog Output: {str(blog_final_output)[:100]}")
         except Exception as e:
             logger.exception(f"Failed to log blog outputs: {e}")
 
@@ -206,7 +219,7 @@ class RouterAgent(BaseAgent):
             logger.info("Yielded final social content event")
 
         # Get blog content from session state
-        blog_final = ctx.session.state.get("blog_final_output")
+        blog_final = ctx.session.state.get("blog_optimizer")
         if blog_final:
             # Convert to JSON string if it's a dict
             if isinstance(blog_final, dict):
@@ -216,10 +229,10 @@ class RouterAgent(BaseAgent):
 
             # Yield as final response event
             yield Event(
-                author="blog_final_output",
+                author="blog_optimizer",
                 content=types.Content(role="model", parts=[types.Part(text=blog_json)]),
             )
-            logger.info("Yielded final blog content event")
+            logger.info("Yielded final blog content event from optimizer")
 
     async def _yield_social_output(
         self, ctx: InvocationContext
@@ -243,7 +256,7 @@ class RouterAgent(BaseAgent):
         self, ctx: InvocationContext
     ) -> AsyncGenerator[Event, None]:
         """Yield final blog output from session state"""
-        blog_final = ctx.session.state.get("blog_final_output")
+        blog_final = ctx.session.state.get("blog_optimizer")
         if blog_final:
             if isinstance(blog_final, dict):
                 blog_json = json.dumps(blog_final)
@@ -251,6 +264,6 @@ class RouterAgent(BaseAgent):
                 blog_json = str(blog_final)
 
             yield Event(
-                author="blog_final_output",
+                author="blog_optimizer",
                 content=types.Content(role="model", parts=[types.Part(text=blog_json)]),
             )

@@ -38,7 +38,7 @@ def serp_google_search(
             "engine": "google",
             "hl": "en",
             "gl": "us",
-            "num": 15,
+            "num": 8,
         }
 
         logger.info(f"Performing SERPAPI search for query: '{query}'")
@@ -65,6 +65,14 @@ def serp_google_search(
         extracted_competitors = extract_competitors(raw_data_for_extract)
         extracted_pain_points = extract_pain_points(raw_data_for_extract)
 
+        # Extract competitor gaps from PAA and related searches
+        competitor_gaps = extract_competitor_gaps(
+            raw_data_for_extract, extracted_competitors
+        )
+
+        # Build sources list matching BlogSource schema (title + url)
+        sources = build_sources(organic_results)
+
         return {
             "organic_results": [
                 {
@@ -76,14 +84,18 @@ def serp_google_search(
             ],
             "people_also_ask": raw_data_for_extract["people_also_ask"],
             "related_searches": raw_data_for_extract["related_searches"],
-            "derived_insights": {
-                "keywords": extracted_keywords
-                or {
-                    "primary_keywords": [query],
-                    "secondary_keywords": [],
-                    "long_tail_keywords": [],
-                },
-                "competitors": extracted_competitors or [],
+            "sources": sources,
+            "keyword_research": extracted_keywords
+            or {
+                "primary_keywords": [query],
+                "secondary_keywords": [],
+                "long_tail_keywords": [],
+            },
+            "competitor_research": {
+                "competitor_names": extracted_competitors or [],
+                "competitor_gaps": competitor_gaps or [],
+            },
+            "pain_point_analysis": {
                 "pain_points": extracted_pain_points or [],
             },
         }
@@ -96,13 +108,17 @@ def serp_google_search(
             "organic_results": [],
             "people_also_ask": [],
             "related_searches": [],
-            "derived_insights": {
-                "keywords": {
-                    "primary_keywords": [query],
-                    "secondary_keywords": [],
-                    "long_tail_keywords": [],
-                },
-                "competitors": [],
+            "sources": [],
+            "keyword_research": {
+                "primary_keywords": [query],
+                "secondary_keywords": [],
+                "long_tail_keywords": [],
+            },
+            "competitor_research": {
+                "competitor_names": [],
+                "competitor_gaps": [],
+            },
+            "pain_point_analysis": {
                 "pain_points": [],
             },
         }
@@ -173,6 +189,8 @@ def extract_pain_points(serp_data: Dict[str, Any]) -> List[str]:
     pain_points = []
 
     for q in serp_data.get("people_also_ask", []):
+        if q is None:
+            continue
         q_lower = q.lower()
         # look for keywords indicating pain points
         if any(
@@ -191,9 +209,60 @@ def extract_pain_points(serp_data: Dict[str, Any]) -> List[str]:
             pain_points.append(q)
 
     for s in serp_data.get("related_searches", []):
+        if s is None:
+            continue
         s_lower = s.lower()
         # look for comparison or problem-related terms
         if any(w in s_lower for w in ["vs", "alternatives", "problems", "review"]):
             pain_points.append(s)
 
     return list(set(pain_points))
+
+
+def extract_competitor_gaps(
+    serp_data: Dict[str, Any], competitors: List[str]
+) -> List[str]:
+    """
+    Identify gaps: PAA questions not well-covered by top competitors.
+    Checks PAA, organic titles, and snippets for coverage.
+    Returns up to 5 unique gaps.
+    """
+    gaps = []
+    seen = set()
+
+    top_competitors = [c.lower() for c in competitors[:3]]
+
+    for question in serp_data.get("people_also_ask", []):
+
+        # Check if any top competitor appears in question OR in organic titles/snippets
+        covered = False
+        for result in serp_data.get("organic_results", [])[:5]:
+            text = " ".join(
+                [str(result.get("title", "")), str(result.get("snippet", ""))]
+            ).lower()
+            if any(comp in text for comp in top_competitors):
+                covered = True
+                break
+        if not covered and question not in seen:
+            gaps.append(question)
+            seen.add(question)
+        if len(gaps) >= 5:
+            break
+
+    return gaps
+
+
+def build_sources(organic_results: List[Dict[str, Any]]) -> List[Dict[str, str]]:
+    """
+    Build sources list matching BlogSource schema (title + url).
+    Returns up to 10 validated sources.
+    """
+    sources = [
+        {
+            "title": r.get("title", "Unknown"),
+            "url": r.get("link", ""),
+        }
+        for r in organic_results
+        if r.get("link")
+    ]
+    return sources[:10]
