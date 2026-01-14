@@ -128,8 +128,6 @@ Use directly from `ctx.session.state`:
 - Ensure **keywords and sources are validated**; flag missing fields if research is incomplete
 
 
-
-
 **CRITICAL OUTPUT RULES:**
 1. **JSON ONLY**: Your final output must be a single, valid JSON object.
 2. **NO CONVERSATION**: Do not include "Here is the result", "I found...", or any other text.

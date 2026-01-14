@@ -87,6 +87,21 @@ Use directly from `ctx.session.state`:
    - **Verify NO XML tags remain** in any content field
 
 
+   
+- TITLE SELECTION LOGIC (CRITICAL):
+  - The output MUST contain exactly ONE title (`final_title`).
+  - IF the user provides a pitch or headline intent in the input:
+    - Use the pitch as `final_title` (light grammar cleanup allowed).
+    - DO NOT generate an additional SEO title.
+  - IF no pitch is provided:
+    - Generate ONE SEO-optimized title and use it as `final_title`.
+  - The selected title MUST NOT be repeated, paraphrased, or reintroduced
+    as a subtitle, headline, or standalone line in the content.
+
+
+
+
+
 ## OUTPUT (STRICT JSON: BlogOptimizerOutput)
 
 {{
@@ -110,4 +125,9 @@ Use directly from `ctx.session.state`:
 2. **NO CONVERSATION**: Do not include "Here is the result", "I found...", or any other text.
 3. **NO MARKDOWN**: Do not wrap in ```json ... ``` blocks if possible, but if you do, the system will handle it.
 4. **START AND END**: The output must start with `{{` and end with `}}`.
+5. SINGLE TITLE GUARANTEE:
+   - The JSON output MUST include exactly ONE title field: `final_title`.
+   - The first line of `final_content` MUST NOT be a title or title-like sentence.
+   - Any pitch or hook not used as the title MUST be rewritten into
+     the introduction paragraph.
 """
